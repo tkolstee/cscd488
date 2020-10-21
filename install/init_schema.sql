@@ -13,4 +13,5 @@ CREATE TABLE users (
   uname TEXT UNIQUE,
   upassword TEXT
 );
+INSERT INTO users (uname, upassword) VALUES ('test', 'test');
 

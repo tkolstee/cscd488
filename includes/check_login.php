@@ -8,8 +8,6 @@
     if($user->validateUser($_POST['username'], $_POST['password'])){
       $_SESSION['username'] = $_POST['username'];
       $_SESSION['user'] = $user;
-    }else{
-      echo "WRONG INFO";
     }
     
   }
@@ -23,10 +21,18 @@
   }
   
   if (! isset($_SESSION['username'])) {
+    if(!empty($_SESSION['error'])){
+      echo($_SESSION['error']);
+    }
 ?>
       <div id="loginform">
         <form method="POST">
-          <input type="text" name="username" placeholder="Username"/><br>
+
+          <?php //Errorhandling on username
+          if(!empty($_SESSION['uname'])) $uname = $_SESSION['uname'];
+          else $uname = "Username";
+          echo "<input type=\"text\" name=\"username\" placeholder=\"".$uname."\"/><br>";
+          ?>
           <input type="password" name="password" placeholder="Password"/><br>
           <button type="submit" name="loginSubmit">Login</button>
         </form>
