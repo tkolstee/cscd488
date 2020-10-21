@@ -15,7 +15,6 @@ COPY html /var/www/html
 COPY install /install
 RUN mkdir /var/www/db
 RUN /install/install.sh
-
-RUN sudo chown -R www-data /var/www/db
-RUN sudo chown www-data /var/www/db/main.db
+USER root
+RUN chmod -R 777 /var/www/db
 
