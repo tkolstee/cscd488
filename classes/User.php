@@ -16,13 +16,11 @@
             $stmt->bindValue(':key', $unameIn, SQLITE3_TEXT);
             $result = $stmt->execute();
             echo "validating user";
-            if ($row = $result->fetchArray()) {
-              if($row[2] == password_hash($upassIn, PASSWORD_BCRYPT)){
+            if(password_verify($upassIn, $row[2])){
                 echo "user validated";
                 $uid = $row[0];
                 $uname = $row[1];
                 return true;
-              }
             } 
             echo "user not validated";
             return false;

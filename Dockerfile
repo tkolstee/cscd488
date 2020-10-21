@@ -13,8 +13,4 @@ COPY classes /var/www/classes
 COPY includes /var/www/includes
 COPY html /var/www/html
 COPY install /install
-RUN mkdir /var/www/db
 RUN /install/install.sh
-USER root
-RUN chmod -R 777 /var/www/db
-
