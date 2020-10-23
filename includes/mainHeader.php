@@ -1,5 +1,8 @@
 <?php session_start(); ?>
 <?php session_start(); ?>
+<?php
+  include "check_login.php";
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -7,6 +10,5 @@
   </head>
   <body>
     <?php
-      include "check_login.php";
       include "navmenu.php";
     ?>

@@ -19,7 +19,6 @@
             $stmt = $db->getConn()->prepare('SELECT * FROM users WHERE uname=:key');
             $stmt->bindValue(':key', $unameIn, SQLITE3_TEXT);
             $result = $stmt->execute();
-            echo "validating user";
             if ($row = $result->fetchArray()) {
               if (password_verify($upassIn, $row[2])) {
                 echo "user validated";

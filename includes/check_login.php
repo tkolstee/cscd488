@@ -20,7 +20,7 @@
     
   }
   
-  if (! isset($_SESSION['username'])) {
+  if (!isset($_SESSION['username'])) {
     if(!empty($_SESSION['error'])){
       echo($_SESSION['error']);
     }
