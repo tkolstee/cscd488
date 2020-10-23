@@ -1,6 +1,5 @@
-<?php session_start(); ?>
-<?php session_start(); ?>
-<?php
+<?php 
+  session_start();
   include "check_login.php";
 ?>
 <!DOCTYPE html>
