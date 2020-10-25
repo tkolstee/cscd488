@@ -37,7 +37,8 @@
         public function createUser($unameIn, $upassIn){
             $db = Db::getInstance();
             if ( User::getUser($unameIn) != null ) {
-                return false;
+                header("Location: ../html/index.php?error=usernameTaken&uname=".$unameIn);
+                exit();
             }
             echo "inserting and executing statement";
             $stmt = $db->getConn()->prepare('INSERT INTO users (uname, upassword) VALUES (:uname, :upass)');
