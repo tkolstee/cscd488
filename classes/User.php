@@ -35,6 +35,10 @@
         }
 
         public function createUser($unameIn, $upassIn){
+            if(empty($unameIn) || empty($upassIn)){
+                header("Location: ../html/index.php?error=emptyFields&uname=".$unameIn);
+                exit();
+            }
             $db = Db::getInstance();
             if ( User::getUser($unameIn) != null ) {
                 header("Location: ../html/index.php?error=usernameTaken&uname=".$unameIn);
