@@ -21,8 +21,8 @@
   }
   
   if (!isset($_SESSION['username'])) {
-    if(!empty($_SESSION['error'])){
-      echo($_SESSION['error']);
+    if(!empty($_GET['error'])){
+      echo($_GET['error']);
     }
 ?>
       <div id="loginform">
