@@ -12,41 +12,43 @@
         
         public function validateUser($unameIn, $upassIn){
             if(empty($unameIn) || empty($upassIn)){
-                header("Location: ../html/index.php?error=emptyFields&uname=".$unameIn);
+                header("Location: /index.php?error=emptyFields&uname=".$unameIn);
                 exit();
             }
             $db = Db::getInstance();
             $stmt = $db->getConn()->prepare('SELECT * FROM users WHERE uname=:key');
             $stmt->bindValue(':key', $unameIn, SQLITE3_TEXT);
             $result = $stmt->execute();
-            echo "validating user";
             if ($row = $result->fetchArray()) {
               if (password_verify($upassIn, $row[2])) {
-                echo "user validated";
                 $uid = $row[0];
                 $uname = $row[1];
                 return true;
               }
-              header("Location: ../html/index.php?error=passwordIncorrect&uname=".$unameIn);
+              header("Location: /index.php?error=passwordIncorrect&uname=".$unameIn);
               exit();
             } 
-            header("Location: ../html/index.php?error=unameIncorrect");
+            header("Location: /index.php?error=unameIncorrect");
             exit();
             
         }
 
         public function createUser($unameIn, $upassIn){
+            if(empty($unameIn) || empty($upassIn)){
+                header("Location: /index.php?error=emptyFields&uname=".$unameIn);
+                exit();
+            }
             $db = Db::getInstance();
             if ( User::getUser($unameIn) != null ) {
-                return false;
+                header("Location: /index.php?error=usernameTaken&uname=".$unameIn);
+                exit();
             }
-            echo "inserting and executing statement";
             $stmt = $db->getConn()->prepare('INSERT INTO users (uname, upassword) VALUES (:uname, :upass)');
             $stmt->bindValue(':uname', $unameIn, SQLITE3_TEXT);
             $stmt->bindValue(':upass', password_hash($upassIn, PASSWORD_BCRYPT),   SQLITE3_TEXT);
             $stmt->execute();
             if(User::getUser($unameIn) == null){
-                header("Location: ../html/index.php?error=userNotCreated&uname=".$unameIn);
+                header("Location: /index.php?error=userNotCreated&uname=".$unameIn);
                 exit();
             }
             return $this->validateUser($unameIn, $upassIn);

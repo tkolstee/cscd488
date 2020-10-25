@@ -13,9 +13,11 @@ services:
       context: .
       dockerfile: Dockerfile
     entrypoint: vendor/bin/phpunit
+    restart: never
   bash:
     container_name: bash
     build:
       context: .
       dockerfile: Dockerfile
     entrypoint: /bin/bash
+    restart: never
