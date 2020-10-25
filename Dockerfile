@@ -1,15 +1,14 @@
-FROM php:7.2-apache
+FROM php:7.4.11-apache
 
-# Install sqlite3 and wget
-RUN apt-get update && apt -y install sqlite3 wget
+ENV PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/var/www/vendor/bin
+RUN apt-get update && apt -y install sqlite3 wget unzip git
 
-# Install PHPUnit into /usr/local/bin
-RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-9.phar && chmod +x /usr/local/bin/phpunit
+WORKDIR /var/www
 
-COPY classes /var/www/classes
-COPY includes /var/www/includes
-COPY html /var/www/html
-COPY install /install
 RUN mkdir /var/www/db
-RUN /install/install.sh
+COPY install /install
+COPY www /var/www
+RUN /bin/bash -x /install/install.sh
+
+WORKDIR /var/www
 

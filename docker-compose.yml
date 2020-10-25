@@ -7,3 +7,15 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:80"
+  phpunit:
+    container_name: phpunit
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: vendor/bin/phpunit
+  bash:
+    container_name: bash
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: /bin/bash

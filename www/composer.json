@@ -1,0 +1,9 @@
+{
+  "require": {
+    "phpunit/phpunit": "^9.4"
+  },
+  "autoload":  {
+    "classmap": [ "classes/" ],
+    "files":    [ ]
+  }
+}
