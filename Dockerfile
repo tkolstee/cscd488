@@ -6,11 +6,10 @@ RUN apt-get update && apt -y install sqlite3 wget unzip git sudo
 WORKDIR /var/www
 
 COPY install /install
-COPY www /var/www
-RUN chown -R www-data /var/www
-
-USER www-data
-WORKDIR /var/www
-
 RUN /bin/bash -x /install/install.sh 
+
+COPY www /var/www/
+RUN chown -R www-data /var/www
+RUN composer dump-autoload
+
 
