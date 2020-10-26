@@ -29,7 +29,7 @@
         <form method="POST">
 
           <?php //Errorhandling on username
-          if(!empty($_SESSION['uname'])) $uname = $_SESSION['uname'];
+          if(!empty($_GET['uname'])) $uname = $_GET['uname'];
           else $uname = "Username";
           echo "<input type=\"text\" name=\"username\" placeholder=\"".$uname."\"/><br>";
           ?>
