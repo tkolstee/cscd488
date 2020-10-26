@@ -11,7 +11,7 @@ CREATE TABLE activity_log (
 CREATE TABLE users (
   uid INTEGER PRIMARY KEY AUTOINCREMENT,
   uname TEXT UNIQUE,
-  upassword TEXT
+  upassword VARCHAR(255)
 );
 INSERT INTO users (uname, upassword) VALUES ('test', 'test');
 
