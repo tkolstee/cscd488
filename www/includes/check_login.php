@@ -29,9 +29,8 @@
         <form method="POST">
 
           <?php //Errorhandling on username
-          if(!empty($_GET['uname'])) $uname = $_GET['uname'];
-          else $uname = "Username";
-          echo "<input type=\"text\" name=\"username\" placeholder=\"".$uname."\"/><br>";
+          if(!empty($_GET['uname'])) echo "<input type=\"text\" name=\"username\" value=\"".$uname."\"/><br>";
+          else echo "<input type=\"text\" name=\"username\" placeholder=\"Username\"/><br>";
           ?>
           <input type="password" name="password" placeholder="Password"/><br>
           <button type="submit" name="loginSubmit">Login</button>
