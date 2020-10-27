@@ -1,6 +1,6 @@
 <div class="navmenu">
   <div class="loginname">
-    Logged in as <?= $_SESSION['username'] ?>
+    Logged in as <a href="../profile.php"><?= $_SESSION['username'] ?></a>
     <a href="logout.php">Log out</a>
   </div>
   <br>
