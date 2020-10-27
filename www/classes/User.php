@@ -4,11 +4,19 @@
 
         private $uid = null;
         private $uname = null;
+        private $blueID = null;
+        private $redID = null;
 
         public function getUid(){ return $uid; }
         public function getUname(){ return $uname; }
-        public function setUid($uidIn){ $uid = $uidIn; }
-        public function setUname($unameIn){ $uname = $unameIn; }
+        public function getBlueID(){ return $blueID; }
+        public function getRedID(){ return $redID; }
+
+        public function setUid($uidIn){ $this->$uid = $uidIn; }
+        public function setUname($unameIn){ $this->$uname = $unameIn; }
+        public function setBlueID($blueIDIn){ $this->$blueID = $blueIDIn; }
+        public function setRedID($redIDIn){ $this->$redID = $redIDIn; }
+
         
         public function validateUser($unameIn, $upassIn){
             if(empty($unameIn) || empty($upassIn)){
@@ -36,11 +44,11 @@
                 header("Location: /index.php?error=emptyFields&uname=".$unameIn);
                 exit();
             }
-            $db = Db::getInstance();
             if ( User::getUser($unameIn) != null ) {
                 header("Location: /index.php?error=usernameTaken&uname=".$unameIn);
                 exit();
             }
+            $db = Db::getInstance();
             $stmt = $db->getConn()->prepare('INSERT INTO users (uname, upassword) VALUES (:uname, :upass)');
             $stmt->bindValue(':uname', $unameIn, SQLITE3_TEXT);
             $stmt->bindValue(':upass', password_hash($upassIn, PASSWORD_BCRYPT),   SQLITE3_TEXT);
