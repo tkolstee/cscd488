@@ -1,7 +1,5 @@
 <?php
 
-namespace classes;
-
 class Math {
     public function add(array $nums) {
         return $nums[0] + $nums[1];

@@ -3,10 +3,9 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
-use classes\Math;
 
 /**
- * @coversDefaultClass \classes\Math
+ * @coversDefaultClass \Math
  */
 class MathTest extends TestCase {
     protected $Math;
