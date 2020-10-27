@@ -12,6 +12,5 @@
     </div>
     
 <?php
-    include "../includes/changePassword.php";
     require "../includes/mainFooter.php";
 ?>

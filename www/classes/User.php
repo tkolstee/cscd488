@@ -54,7 +54,11 @@
 
         public function changePassword($upassIn, $upassNew){
             if(empty($upassIn) || empty($upassNew)){
-                header("Location: /index.php?error=emptyFields");
+                header("Location: /profile.php?error=emptyFields");
+                exit();
+            }
+            if($upassIn == $upassNew){
+                header("Location: /profile.php?error=samePasswords");
                 exit();
             }
             $row = User::getUser($this->$uname);
@@ -66,18 +70,18 @@
                     $stmt->bindValue(':upassNew', password_hash($upassNew, PASSWORD_BCRYPT), SQLITE3_TEXT);
                     $stmt->execute();
                 }else{
-                    header("Location: /index.php?error=passwordIncorrect");
+                    header("Location: /profile.php?error=passwordIncorrect");
                     exit();
                 }
             }else{
-                header("Location: /index.php?error=userNotFound");
+                header("Location: /profile.php?error=userNotFound");
                 exit();
             }
             //validate password is changed
             $row = User::getUser($this->$uname);
             if(password_verify($upassNew, $row[2])) return true;
             else{
-                header("Location: /index.php?error=passwordUnchanged");
+                header("Location: /profile.php?error=passwordUnchanged");
                 exit();
             }
         }
