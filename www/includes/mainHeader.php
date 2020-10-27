@@ -1,4 +1,5 @@
-<?php 
+<?php
+  session_cache_limiter('private_no_expire');
   session_start();
   include "check_login.php";
 ?>
