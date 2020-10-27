@@ -1,4 +1,5 @@
 <?php 
+  ob_start();
   session_start();
   include "check_login.php";
 ?>

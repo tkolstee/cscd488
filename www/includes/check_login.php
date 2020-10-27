@@ -7,7 +7,7 @@
     $user = new User();
     if($user->validateUser($_POST['username'], $_POST['password'])){
       $_SESSION['username'] = $_POST['username'];
-      $_SESSION['user'] = $user;
+      $_SESSION['user'] = serialize($user);
     }
     
   }
@@ -15,16 +15,12 @@
     $user = new User();
     if($user->createUser($_POST['username'], $_POST['password'])){
       $_SESSION['username'] = $_POST['username'];
-      $_SESSION['user'] = $user;
+      $_SESSION['user'] = serialize($user);
     }
     
   }
 
-  if(isset($_POST['passwordChangeSubmit'])){
-    $user = $_SESSION['user'];
-    if($user->changePassword($_POST['username'], $_POST['password'], $_POST['passwordNew']))
-      echo "Password Changed Successfully";
-  }
+  
   
   if (!isset($_SESSION['username'])) {
     if(!empty($_GET['error'])){
@@ -51,18 +47,6 @@
       </div>
 <?php
     exit();
-  }else{
-    ?>
-      <div id="passwordChangeform">
-        <form method="POST">
-          <input type="text" name="username" placeholder="Username"/><br>
-          <input type="password" name="password" placeholder="Current Password"/><br>
-          <input type="password" name="passwordNew" placeholder="New Password"/><br>
-
-          <button type="submit" name="passwordChangeSubmit">Change Password</button>
-        </form>
-      </div>
-  <?php
   }
   
 ?>

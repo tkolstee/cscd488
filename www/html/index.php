@@ -3,7 +3,8 @@
 ?>
 
     <h1>this is the main page</h1>
-    
+
 <?php
+    include "../includes/changePassword.php";
     require "../includes/mainFooter.php";
 ?>
