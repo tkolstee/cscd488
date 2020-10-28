@@ -29,8 +29,8 @@ class BlueTeamTest extends TestCase {
      * @covers ::createBlueTeam
      */
     public function testCreateValidBlueTeam(): void {
-        self::assertTrue($this->blueTeam->createBlueTeam("test"));
-        self::assertEquals("test", $this->blueTeam->getBlueName());
+        $this->assertTrue($this->blueTeam->createBlueTeam("test"));
+        $this->assertEquals("test", $this->blueTeam->getBlueName());
     }
 
 }
