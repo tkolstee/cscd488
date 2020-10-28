@@ -10,19 +10,112 @@ use PHPUnit\Framework\TestCase;
 class UserTest extends TestCase {
     protected $user;
 
+    public function setUp(): void {
+        $this->user = new User();
+    }
+
+    public function tearDown(): void {
+        $db = Db::getInstance();
+        $stmt = $db->getConn()->prepare('DELETE FROM users');
+        $stmt->execute();
+    }
+
     /**
      * @covers ::createUser
      */
-    public function testCreateUser(): void {
-        $unameIn = "test";
-        $upassIn = "testPass";
-        self::assertTrue(true);
+    public function testCreateValidUser(): void {
+        $this->assertTrue($this->user->createUser("test","testPass"));
+    }
+
+    /**
+     * @covers ::createUser
+     * @runInSeparateProcess
+     */
+    public function testCreateUserEmptyFields(): void {
+        $this->assertFalse($this->user->createUser("",""));
+        $this->assertFalse($this->user->createUser("name",""));
+        $this->assertFalse($this->user->createUser("","pass"));
+    }
+
+    /**
+     * @covers ::createUser
+     * @runInSeparateProcess
+     */
+    public function testCreateUserNameTaken(): void {
+        $this->user->createUser("test","testPass");
+        $this->assertFalse($this->user->createUser("test","testPass"));
+        $this->assertFalse($this->user->createUser("test","123"));
     }
 
     /**
      * @covers ::validateUser
+     * @runInSeparateProcess
      */
     public function testValidateUser(): void {
-        self::assertTrue(true);
+        $this->assertFalse($this->user->validateUser("test","testPass"));
+        $this->user->createUser("test","testPass");
+        $this->assertTrue($this->user->validateUser("test","testPass"));
+    }
+
+    /**
+     * @covers ::validateUser
+     * @runInSeparateProcess
+     */
+    public function testValidateUserEmptyFields(): void {
+        $this->assertFalse($this->user->validateUser("",""));
+        $this->assertFalse($this->user->validateUser("name",""));
+        $this->assertFalse($this->user->validateUser("","pass"));
+    }
+
+    /**
+     * @covers ::validateUser
+     * @runInSeparateProcess
+     */
+    public function testValidateUserInvalidCredentials(): void {
+        $this->assertFalse($this->user->validateUser("test","wrongPass"));
+        $this->assertFalse($this->user->validateUser("noAccount","testPass"));
+    }
+
+    /**
+     * @covers ::changePassword
+     */
+    public function testChangePassword(): void {
+        $this->user->createUser("test","testPass");
+        $this->assertTrue($this->user->changePassword("testPass","test2"));
+    }
+
+    /**
+     * @covers ::changePassword
+     * @runInSeparateProcess
+     */
+    public function testChangePasswordNotUser(): void {
+        $this->assertFalse($this->user->changePassword("testPass","test2"));
+    }
+
+    /**
+     * @covers ::changePassword
+     * @runInSeparateProcess
+     */
+    public function testChangePasswordEmpty(): void {
+        $this->user->createUser("test","testPass");
+        $this->assertFalse($this->user->changePassword("testPass",""));
+    }
+
+    /**
+     * @covers ::changePassword
+     * @runInSeparateProcess
+     */
+    public function testChangePasswordToSame(): void {
+        $this->user->createUser("test","testPass");
+        $this->assertFalse($this->user->changePassword("testPass","testPass"));
+    }
+
+    /**
+     * @covers ::changePassword
+     * @runInSeparateProcess
+     */
+    public function testChangePasswordWrongOldPassword(): void {
+        $this->user->createUser("test","testPass");
+        $this->assertFalse($this->user->changePassword("wrongpassword","test2"));
     }
 }

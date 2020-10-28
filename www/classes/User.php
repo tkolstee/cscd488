@@ -21,7 +21,7 @@
         public function validateUser($unameIn, $upassIn){
             if(empty($unameIn) || empty($upassIn)){
                 header("Location: /index.php?error=emptyFields&uname=".$unameIn);
-                exit();
+                return false;
             }
             $row = User::getUser($unameIn);
             if ($row != null) {
@@ -31,10 +31,10 @@
                     return true;
               }
               header("Location: /index.php?error=passwordIncorrect&uname=".$unameIn);
-              exit();
+              return false;
             }else{
                 header("Location: /index.php?error=unameIncorrect");
-                exit();
+                return false;
             }
             
         }
@@ -42,11 +42,11 @@
         public function createUser($unameIn, $upassIn){
             if(empty($unameIn) || empty($upassIn)){
                 header("Location: /index.php?error=emptyFields&uname=".$unameIn);
-                exit();
+                return false;
             }
             if ( User::getUser($unameIn) != null ) {
                 header("Location: /index.php?error=usernameTaken&uname=".$unameIn);
-                exit();
+                return false;
             }
             $db = Db::getInstance();
             $stmt = $db->getConn()->prepare('INSERT INTO users (uname, upassword) VALUES (:uname, :upass)');
@@ -55,7 +55,7 @@
             $stmt->execute();
             if(User::getUser($unameIn) == null){
                 header("Location: /index.php?error=userNotCreated&uname=".$unameIn);
-                exit();
+                return false;
             }
             return $this->validateUser($unameIn, $upassIn);
         }
@@ -63,11 +63,11 @@
         public function changePassword($upassIn, $upassNew){
             if(empty($upassIn) || empty($upassNew)){
                 header("Location: /profile.php?error=emptyFields");
-                exit();
+                return false;
             }
             if($upassIn == $upassNew){
                 header("Location: /profile.php?error=samePasswords");
-                exit();
+                return false;
             }
             $row = User::getUser($this->$uname);
             if($row != null){
@@ -79,18 +79,18 @@
                     $stmt->execute();
                 }else{
                     header("Location: /profile.php?error=passwordIncorrect");
-                    exit();
+                    return false;
                 }
             }else{
                 header("Location: /profile.php?error=userNotFound");
-                exit();
+                return false;
             }
             //validate password is changed
             $row = User::getUser($this->$uname);
             if(password_verify($upassNew, $row[2])) return true;
             else{
                 header("Location: /profile.php?error=passwordUnchanged");
-                exit();
+                return false;
             }
         }
 
