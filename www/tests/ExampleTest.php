@@ -12,7 +12,7 @@ class ExampleTest extends TestCase {
         self::assertTrue(true);
     }
 
-    public function testFailure(): void {
+    /*public function testFailure(): void {
         self::assertTrue(false);
-    }
+    }*/
 }
