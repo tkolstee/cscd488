@@ -1,5 +1,5 @@
 <?php
-    include "Db.php";
+    require_once "Db.php";
     class BlueTeam{
 
         private $blueID = null;
@@ -28,13 +28,13 @@
             $stmt->bindValue(':blueName', $blueNameIn, SQLITE3_TEXT);
             $stmt->execute();
             $row = BlueTeam::getBlueTeam($blueNameIn);
-            if($row == null){
+            if($row[0] == null){
                 header("Location: /blue.php?error=teamNotCreated&bluename=".$blueNameIn);
                 return false;
             }
-            $this->$blueID = $row[0];
+            $this->blueID = $row[0];
             //$this->$leaderID = $leaderIDIn;
-            $this->$blueName = $blueNameIn;
+            $this->blueName = $row[1];
             return true;
         }
 

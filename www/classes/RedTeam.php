@@ -1,5 +1,5 @@
 <?php
-    require "Db.php";
+    require_once "Db.php";
     class RedTeam{
 
         private $redID = null;
