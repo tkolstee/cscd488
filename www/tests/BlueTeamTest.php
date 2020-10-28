@@ -32,4 +32,25 @@ class BlueTeamTest extends TestCase {
         $this->assertTrue($this->blueTeam->createBlueTeam("test"));
     }
 
+    /**
+     * @covers ::createBlueTeam
+     */
+    public function testCreateBlueTeamEmptyFields(): void {
+        $this->assertFalse($this->blueTeam->createBlueTeam(""));
+    }
+
+    /**
+     * @covers ::createBlueTeam
+     */
+    public function testCreateBlueTeamNameTaken(): void {
+        $this->blueTeam->createBlueTeam("team1");
+        $this->assertFalse($this->blueTeam->createBlueTeam("team1"));
+    }
+
+    /**
+     * @covers ::createBlueTeam
+     */
+    public function testCreateBlueTeamNull(): void {
+        $this->assertFalse($this->blueTeam->createBlueTeam(null));
+    }
 }
