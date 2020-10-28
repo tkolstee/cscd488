@@ -48,6 +48,16 @@ class UserTest extends TestCase {
     }
 
     /**
+     * @covers ::createUser
+     * @runInSeparateProcess
+     */
+    public function testCreateUserNull(): void {
+        $this->AssertFalse($this->user->createUser(null, null));
+        $this->AssertFalse($this->user->createUser(null, "pass"));
+        $this->AssertFalse($this->user->createUser("uname", null));
+    }
+
+    /**
      * @covers ::validateUser
      * @runInSeparateProcess
      */
@@ -74,6 +84,16 @@ class UserTest extends TestCase {
     public function testValidateUserInvalidCredentials(): void {
         $this->assertFalse($this->user->validateUser("test","wrongPass"));
         $this->assertFalse($this->user->validateUser("noAccount","testPass"));
+    }
+
+     /**
+     * @covers ::validateUser
+     * @runInSeparateProcess
+     */
+    public function testValidateUserNull(): void {
+        $this->AssertFalse($this->user->validateUser(null, null));
+        $this->AssertFalse($this->user->validateUser(null, "pass"));
+        $this->AssertFalse($this->user->validateUser("uname", null));
     }
 
     /**
@@ -117,5 +137,14 @@ class UserTest extends TestCase {
     public function testChangePasswordWrongOldPassword(): void {
         $this->user->createUser("test","testPass");
         $this->assertFalse($this->user->changePassword("wrongpassword","test2"));
+    }
+
+    /**
+     * @covers ::changePassword
+     * @runInSeparateProcess
+     */
+    public function testChangePasswordNull(): void {
+        $this->user->createUser("test","testPass");
+        $this->AssertFalse($this->user->changePassword("testPass", null));
     }
 }
