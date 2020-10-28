@@ -30,7 +30,6 @@ class BlueTeamTest extends TestCase {
      */
     public function testCreateValidBlueTeam(): void {
         $this->assertTrue($this->blueTeam->createBlueTeam("test"));
-        $this->assertEquals("test", $this->blueTeam->getBlueName());
     }
 
 }

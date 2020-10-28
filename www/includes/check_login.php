@@ -1,6 +1,6 @@
 <?php
   
-  require "../classes/User.php";
+  require_once "../classes/User.php";
 
   if(isset($_POST['loginSubmit'])) {
     // Eventually need to actually authenticate the user first

@@ -52,7 +52,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::createUser
-     * @runInSeparateProcess
      */
     public function testCreateUserNull(): void {
         $this->AssertFalse($this->user->createUser(null, null));
@@ -88,7 +87,6 @@ class UserTest extends TestCase {
 
      /**
      * @covers ::validateUser
-     * @runInSeparateProcess
      */
     public function testValidateUserNull(): void {
         $this->AssertFalse($this->user->validateUser(null, null));
@@ -137,7 +135,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::changePassword
-     * @runInSeparateProcess
      */
     public function testChangePasswordNull(): void {
         $this->user->createUser("test","testPass");

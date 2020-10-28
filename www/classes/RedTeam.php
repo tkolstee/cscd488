@@ -14,11 +14,11 @@
         public function createRedTeam($redNameIn){
             if(empty($redNameIn)){
                 header("Location: /red.php?error=emptyName");
-                exit();
+                return false;
             }
             if ( RedTeam::getRedTeam($redNameIn) != null ) {
                 header("Location: /red.php?error=teamnameTaken&redname=".$redNameIn);
-                exit();
+                return false;
             }
             $db = Db::getInstance();
             $stmt = $db->getConn()->prepare('INSERT INTO redteam (redName) VALUES (:redName)');
@@ -27,17 +27,17 @@
             $row = RedTeam::getRedTeam($redNameIn);
             if(row == null){
                 header("Location: /red.php?error=teamNotCreated&redname=".$redNameIn);
-                exit();
+                return false;
             }
-            $this->$redID = $row[0];
-            $this->$redName = $redNameIn;
+            $this->redID = $row[0];
+            $this->redName = $row[1];
             return true;
         }
 
-        private static function getRedTeam($redIDIn){
+        private static function getRedTeam($redNameIn){
             $db = Db::getInstance();
             $stmt = $db->getConn()->prepare('SELECT * FROM redteam WHERE redName=:key');
-            $stmt->bindValue(':key', $redIDIn, SQLITE3_TEXT);
+            $stmt->bindValue(':key', $redNameIn, SQLITE3_TEXT);
             $result = $stmt->execute();
             if ($row = $result->fetchArray()){
                 return $row;
