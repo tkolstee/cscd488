@@ -8,6 +8,11 @@ use PHPUnit\Framework\TestCase;
  * @coversDefaultClass \User
  */
 class UserTest extends TestCase {
+    
+    //Test Settings
+    protected $preserveGlobalState = FALSE;
+    protected $runTestInSeparateProcess = TRUE;
+
     protected $user;
 
     public function setUp(): void {
@@ -29,7 +34,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::createUser
-     * @runInSeparateProcess
      */
     public function testCreateUserEmptyFields(): void {
         $this->assertFalse($this->user->createUser("",""));
@@ -39,7 +43,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::createUser
-     * @runInSeparateProcess
      */
     public function testCreateUserNameTaken(): void {
         $this->user->createUser("test","testPass");
@@ -49,7 +52,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::validateUser
-     * @runInSeparateProcess
      */
     public function testValidateUser(): void {
         $this->assertFalse($this->user->validateUser("test","testPass"));
@@ -59,7 +61,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::validateUser
-     * @runInSeparateProcess
      */
     public function testValidateUserEmptyFields(): void {
         $this->assertFalse($this->user->validateUser("",""));
@@ -69,7 +70,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::validateUser
-     * @runInSeparateProcess
      */
     public function testValidateUserInvalidCredentials(): void {
         $this->assertFalse($this->user->validateUser("test","wrongPass"));
@@ -86,7 +86,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::changePassword
-     * @runInSeparateProcess
      */
     public function testChangePasswordNotUser(): void {
         $this->assertFalse($this->user->changePassword("testPass","test2"));
@@ -94,7 +93,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::changePassword
-     * @runInSeparateProcess
      */
     public function testChangePasswordEmpty(): void {
         $this->user->createUser("test","testPass");
@@ -103,7 +101,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::changePassword
-     * @runInSeparateProcess
      */
     public function testChangePasswordToSame(): void {
         $this->user->createUser("test","testPass");
@@ -112,7 +109,6 @@ class UserTest extends TestCase {
 
     /**
      * @covers ::changePassword
-     * @runInSeparateProcess
      */
     public function testChangePasswordWrongOldPassword(): void {
         $this->user->createUser("test","testPass");

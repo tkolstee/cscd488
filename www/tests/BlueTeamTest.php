@@ -8,6 +8,11 @@ use PHPUnit\Framework\TestCase;
  * @coversDefaultClass \BlueTeam
  */
 class BlueTeamTest extends TestCase {
+
+    //Test Settings
+    protected $preserveGlobalState = FALSE;
+    protected $runTestInSeparateProcess = TRUE;
+
     protected $blueTeam;
 
     public function setUp(): void {
@@ -22,10 +27,10 @@ class BlueTeamTest extends TestCase {
 
     /**
      * @covers ::createBlueTeam
-     * @runInSeparateProcess
      */
-    public function testCreateBlueTeam(): void {
-        self::assertTrue($blueTeam->createBlueTeam("test"));
+    public function testCreateValidBlueTeam(): void {
+        self::assertTrue($this->blueTeam->createBlueTeam("test"));
+        self::assertEquals("test", $this->blueTeam->getBlueName());
     }
 
 }
