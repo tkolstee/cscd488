@@ -6,16 +6,94 @@
         private $uname = null;
         private $blueID = null;
         private $redID = null;
+        
 
         public function getUid(){ return $uid; }
         public function getUname(){ return $uname; }
         public function getBlueID(){ return $blueID; }
         public function getRedID(){ return $redID; }
 
-        public function setUid($uidIn){ $this->$uid = $uidIn; }
-        public function setUname($unameIn){ $this->$uname = $unameIn; }
-        public function setBlueID($blueIDIn){ $this->$blueID = $blueIDIn; }
-        public function setRedID($redIDIn){ $this->$redID = $redIDIn; }
+        public function setUname($unameIn){ 
+            if(empty($unameIn)){
+                header("Location: /profile.php?error=emptyFields");
+                return false;
+            }
+            $row = User::getUser($this->uname);
+            if($row != null){
+                
+                    $db = Db::getInstance();
+                    $stmt = $db->getConn()->prepare('UPDATE users SET uname = :unameNew WHERE uname=:key');
+                    $stmt->bindValue(':key', $this->uname, SQLITE3_TEXT);
+                    $stmt->bindValue(':unameNew', $unameIn, SQLITE3_TEXT);
+                    $stmt->execute();
+            }else{
+                header("Location: /profile.php?error=userNotFound");
+                return false;
+            }
+            //validate name is changed
+            $row = User::getUser($this->uname);
+            if($unameIn == $row[1]) {
+                $this->uname = $unameIn;
+                return true;
+            }else{
+                header("Location: /profile.php?error=nameUnchanged");
+                return false;
+            }
+        }
+
+        public function setBlueID($blueIDIn){
+            if(empty($blueIDIn)){
+                header("Location: /profile.php?error=emptyFields");
+                return false;
+            }
+            $row = User::getUser($this->uname);
+            if($row != null){
+                    $db = Db::getInstance();
+                    $stmt = $db->getConn()->prepare('UPDATE users SET blueID = :bIDNew WHERE uname=:key');
+                    $stmt->bindValue(':key', $this->uname, SQLITE3_TEXT);
+                    $stmt->bindValue(':bIDNew', $blueIDIn, SQLITE3_TEXT);
+                    $stmt->execute();
+            }else{
+                header("Location: /profile.php?error=userNotFound");
+                return false;
+            }
+            //validate ID is changed
+            $row = User::getUser($this->uname);
+            if($blueIDIn == $row[3]) {
+                $this->blueID = $blueIDIn;
+                return true;
+            }else{
+                header("Location: /profile.php?error=blueIDUnchanged");
+                return false;
+            } 
+        }
+
+        public function setRedID($redIDIn){ 
+            if(empty($redIDIn)){
+                header("Location: /profile.php?error=emptyFields");
+                return false;
+            }
+            $row = User::getUser($this->uname);
+            if($row != null){
+                    $db = Db::getInstance();
+                    $stmt = $db->getConn()->prepare('UPDATE users SET redID = :rIDNew WHERE uname=:key');
+                    $stmt->bindValue(':key', $this->uname, SQLITE3_TEXT);
+                    $stmt->bindValue(':rIDNew', $blueIDIn, SQLITE3_TEXT);
+                    $stmt->execute();
+            }else{
+                header("Location: /profile.php?error=userNotFound");
+                return false;
+            }
+            //validate ID is changed
+            $row = User::getUser($this->uname);
+            if($blueIDIn == $row[4]) {
+                $this->redID = $redIDIn;
+                return true;
+            }else{
+                header("Location: /profile.php?error=redIDUnchanged");
+                return false;
+            } 
+         }
 
         
         public function validateUser($unameIn, $upassIn){
@@ -28,6 +106,8 @@
                 if (password_verify($upassIn, $row[2])) {
                     $this->$uid = $row[0];
                     $this->$uname = $row[1];
+                    $this->$blueID = $row[3];
+                    $this->$redID = $row[4];
                     return true;
               }
               header("Location: /index.php?error=passwordIncorrect&uname=".$unameIn);
@@ -49,7 +129,7 @@
                 return false;
             }
             $db = Db::getInstance();
-            $stmt = $db->getConn()->prepare('INSERT INTO users (uname, upassword) VALUES (:uname, :upass)');
+            $stmt = $db->getConn()->prepare('INSERT INTO users (uname, upassword, blueID, redID) VALUES (:uname, :upass, 1, 1)');
             $stmt->bindValue(':uname', $unameIn, SQLITE3_TEXT);
             $stmt->bindValue(':upass', password_hash($upassIn, PASSWORD_BCRYPT),   SQLITE3_TEXT);
             $stmt->execute();

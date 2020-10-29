@@ -19,42 +19,34 @@ CREATE TABLE users (
 );
 CREATE TABLE blueteam (
   blueID INTEGER PRIMARY KEY AUTOINCREMENT,
-  blueName TEXT UNIQUE,
+  blueName TEXT UNIQUE NOT NULL,
   leaderID INTEGER UNIQUE,
   revenue INTEGER DEFAULT 0,
   reputation INTEGER,
   available INTEGER
 );
-CREATE TABLE blueteam (
-  blueID INTEGER PRIMARY KEY AUTOINCREMENT,
-  blueName TEXT UNIQUE,
-  leaderID INTEGER UNIQUE,
-  revenue INTEGER DEFAULT 0,
-  reputation INTEGER,
-  available INTEGER
-);
-CREATE TABLE blue-inventory (
+CREATE TABLE blue_inventory (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   blueID INTEGER REFERENCES blueteam(blueID),
   pluginID INTEGER REFERENCES plugins(id),
   qty INTEGER,
-  exp-use INTEGER
+  exp_use INTEGER
 );
 CREATE TABLE redteam (
   redID INTEGER PRIMARY KEY AUTOINCREMENT,
-  redName TEXT UNIQUE,
+  redName TEXT UNIQUE NOT NULL,
   money INTEGER DEFAULT 0,
   reputation INTEGER
 );
-CREATE TABLE red-inventory (
+CREATE TABLE red_inventory (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   redID INTEGER REFERENCES redteam(redID),
   pluginID INTEGER REFERENCES plugins(id),
   qty INTEGER,
-  exp-time TEXT,
-  exp-use INTEGER
+  exp_time TEXT,
+  exp_use INTEGER
 );
-CREATE TABLE persistent-access (
+CREATE TABLE persistent_access (
   redID INTEGER NOT NULL REFERENCES redteam(redID),
   blueID INTEGER NOT NULL REFERENCES blueteam(blueID),
   level INTEGER,
@@ -62,8 +54,8 @@ CREATE TABLE persistent-access (
 );
 CREATE TABLE plugins (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  typeID INTEGER REFERENCES plugtypes(id),
-  name TEXT UNIQUE,
+  typeID INTEGER NOT NULL REFERENCES plugtypes(id),
+  name TEXT UNIQUE NOT NULL,
   description TEXT,
   price INTEGER,
   affect TEXT
@@ -75,11 +67,13 @@ CREATE TABLE plugtypes (
 );
 CREATE TABLE prereqs (
   attackID INTEGER REFERENCES attacks(id),
-  pluginID INTEGER REFERENCES plugins(id)
+  pluginID INTEGER REFERENCES plugins(id),
   primary key (attackID, pluginID)
 );
 CREATE TABLE attacks (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT UNIQUE,
+  name TEXT UNIQUE NOT NULL,
   minigame INTEGER
 );
+INSERT INTO redteam (redName) VALUES ("test");
+INSERT INTO blueteam (blueName) VALUES ("test");
