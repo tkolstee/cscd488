@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * @coversDefaultClass \BlueTeam
- */
 class BlueTeamTest extends TestCase {
 
     //Test Settings
@@ -14,9 +11,12 @@ class BlueTeamTest extends TestCase {
     protected $runTestInSeparateProcess = TRUE;
 
     protected $blueTeam;
+    protected $leader;
 
     public function setUp(): void {
         $this->blueTeam = new BlueTeam();
+        $this->leader = new User();
+        $this->leader->createUser("leader", "pass");
     }
 
     public function tearDown(): void {
@@ -25,32 +25,20 @@ class BlueTeamTest extends TestCase {
         $stmt->execute();
     }
 
-    /**
-     * @covers ::createBlueTeam
-     */
     public function testCreateValidBlueTeam(): void {
-        $this->assertTrue($this->blueTeam->createBlueTeam("test"));
+        $this->assertTrue($this->blueTeam->createBlueTeam("test", "leader"));
     }
 
-    /**
-     * @covers ::createBlueTeam
-     */
     public function testCreateBlueTeamEmptyFields(): void {
-        $this->assertFalse($this->blueTeam->createBlueTeam(""));
+        $this->assertFalse($this->blueTeam->createBlueTeam("",""));
     }
 
-    /**
-     * @covers ::createBlueTeam
-     */
     public function testCreateBlueTeamNameTaken(): void {
-        $this->blueTeam->createBlueTeam("team1");
-        $this->assertFalse($this->blueTeam->createBlueTeam("team1"));
+        $this->blueTeam->createBlueTeam("team1", "leader");
+        $this->assertFalse($this->blueTeam->createBlueTeam("team1", "leader"));
     }
 
-    /**
-     * @covers ::createBlueTeam
-     */
     public function testCreateBlueTeamNull(): void {
-        $this->assertFalse($this->blueTeam->createBlueTeam(null));
+        $this->assertFalse($this->blueTeam->createBlueTeam(null, null));
     }
 }
