@@ -12,36 +12,36 @@ CREATE TABLE activity_log (
 );
 CREATE TABLE users (
   uid INTEGER PRIMARY KEY AUTOINCREMENT,
-  uname TEXT UNIQUE,
-  upassword TEXT,
+  uname TEXT UNIQUE NOT NULL,
+  upassword TEXT NOT NULL,
   blueID INTEGER REFERENCES blueteam(blueID),
   redID INTEGER REFERENCES redteam(redID)
 );
 CREATE TABLE blueteam (
   blueID INTEGER PRIMARY KEY AUTOINCREMENT,
   blueName TEXT UNIQUE NOT NULL,
-  leaderID INTEGER UNIQUE,
+  leaderID INTEGER UNIQUE NOT NULL,
   revenue INTEGER DEFAULT 0,
   reputation INTEGER,
   available INTEGER
 );
-CREATE TABLE blue_inventory (
+CREATE TABLE blue-inventory (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  blueID INTEGER REFERENCES blueteam(blueID),
-  pluginID INTEGER REFERENCES plugins(id),
+  blueID INTEGER NOT NULL REFERENCES blueteam(blueID),
+  pluginID INTEGER NOT NULL REFERENCES plugins(id),
   qty INTEGER,
   exp_use INTEGER
 );
 CREATE TABLE redteam (
   redID INTEGER PRIMARY KEY AUTOINCREMENT,
-  redName TEXT UNIQUE NOT NULL,
-  money INTEGER DEFAULT 0,
+  redName TEXT NOT NULL UNIQUE,
+  money INTEGER NOT NULL DEFAULT 0,
   reputation INTEGER
 );
 CREATE TABLE red_inventory (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  redID INTEGER REFERENCES redteam(redID),
-  pluginID INTEGER REFERENCES plugins(id),
+  redID INTEGER NOT NULL REFERENCES redteam(redID),
+  pluginID INTEGER NOT NULL REFERENCES plugins(id),
   qty INTEGER,
   exp_time TEXT,
   exp_use INTEGER
@@ -55,14 +55,14 @@ CREATE TABLE persistent_access (
 CREATE TABLE plugins (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   typeID INTEGER NOT NULL REFERENCES plugtypes(id),
-  name TEXT UNIQUE NOT NULL,
-  description TEXT,
-  price INTEGER,
+  name TEXT NOT NULL UNIQUE,
+  description NOT NULL TEXT,
+  price NOT NULL INTEGER DEFAULT 0,
   affect TEXT
 ); 
 CREATE TABLE plugtypes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT UNIQUE,
+  name TEXT NOT NULL UNIQUE,
   defensive INTEGER
 );
 CREATE TABLE prereqs (
@@ -72,7 +72,7 @@ CREATE TABLE prereqs (
 );
 CREATE TABLE attacks (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL UNIQUE,
   minigame INTEGER
 );
 INSERT INTO redteam (redName) VALUES ("test");
