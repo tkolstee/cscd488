@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE config (
   name  TEXT UNIQUE,
   value TEXT
@@ -12,12 +14,16 @@ CREATE TABLE users (
   uid INTEGER PRIMARY KEY AUTOINCREMENT,
   uname TEXT UNIQUE,
   upassword TEXT
-  blue-id INTEGER,
-  red-id INTEGER,
-  FOREIGN KEY (blue-id)
-    REFERENCES blueteam (blueID),
-  FOREIGN KEY (red-id)
-    REFERENCES redteam (redID)
+  blueID INTEGER REFERENCES blueteam(blueID),
+  redID INTEGER REFERENCES redteam(redID)
+);
+CREATE TABLE blueteam (
+  blueID INTEGER PRIMARY KEY AUTOINCREMENT,
+  blueName TEXT UNIQUE,
+  leaderID INTEGER UNIQUE,
+  revenue INTEGER DEFAULT 0,
+  reputation INTEGER,
+  available INTEGER
 );
 CREATE TABLE blueteam (
   blueID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,14 +35,10 @@ CREATE TABLE blueteam (
 );
 CREATE TABLE blue-inventory (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  blueID INTEGER,
-  pluginID INTEGER,
+  blueID INTEGER REFERENCES blueteam(blueID),
+  pluginID INTEGER REFERENCES plugins(id),
   qty INTEGER,
-  exp-use INTEGER,
-  FOREIGN KEY (blueID)
-    REFERENCES blueteam (blueID),
-  FOREIGN KEY (pluginID)
-    REFERENCES plugins (id)
+  exp-use INTEGER
 );
 CREATE TABLE redteam (
   redID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,33 +48,38 @@ CREATE TABLE redteam (
 );
 CREATE TABLE red-inventory (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  redID INTEGER,
-  pluginID INTEGER,
+  redID INTEGER REFERENCES redteam(redID),
+  pluginID INTEGER REFERENCES plugins(id),
   qty INTEGER,
   exp-time TEXT,
-  exp-use INTEGER,
-  FOREIGN KEY (redID)
-    REFERENCES redteam (redID),
-  FOREIGN KEY (pluginID)
-    REFERENCES plugins (id)
+  exp-use INTEGER
 );
 CREATE TABLE persistent-access (
-  redID INTEGER NOT NULL,
-  blueID INTEGER NOT NULL,
+  redID INTEGER NOT NULL REFERENCES redteam(redID),
+  blueID INTEGER NOT NULL REFERENCES blueteam(blueID),
   level INTEGER,
-  primary key (redID, blueID),
-  FOREIGN KEY (redID)
-    REFERENCES redteam(redID),
-  FOREIGN KEY (blueID)
-    REFERENCES blueteam(blueID)
+  primary key (redID, blueID)
 );
 CREATE TABLE plugins (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  typeID INTEGER,
+  typeID INTEGER REFERENCES plugtypes(id),
   name TEXT UNIQUE,
   description TEXT,
   price INTEGER,
-  affect TEXT,
-  FOREIGN KEY (typeID)
-    REFERENCES plugtypes (id)
+  affect TEXT
 ); 
+CREATE TABLE plugtypes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT UNIQUE,
+  defensive INTEGER
+);
+CREATE TABLE prereqs (
+  attackID INTEGER REFERENCES attacks(id),
+  pluginID INTEGER REFERENCES plugins(id)
+  primary key (attackID, pluginID)
+);
+CREATE TABLE attacks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT UNIQUE,
+  minigame INTEGER
+);
