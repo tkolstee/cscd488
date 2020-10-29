@@ -12,34 +12,34 @@
         public function getBlueID(){ return $blueID; }
         public function getRedID(){ return $redID; }
 
-        public function setUid($uidIn){ $this->$uid = $uidIn; }
         public function setUname($unameIn){ 
             if(empty($unameIn)){
                 header("Location: /profile.php?error=emptyFields");
                 return false;
             }
-            $row = User::getUser($this->uname);
+            $row = User::getUser($this->$uname);
             if($row != null){
                 
                     $db = Db::getInstance();
-                    $stmt = $db->getConn()->prepare('UPDATE users SET uname = :unameNew WHERE uname=:key');
-                    $stmt->bindValue(':key', $this->uname, SQLITE3_TEXT);
-                    $stmt->bindValue(':unameNew', $unameIn, SQLITE3_TEXT);
+                    $stmt = $db->getConn()->prepare('UPDATE users SET uname=:unameIn WHERE uid=:key');
+                    $stmt->bindValue(':key', $this->$uid, SQLITE3_TEXT);
+                    $stmt->bindValue(':unameIn', $unameIn, SQLITE3_TEXT);
                     $stmt->execute();
             }else{
                 header("Location: /profile.php?error=userNotFound");
-                return false;
+                return "row null";
             }
             //validate name is changed
-            $row = User::getUser($this->uname);
+            $row = User::getUser($this->$uname);
             if($unameIn == $row[1]) {
-                $this->uname = $unameIn;
+                $this->$uname = $unameIn;
                 return true;
             }else{
                 header("Location: /profile.php?error=nameUnchanged");
-                return false;
+                return $row[1];
             }
         }
+        
         public function setBlueID($blueIDIn){ $this->$blueID = $blueIDIn; }
         public function setRedID($redIDIn){ $this->$redID = $redIDIn; }
 
