@@ -13,7 +13,33 @@
         public function getRedID(){ return $redID; }
 
         public function setUid($uidIn){ $this->$uid = $uidIn; }
-        public function setUname($unameIn){ $this->$uname = $unameIn; }
+        public function setUname($unameIn){ 
+            if(empty($unameIn)){
+                header("Location: /profile.php?error=emptyFields");
+                return false;
+            }
+            $row = User::getUser($this->uname);
+            if($row != null){
+                
+                    $db = Db::getInstance();
+                    $stmt = $db->getConn()->prepare('UPDATE users SET uname = :unameNew WHERE uname=:key');
+                    $stmt->bindValue(':key', $this->uname, SQLITE3_TEXT);
+                    $stmt->bindValue(':unameNew', $unameIn, SQLITE3_TEXT);
+                    $stmt->execute();
+            }else{
+                header("Location: /profile.php?error=userNotFound");
+                return false;
+            }
+            //validate name is changed
+            $row = User::getUser($this->uname);
+            if($unameIn == $row[1]) {
+                $this->uname = $unameIn;
+                return true;
+            }else{
+                header("Location: /profile.php?error=nameUnchanged");
+                return false;
+            }
+        }
         public function setBlueID($blueIDIn){ $this->$blueID = $blueIDIn; }
         public function setRedID($redIDIn){ $this->$redID = $redIDIn; }
 
