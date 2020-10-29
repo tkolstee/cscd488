@@ -25,7 +25,7 @@
             $stmt->bindValue(':redName', $redNameIn, SQLITE3_TEXT);
             $stmt->execute();
             $row = RedTeam::getRedTeam($redNameIn);
-            if(row == null){
+            if($row == null){
                 header("Location: /red.php?error=teamNotCreated&redname=".$redNameIn);
                 return false;
             }
