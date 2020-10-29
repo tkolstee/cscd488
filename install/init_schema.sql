@@ -13,7 +13,7 @@ CREATE TABLE activity_log (
 CREATE TABLE users (
   uid INTEGER PRIMARY KEY AUTOINCREMENT,
   uname TEXT UNIQUE,
-  upassword TEXT
+  upassword TEXT,
   blueID INTEGER REFERENCES blueteam(blueID),
   redID INTEGER REFERENCES redteam(redID)
 );
