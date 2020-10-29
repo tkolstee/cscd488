@@ -41,9 +41,6 @@
             }
         }
         
-        public function setBlueID($blueIDIn){ $this->$blueID = $blueIDIn; }
-        public function setRedID($redIDIn){ $this->$redID = $redIDIn; }
-
         public function setBlueID($blueIDIn){
             if(empty($blueIDIn)){
                 header("Location: /profile.php?error=emptyFields");
