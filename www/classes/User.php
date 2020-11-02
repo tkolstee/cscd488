@@ -25,7 +25,7 @@
             }
             $row = User::getUser($unameIn);
             if ($row != null) {
-                if (password_verify($upassIn, $row[2])) {
+                if (password_verify($upassIn, User::getUserPassword($unameIn))) {
                     $this->$uid = $row[0];
                     $this->$uname = $row[1];
                     return true;
@@ -71,7 +71,7 @@
             }
             $row = User::getUser($this->$uname);
             if($row != null){
-                if (password_verify($upassIn, $row[2])) {
+                if (password_verify($upassIn, User::getUserPassword($this->$uname))) {
                     $db = Db::getInstance();
                     $stmt = $db->getConn()->prepare('UPDATE users SET upassword = :upassNew WHERE uname=:key');
                     $stmt->bindValue(':key', $this->$uname, SQLITE3_TEXT);
@@ -87,19 +87,32 @@
             }
             //validate password is changed
             $row = User::getUser($this->$uname);
-            if(password_verify($upassNew, $row[2])) return true;
+            if(password_verify($upassNew, User::getUserPassword($this->$uname))) return true;
             else{
                 header("Location: /profile.php?error=passwordUnchanged");
                 return false;
             }
         }
 
-        private static function getUser($unameIn){
+        private static function getUserPassword($unameIn){
             $db = Db::getInstance();
             $stmt = $db->getConn()->prepare('SELECT * FROM users WHERE uname=:key');
             $stmt->bindValue(':key', $unameIn, SQLITE3_TEXT);
             $result = $stmt->execute();
             if ($row = $result->fetchArray()){
+                return $row[2];
+            }else{
+                return null;
+            }
+        }
+
+        public static function getUser($unameIn){
+            $db = Db::getInstance();
+            $stmt = $db->getConn()->prepare('SELECT * FROM users WHERE uname=:key');
+            $stmt->bindValue(':key', $unameIn, SQLITE3_TEXT);
+            $result = $stmt->execute();
+            if ($row = $result->fetchArray()){
+                $row[2] = null;
                 return $row;
             }else{
                 return null;

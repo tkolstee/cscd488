@@ -1,5 +1,6 @@
 <?php
     require_once "Db.php";
+    require_once "User.php";
     class BlueTeam{
 
         private $blueID = null;
@@ -14,26 +15,33 @@
         public function setBlueName($blueNameIn){ $this->$blueName = $blueNameIn; }
         public function setLeaderID($leaderIDIn){ $this->$leaderID = $leaderIDIn; }
 
-        public function createBlueTeam($blueNameIn){
-            if(empty($blueNameIn)){
-                header("Location: /blue.php?error=emptyName");
+        public function createBlueTeam($blueNameIn, $leaderNameIn){
+            if(empty($blueNameIn) || empty($leaderNameIn)){
+                header("Location: /blue.php?error=emptyFields&bluename=".$blueNameIn."&leadername=".$leaderNameIn);
                 return false;
             }
-            if ( BlueTeam::getBlueTeam($blueNameIn) != null ) {
-                header("Location: /blue.php?error=teamnameTaken&bluename=".$blueNameIn);
+            if(BlueTeam::getBlueTeam($blueNameIn) != null){
+                header("Location: /blue.php?error=teamnameTaken&bluename=".$blueNameIn."&leadername=".$leaderNameIn);
                 return false;
             }
+            $row = User::getUser($leaderNameIn);
+            if($row == null){
+                header("Location: /blue.php?error=leaderInvalid&bluename=".$blueNameIn."&leadername=".$leaderNameIn);
+                return false;
+            }
+            $leaderIDIn = $row[0];
             $db = Db::getInstance();
-            $stmt = $db->getConn()->prepare('INSERT INTO blueteam (blueName) VALUES (:blueName)');
+            $stmt = $db->getConn()->prepare('INSERT INTO blueteam (blueName, leaderID) VALUES (:blueName, :leaderID)');
             $stmt->bindValue(':blueName', $blueNameIn, SQLITE3_TEXT);
+            $stmt->bindValue(':leaderID', $leaderIDIn, SQLITE3_TEXT);
             $stmt->execute();
             $row = BlueTeam::getBlueTeam($blueNameIn);
             if($row == null){
-                header("Location: /blue.php?error=teamNotCreated&bluename=".$blueNameIn);
+                header("Location: /blue.php?error=teamNotCreated&bluename=".$blueNameIn."&leadername=".$leaderNameIn);
                 return false;
             }
             $this->blueID = $row[0];
-            //$this->$leaderID = $leaderIDIn;
+            $this->$leaderID = $leaderIDIn;
             $this->blueName = $row[1];
             return true;
         }
