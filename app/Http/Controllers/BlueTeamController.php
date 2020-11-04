@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Http\Models\Team;
+use App\Models\Team;
 use View;
 
 class BlueTeamController extends Controller {
@@ -21,7 +21,7 @@ class BlueTeamController extends Controller {
     }
 
     public function index(){
-        $blueteams = team::where('blue', '=', 1);
+        $blueteams = Team::where('blue', '=', 1);
         return View::make('blueteam.join')->with('blueteams', $blueteams);
     }
 
