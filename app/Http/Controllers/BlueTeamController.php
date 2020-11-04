@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use App\Http\Models\Team;
 
 class BlueTeamController extends Controller {
 
@@ -9,6 +10,8 @@ class BlueTeamController extends Controller {
 
         switch ($page) {
             case 'home': return view('blueteam.home'); break;
+            case 'create': return view('blueteam.create'); break;
+            case 'join': return index(); break;
             case 'planning': return view('blueteam.planning'); break;
             case 'status': return view('blueteam.status'); break;
             case 'store': return view('blueteam.store'); break;
@@ -16,4 +19,10 @@ class BlueTeamController extends Controller {
         }
 
     }
+
+    public function index(){
+        $blueteams = Teams::where('blue', '=', 1);
+        return View::make('blueteam.join')->with('blueteams', $blueteams);
+    }
+
 }

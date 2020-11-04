@@ -1,6 +1,7 @@
 @extends('layouts.base')
 @section('basecontent')
     <div style="background-color: blue; padding: 0px;">
+
         <h2>Blue Team Content</h2>
         <table width="100%"><tr>
             <td width="50%">
