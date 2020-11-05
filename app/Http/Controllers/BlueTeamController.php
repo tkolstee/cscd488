@@ -26,7 +26,7 @@ class BlueTeamController extends Controller {
             return View::make('blueteam.join')->with('blueteams', $blueteams);
         }
         $user = Auth::user();
-        $user->$blueteam = BlueTeam::all()->where('name', '=', $request->result)->id;
+        $user->blueteam = substr(Team::all()->where('name', '=', $request->result)->pluck('id'), 1, 1);
         $user->update();
         return view('blueteam.home');
     }
@@ -47,6 +47,7 @@ class BlueTeamController extends Controller {
     public function delete(request $request){
         $team = Team::all()->where('name', '=', $request->name);
         $team->delete();
+        return view('home');
     }
 
 }
