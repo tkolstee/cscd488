@@ -20,11 +20,18 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 Route::get('/blueteam/index', [App\Http\Controllers\BlueTeamController::class, 'index'])->name('blueteam/index');
 Route::any('/blueteam/create', [App\Http\Controllers\BlueTeamController::class, 'create'])->name('blueteam/create');
 Route::any('/blueteam/join', [App\Http\Controllers\BlueTeamController::class, 'join'])->name('blueteam/join');
+Route::get('/blueteam/store', [App\Http\Controllers\BlueTeamController::class, 'store'])->name('blueteam/store');
+Route::any('/blueteam/buy', [App\Http\Controllers\BlueTeamController::class, 'buy'])->name('blueteam/buy');
+
 Route::any('/blueteam/{page}', [App\Http\Controllers\BlueTeamController::class, 'page'])->name('blueteam');
+
 Route::any('/redteam/create', [App\Http\Controllers\RedTeamController::class, 'create'])->name('redteam/create');
 Route::any('/redteam/{page}', [App\Http\Controllers\RedTeamController::class, 'page'])->name('redteam');
+
 Route::any('/admin/{page}', [App\Http\Controllers\AdminController::class, 'page'])->name('admin');
+
 Route::any('/setup', [App\Http\Controllers\SetupController::class, 'page'])->name('setup');

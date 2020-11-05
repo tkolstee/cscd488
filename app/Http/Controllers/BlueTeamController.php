@@ -21,6 +21,25 @@ class BlueTeamController extends Controller {
 
     }
 
+    public function buy(request $request){
+        $assets = $request->get('results');
+        $totalCost = 0;
+        foreach($assets as $asset){
+            $totalCost += Asset::all()->where('name','=',$asset)->purchase_cost;
+        }
+        if(Team::find(Auth::user()->blueteam)->revenue < $totalCost)
+            return ('blueteam.store')->with('not-enough-money',$error);
+        foreach($assets as $asset){
+            //add asset to inventory and charge user
+        }
+    }
+
+    public function store(){
+        $blueteam = Team::find(Auth::user()->blueteam);
+        $assets = Asset::all()->where(['blue', '=', 1],['buyable','=',1]);
+        return view('blueteam.store')->with('blueteam',$blueteam);
+    }
+
     public function join(request $request){
         if($request->result == ""){
             $blueteams = Team::all()->where('blue', '=', 1);
