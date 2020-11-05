@@ -33,6 +33,9 @@ class BlueTeamController extends Controller {
 
     public function create(request $request){
         if($request->name == "") return view('blueteam.create'); 
+        $request->validate([
+            'name' => ['required', 'unique:teams', 'string', 'max:255'],
+        ]);
         $team = new Team();
         $team->name = $request->name;
         $team->balance = 0;
