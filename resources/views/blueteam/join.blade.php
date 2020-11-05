@@ -9,7 +9,9 @@
     @csrf
     @foreach ($blueteams as $blueteam)
 
-    <input type="radio" name="result" value="{{ $blueteam->name }}"><br>
+    <input type="radio" name="result" id="{{ $blueteam->name }}" value="{{ $blueteam->name }}">
+    <label for="{{ $blueteam->name }}">{{ $blueteam->name }}</label>
+    <br>
     
     @endforeach
 
