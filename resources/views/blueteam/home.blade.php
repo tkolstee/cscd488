@@ -1,3 +1,4 @@
+
 @extends('blueteam.base')
 
 @section('title', 'Blue Team Home')

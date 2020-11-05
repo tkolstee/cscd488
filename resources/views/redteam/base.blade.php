@@ -6,9 +6,13 @@
             <td width="50%">
                 <img src="blah" alt="messages" height=20 width=20>
                 <img src="blah" alt="notifications" height=20 width=20>
-            </td><td width="50%">
-                Cash: $0    Reputation: 07/100
             </td>
+            @if ($redteam->name  ?? '' != "")
+                <td width="50%">
+                <strong>{{  $redteam->name ?? '' }}</strong>
+                    Cash: {{ $redteam->balance ?? '' }}    Reputation: {{ $redteam->reputation ?? '' }}
+                </td>
+            @endif
         </tr></table>
         <br clear>
         <div style="background-color: #F77; padding: 80px; align: center; vertical-align: center;">

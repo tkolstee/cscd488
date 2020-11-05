@@ -17,6 +17,7 @@ class CreateTeamsTable extends Migration
             $table->id();
             $table->text('name');
             $table->integer('balance');
+            $table->integer('reputation');
             $table->integer('blue');
             $table->timestamps();
         });

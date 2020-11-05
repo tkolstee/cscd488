@@ -10,12 +10,13 @@ class BlueTeamController extends Controller {
 
     public function page($page, Request $request) {
 
+        $blueteam = Team::find(Auth::user()->blueteam);
         switch ($page) {
-            case 'home': return view('blueteam.home'); break;
-            case 'planning': return view('blueteam.planning'); break;
-            case 'status': return view('blueteam.status'); break;
-            case 'store': return view('blueteam.store'); break;
-            case 'training': return view('blueteam.training'); break;
+            case 'home': return view('blueteam.home')->with('blueteam',$blueteam); break;
+            case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
+            case 'status': return view('blueteam.status')->with('blueteam',$blueteam); break;
+            case 'store': return view('blueteam.store')->with('blueteam',$blueteam); break;
+            case 'training': return view('blueteam.training')->with('blueteam',$blueteam); break;
         }
 
     }
@@ -23,12 +24,13 @@ class BlueTeamController extends Controller {
     public function join(request $request){
         if($request->result == ""){
             $blueteams = Team::all()->where('blue', '=', 1);
-            return View::make('blueteam.join')->with('blueteams', $blueteams);
+            return view('blueteam.join')->with('blueteams', $blueteams);
         }
         $user = Auth::user();
-        $user->blueteam = substr(Team::all()->where('name', '=', $request->result)->pluck('id'), 1, 1);
+        $blueteam = Team::all()->where('name', '=', $request->result);
+        $user->blueteam = substr($blueteam->pluck('id'), 1, 1);
         $user->update();
-        return view('blueteam.home');
+        return view('blueteam.home')->with('blueteam',$blueteam);
     }
 
     public function create(request $request){
@@ -36,15 +38,16 @@ class BlueTeamController extends Controller {
         $request->validate([
             'name' => ['required', 'unique:teams', 'string', 'max:255'],
         ]);
-        $team = new Team();
-        $team->name = $request->name;
-        $team->balance = 0;
-        $team->blue = 1;
-        $team->save();
+        $blueteam = new Team();
+        $blueteam->name = $request->name;
+        $blueteam->balance = 0;
+        $blueteam->blue = 1;
+        $blueteam->reputation = 0;
+        $blueteam->save();
         $user = Auth::user();
         $user->blueteam = substr(Team::all()->where('name', '=', $request->name)->pluck('id'), 1, 1);
         $user->update();
-        return view('blueteam.home');
+        return view('blueteam.home')->with('blueteam',$blueteam);
     }
 
     public function delete(request $request){
