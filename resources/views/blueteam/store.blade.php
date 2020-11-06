@@ -4,9 +4,9 @@
 
 @section('pagecontent')
     <p>This is the blue team store.</p>
-    <form method="POST" action="{{ route('blueteam/buy') }}">
+    <form method="POST" action="/blueteam/buy">
     @csrf
-    @foreach ($assets as $asset)
+    @foreach ($assets ?? [] as $asset)
 
     <input type="checkbox" name="results[]" id="{{ $asset->name }}" value="{{ $asset->name }}">
     <label for="{{ $asset->name }}">{{ $asset->name }}  Type: {{ $asset->type }}  Purchase Cost: {{ $asset->purchase_cost }}  Ownership Cost: {{ $asset->ownership_cost }}</label>

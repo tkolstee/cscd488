@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Models\Asset;
+use App\Models\Inventory;
 use View;
 use Auth;
 
@@ -16,11 +17,11 @@ class BlueTeamController extends Controller {
             case 'home': return view('blueteam.home')->with('blueteam',$blueteam); break;
             case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
             case 'status': return view('blueteam.status')->with('blueteam',$blueteam); break;
-            case 'store': return store();
+            case 'store': return $this->store();
             case 'training': return view('blueteam.training')->with('blueteam',$blueteam); break;
             case 'create': return $this->create($request); break;
-            case 'join': return join($request); break;
-            case 'buy': return buy($request); break;
+            case 'join': return $this->join($request); break;
+            case 'buy': return $this->buy($request); break;
         }
 
     }
@@ -28,14 +29,31 @@ class BlueTeamController extends Controller {
     public function buy(request $request){
         $assets = $request->get('results');
         $totalCost = 0;
+        if($assets == "") return view('blueteam.store')->with('nothing-selected', 'nothing-selected');
         foreach($assets as $asset){
             $totalCost += Asset::all()->where('name','=',$asset)->purchase_cost;
         }
-        if(Team::find(Auth::user()->blueteam)->revenue < $totalCost)
-            return ('blueteam.store')->with('not-enough-money',$error);
+        $blueteam = Team::find(Auth::user()->blueteam);
+        if($blueteam->revenue < $totalCost)
+            return view('blueteam.store')->with('not-enough-money','not-enough-money');
         foreach($assets as $asset){
             //add asset to inventory and charge user
+            $assetId = substr(Asset::all()->where('name','=',$asset->name)->pluck('id'), 1, 1);
+            $currAsset = Inventory::all()->where(['team_id','=',Auth::user()->blueteam],['asset_id','=', $assetId]);
+            if($currAsset == ""){
+                $currAsset = new Inventory();
+                $currAsset->team_id = Auth::user()->blueteam;
+                $currAsset->asset_id = $assetId;
+                $currAsset->quantity = 1;
+                $currAsset->save();
+            }else{
+                $currAsset->quantity += 1;
+                $currAsset->update();
+            }
         }
+        $blueteam->revenue -= $totalCost;
+        return view('blueteam.home');
+        
     }
 
     public function store(){

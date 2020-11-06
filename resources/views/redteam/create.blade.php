@@ -5,7 +5,7 @@
 @section('pagecontent')
 
 <h2>Create New Red Team</h2>
-<form method="POST" action="{{ route('redteam/create') }}">
+<form method="POST" action="/redteam/create">
     @csrf
 
     <div class="form-group row">
