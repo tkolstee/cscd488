@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Team;
+use App\Models\Asset;
 use View;
 use Auth;
 
@@ -15,12 +16,15 @@ class BlueTeamController extends Controller {
             case 'home': return view('blueteam.home')->with('blueteam',$blueteam); break;
             case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
             case 'status': return view('blueteam.status')->with('blueteam',$blueteam); break;
-            case 'store': return view('blueteam.store')->with('blueteam',$blueteam); break;
+            case 'store': return store();
             case 'training': return view('blueteam.training')->with('blueteam',$blueteam); break;
+            case 'create': return $this->create($request); break;
+            case 'join': return join($request); break;
+            case 'buy': return buy($request); break;
         }
 
     }
-
+ 
     public function buy(request $request){
         $assets = $request->get('results');
         $totalCost = 0;
@@ -35,7 +39,9 @@ class BlueTeamController extends Controller {
     }
 
     public function store(){
-        $blueteam = Team::find(Auth::user()->blueteam);
+        $user = Auth::user();
+        $blueid = $user->blueteam;
+        $blueteam = Team::find($blueid);
         $assets = Asset::all()->where(['blue', '=', 1],['buyable','=',1]);
         return view('blueteam.store')->with('blueteam',$blueteam);
     }

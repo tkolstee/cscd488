@@ -16,6 +16,7 @@ class RedTeamController extends Controller {
             case 'learn': return view('redteam.learn')->with('redteam',$redteam); break;
             case 'store': return view('redteam.store')->with('redteam',$redteam); break;
             case 'status': return view('redteam.status')->with('redteam',$redteam); break;
+            case 'create': return create($request); break;
         }
     }
 
