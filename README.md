@@ -9,7 +9,7 @@
 
 ## Build Status
 [![Build Status](https://jenkins.cscd488.kolstee.net/buildStatus/icon?job=janus)](https://jenkins.cscd488.kolstee.net/job/janus/)
-[![Docker Build](https://img.shields.io/docker/cloud/build/tkolstee/cscd488.svg)](https://hub.docker.com/repository/docker/tkolstee/cscd488)
+[![Docker Build](https://img.shields.io/docker/cloud/build/tkolstee/cscd488.svg)](https://hub.docker.com/r/tkolstee/cscd488)
 
 ## About Laravel
 
