@@ -60,8 +60,8 @@ class BlueTeamController extends Controller {
         $user = Auth::user();
         $blueid = $user->blueteam;
         $blueteam = Team::find($blueid);
-        $assets = Asset::all()->where(['blue', '=', 1],['buyable','=',1]);
-        return view('blueteam.store')->with('blueteam',$blueteam);
+        $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
+        return view('blueteam.store')->with(compact('blueteam', 'assets'));
     }
 
     public function join(request $request){
