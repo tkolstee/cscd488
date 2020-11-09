@@ -52,7 +52,7 @@ class BlueTeamController extends Controller {
             }
         }
         $blueteam->revenue -= $totalCost;
-        return view('blueteam.home');
+        return view('blueteam.home')->with('blueteam', $blueteam);
         
     }
 
