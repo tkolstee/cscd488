@@ -2,17 +2,38 @@
 
 namespace Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
+use App\Http\Controllers\BlueTeamController;
+use Illuminate\Http\Request;
+use App\Models\Team;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\WithFaker;
+use App\Models\User;
+use View;
 
 class BlueTeamTest extends TestCase
 {
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
-    public function testExample()
+    use DatabaseMigrations;
+
+    public function login(){
+        $user = new User([
+            'id' => 1,
+            'name' => 'test',
+        ]);
+        $this->be($user);
+    }
+
+    public function testCreateValid()
     {
-        $this->assertTrue(true);
+        $this->login();
+        $request = Request::create('/create', 'POST', [
+            'name' => 'test',
+        ]);
+        $controller = new BlueTeamController();
+        $response = $controller->create($request);
+        $this->assertEquals('test', $response->blueteam->name);
+        $this->assertDatabaseHas('teams',[
+            'name' => 'test'
+        ]);
     }
 }
