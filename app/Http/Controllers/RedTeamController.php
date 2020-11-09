@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Team;
+use App\Models\Asset;
 Use Auth;
 Use View;
 
@@ -14,9 +15,23 @@ class RedTeamController extends Controller {
             case 'home': return view('redteam.home')->with('redteam',$redteam); break;
             case 'attacks': return view('redteam.attacks')->with('redteam',$redteam); break;
             case 'learn': return view('redteam.learn')->with('redteam',$redteam); break;
-            case 'store': return view('redteam.store')->with('redteam',$redteam); break;
+            case 'store': return $this->store();break;
             case 'status': return view('redteam.status')->with('redteam',$redteam); break;
+            case 'create': return $this->create($request); break;
+            case 'buy': return $this->buy($request);break;
         }
+    }
+
+    public function buy(request $request){
+
+    }
+
+    public function store(){
+        $user = Auth::user();
+        $redid = $user->redteam;
+        $redteam = Team::find($redid);
+        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
+        return view('redteam.store')->with(compact('redteam', 'assets'));
     }
 
     public function create(request $request){

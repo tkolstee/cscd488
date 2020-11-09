@@ -1,7 +1,30 @@
 @extends('redteam.base')
 
-@section('title', 'Red Team Home')
+@section('title', 'Red Team Store')
 
 @section('pagecontent')
-    <p>This is the red team store page. Much Wow.</p>
+    <p>This is the red team store.</p>
+    @csrf
+    @if($assets->isEmpty())
+        <p>No items are available for purchase right now.</p>
+    @else
+    <form method="POST" action="/redteam/buy">
+        @foreach ($assets as $asset)
+
+        <input type="checkbox" name="results[]" id="{{ $asset->name }}" value="{{ $asset->name }}">
+        <label for="{{ $asset->name }}">{{ $asset->name }}  Type: {{ $asset->type }}  Purchase Cost: {{ $asset->purchase_cost }}  Ownership Cost: {{ $asset->ownership_cost }}</label>
+        <br>
+    
+        @endforeach
+
+        <div class="form-group row mb-0">
+            <div class="col-md-8 offset-md-4">
+                <button type="submit" class="btn btn-primary">
+                    Purchase
+                </button>
+            </div>
+        </div>
+    </form>
+    @endif
+
 @endsection
