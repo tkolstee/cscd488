@@ -8,7 +8,7 @@ use App\Models\Asset;
 class AssetController extends Controller
 {
     public function prefill(){
-        if(isempty(Asset::all())){
+        if(Asset::all()->isEmpty()){
             $asset = new Asset();
             $asset->name = "TestAssetName";
             $asset->type = 1;
