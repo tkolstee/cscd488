@@ -30,13 +30,23 @@ class BlueTeamController extends Controller {
  
     public function buy(request $request){
         $assetNames = $request->input('results');
+        if(count($assetNames) == 0){
+            $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
+            $error = "no-asset-selected";
+            return view('blueteam.store')->with(compact('assets','error'));
+        }
         $totalCost = 0;
         foreach($assetNames as $assetName){
             $asset = Asset::all()->where('name','=',$assetName)->first();
+            if($asset == null){
+                throw new Exception("invalid-asset-name");
+            }
             $totalCost += $asset->purchase_cost;
         }
         $blueteam = Team::find(Auth::user()->blueteam);
-        $blueteam->balance = 10000;//Testing Purposes
+        if($blueteam == null){
+            throw new Exception("invalid-team-selected");
+        }
         if($blueteam->balance < $totalCost){
             $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
             $error = "not-enough-money";

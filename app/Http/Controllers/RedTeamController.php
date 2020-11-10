@@ -26,13 +26,23 @@ class RedTeamController extends Controller {
 
     public function buy(request $request){
         $assetNames = $request->input('results');
+        if(count($assetNames) == 0){
+            $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
+            $error = "no-asset-selected";
+            return view('redteam.store')->with(compact('assets','error'));
+        }
         $totalCost = 0;
         foreach($assetNames as $assetName){
             $asset = Asset::all()->where('name','=',$assetName)->first();
+            if($asset == null){
+                throw new Exception("invalid-asset-name");
+            }
             $totalCost += $asset->purchase_cost;
         }
         $redteam = Team::find(Auth::user()->redteam);
-        $redteam->balance = 10000;//Testing Purposes
+        if($redteam == null){
+            throw new Exception("invalid-team-selected");
+        }
         if($redteam->balance < $totalCost){
             $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
             $error = "not-enough-money";

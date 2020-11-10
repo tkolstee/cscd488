@@ -26,7 +26,7 @@ Route::any('/blueteam/{page}', [App\Http\Controllers\BlueTeamController::class, 
 Route::any('/redteam/{page}', [App\Http\Controllers\RedTeamController::class, 'page'])->name('redteam');
 
 //TestFill Assets
-Route::any('/asset/prefill', [App\Http\Controllers\AssetController::class, 'prefill'])->name('prefillAssets');
+Route::any('/asset/prefillTest', [App\Http\Controllers\AssetController::class, 'prefillTest'])->name('prefillAssets');
 
 Route::any('/admin/{page}', [App\Http\Controllers\AdminController::class, 'page'])->name('admin');
 
