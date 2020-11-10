@@ -92,4 +92,14 @@ class BlueTeamTest extends TestCase
         $this->assertNotEquals(Auth::user()->blueteam, null);
     }
 
+    public function testJoinInvalid(){
+        $this->login();
+        $controller = new BlueTeamController();
+        $request = Request::create('/join', 'POST', [
+            'result' => 'invalid name',
+        ]);
+        $this->expectException(Exception::class);
+        $response = $controller->join($request);
+    }
+
 }

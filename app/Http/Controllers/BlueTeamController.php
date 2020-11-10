@@ -73,6 +73,7 @@ class BlueTeamController extends Controller {
         }
         $user = Auth::user();
         $blueteam = Team::all()->where('name', '=', $request->result);
+        if($blueteam->isEmpty()) throw new Exception("TeamDoesNotExist");
         $user->blueteam = substr($blueteam->pluck('id'), 1, 1);
         $user->update();
         return view('blueteam.home')->with('blueteam',$blueteam);
