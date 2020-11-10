@@ -7,6 +7,8 @@ use App\Models\Asset;
 use App\Models\Inventory;
 use View;
 use Auth;
+use Exception;
+
 
 class BlueTeamController extends Controller {
 
@@ -94,8 +96,11 @@ class BlueTeamController extends Controller {
     }
 
     public function delete(request $request){
-        $team = Team::all()->where('name', '=', $request->name);
-        $team->delete();
+        if(Team::all()->where('name', '=', $request->name)->isEmpty()) {
+            throw new Exception("TeamDoesNotExist");
+        }
+        $id = substr(Team::all()->where('name', '=', $request->name)->pluck('id'), 1, 1);
+        Team::destroy($id);
         return view('home');
     }
 

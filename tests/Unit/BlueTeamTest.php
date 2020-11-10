@@ -2,18 +2,27 @@
 
 namespace Tests\Unit;
 
+//use PHPUnit\Framework\TestCase;
 use Tests\TestCase;
 use App\Http\Controllers\BlueTeamController;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use View;
+use Exception;
+
 
 class BlueTeamTest extends TestCase
 {
     use DatabaseMigrations;
+
+    /*public function setUp(){
+        parent::setUp();
+        $this->login();
+    }*/
 
     public function login(){
         $user = new User([
@@ -23,8 +32,7 @@ class BlueTeamTest extends TestCase
         $this->be($user);
     }
 
-    public function testCreateValid()
-    {
+    public function testCreateValid(){
         $this->login();
         $request = Request::create('/create', 'POST', [
             'name' => 'test',
@@ -35,5 +43,49 @@ class BlueTeamTest extends TestCase
         $this->assertDatabaseHas('teams',[
             'name' => 'test'
         ]);
+    }
+
+    public function testCreateNameAlreadyExists(){
+        $this->login();
+        $request = Request::create('/create', 'POST', [
+            'name' => 'test',
+        ]);
+        $controller = new BlueTeamController();
+        $response = $controller->create($request);
+        try{$response = $controller->create($request);}
+        catch(ValidationException $e){
+            $this->assertTrue(true);
+            return;
+        }
+        $this->assertTrue(false);
+    }
+
+    public function testDeleteValid(){
+        $this->login();
+        $request = Request::create('/create', 'POST', [
+            'name' => 'test',
+        ]);
+        $controller = new BlueTeamController();
+        $controller->create($request);
+        $request = Request::create('/delete', 'POST', [
+            'name' => 'test',
+        ]);
+        $response = $controller->delete($request);
+        $this->assertTrue(Team::all()->where('name', '=', 'test')->isEmpty());
+    }
+
+    public function testDeleteInvalid(){
+        $this->login();
+        $request = Request::create('/delete', 'POST', [
+            'name' => 'test',
+        ]);
+        $controller = new BlueTeamController();
+        try{$response = $controller->delete($request);}
+        catch(Exception $e){
+            $this->assertEquals('TeamDoesNotExist', $e->getMessage());
+            return;
+        }
+        $this->assertTrue(false);
+        
     }
 }
