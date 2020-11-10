@@ -47,7 +47,7 @@ class BlueTeamTest extends TestCase
         $controller->prefillTest();
     }
 
-    public function testCreateValid(){
+    public function testCreateValidBlueTeam(){
         $request = Request::create('/create', 'POST', [
             'name' => 'test',
         ]);
@@ -59,7 +59,7 @@ class BlueTeamTest extends TestCase
         ]);
     }
 
-    public function testCreateNameAlreadyExists(){
+    public function testCreateBlueTeamNameAlreadyExists(){
         $team = Team::factory()->make();
         $team->save();
         $controller = new BlueTeamController();
@@ -70,7 +70,7 @@ class BlueTeamTest extends TestCase
         $response = $controller->create($request);
     }
 
-    public function testDeleteValid(){
+    public function testDeleteValidBlueTeam(){
         $team = Team::factory()->make();
         $team->save();
         $controller = new BlueTeamController();
@@ -81,7 +81,7 @@ class BlueTeamTest extends TestCase
         $this->assertTrue(Team::all()->where('name', '=', $team->name)->isEmpty());
     }
 
-    public function testDeleteInvalid(){
+    public function testDeleteInvalidBlueTeam(){
         $request = Request::create('/delete', 'POST', [
             'name' => 'test',
         ]);
@@ -90,7 +90,7 @@ class BlueTeamTest extends TestCase
         $response = $controller->delete($request);
     }
 
-    public function testJoinValid(){
+    public function testJoinValidBlueTeam(){
         $controller = new BlueTeamController();
         $team = Team::factory()->make();
         $team->save();
@@ -101,7 +101,7 @@ class BlueTeamTest extends TestCase
         $this->assertNotEquals(Auth::user()->blueteam, null);
     }
 
-    public function testJoinInvalid(){
+    public function testJoinInvalidBlueTeam(){
         $controller = new BlueTeamController();
         $request = Request::create('/join', 'POST', [
             'result' => 'invalid name',
@@ -110,7 +110,7 @@ class BlueTeamTest extends TestCase
         $response = $controller->join($request);
     }
 
-    public function testBuyValid(){
+    public function testBlueBuyValidAsset(){
         $this->prefillAssets();
         $this->assignTeam();
         $controller = new BlueTeamController();
@@ -123,7 +123,7 @@ class BlueTeamTest extends TestCase
         $this->assertEquals($balanceBefore-100, $response->blueteam->balance);
     }
 
-    public function testBuyInvalidAssetName(){
+    public function testBlueBuyInvalidAssetName(){
         $this->prefillAssets();
         $this->assignTeam();
         $controller = new BlueTeamController();
@@ -134,7 +134,7 @@ class BlueTeamTest extends TestCase
         $response = $controller->buy($request);
     }
 
-    public function testBuyInvalidTeam(){
+    public function testInvalidBlueTeamCannotBuy(){
         $this->prefillAssets();
         $controller = new BlueTeamController();
         $request = Request::create('/buy','POST', [
@@ -144,7 +144,7 @@ class BlueTeamTest extends TestCase
         $response = $controller->buy($request);
     }
 
-    public function testBuyNotEnoughMoney(){
+    public function testBlueTeamBuyNotEnoughMoney(){
         $this->prefillAssets();
         $this->assignTeam();
         $controller = new BlueTeamController();
@@ -158,7 +158,7 @@ class BlueTeamTest extends TestCase
         $this->assertEquals('not-enough-money', $response->error);
     }
 
-    public function testBuyNoAssetSelected(){
+    public function testBlueTeamBuyNoAssetSelected(){
         $this->prefillAssets();
         $this->assignTeam();
         $controller = new BlueTeamController();
