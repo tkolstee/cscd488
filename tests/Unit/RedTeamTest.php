@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 //use PHPUnit\Framework\TestCase;
 use Tests\TestCase;
-use App\Http\Controllers\BlueTeamController;
+use App\Http\Controllers\RedTeamController;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -16,7 +16,7 @@ use Auth;
 use Exception;
 
 
-class BlueTeamTest extends TestCase
+class RedTeamTest extends TestCase
 {
     use DatabaseMigrations;
 
@@ -37,18 +37,18 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/create', 'POST', [
             'name' => 'test',
         ]);
-        $controller = new BlueTeamController();
+        $controller = new RedTeamController();
         $response = $controller->create($request);
-        $this->assertEquals('test', $response->blueteam->name);
+        $this->assertEquals('test', $response->redteam->name);
         $this->assertDatabaseHas('teams',[
             'name' => 'test'
         ]);
     }
 
     public function testCreateNameAlreadyExists(){
-        $team = Team::factory()->make();
+        $team = Team::factory()->red()->make();
         $team->save();
-        $controller = new BlueTeamController();
+        $controller = new RedTeamController();
         $request = Request::create('/create', 'POST', [
             'name' => $team->name,
         ]);
@@ -57,9 +57,9 @@ class BlueTeamTest extends TestCase
     }
 
     public function testDeleteValid(){
-        $team = Team::factory()->make();
+        $team = Team::factory()->red()->make();
         $team->save();
-        $controller = new BlueTeamController();
+        $controller = new RedTeamController();
         $request = Request::create('/delete', 'POST', [
             'name' => $team->name,
         ]);
@@ -71,29 +71,9 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/delete', 'POST', [
             'name' => 'test',
         ]);
-        $controller = new BlueTeamController();
+        $controller = new RedTeamController();
         $this->expectException(Exception::class);
         $response = $controller->delete($request);
-    }
-
-    public function testJoinValid(){
-        $controller = new BlueTeamController();
-        $team = Team::factory()->make();
-        $team->save();
-        $request = Request::create('/join', 'POST', [
-            'result' => $team->name,
-        ]);
-        $controller->join($request);
-        $this->assertNotEquals(Auth::user()->blueteam, null);
-    }
-
-    public function testJoinInvalid(){
-        $controller = new BlueTeamController();
-        $request = Request::create('/join', 'POST', [
-            'result' => 'invalid name',
-        ]);
-        $this->expectException(Exception::class);
-        $response = $controller->join($request);
     }
 
 }

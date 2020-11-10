@@ -7,6 +7,8 @@ use App\Models\Asset;
 use App\Models\Inventory;
 use View;
 use Auth;
+use Exception;
+
 
 class BlueTeamController extends Controller {
 
@@ -40,7 +42,7 @@ class BlueTeamController extends Controller {
             //add asset to inventory and charge user
             $assetId = substr(Asset::all()->where('name','=',$asset->name)->pluck('id'), 1, 1);
             $currAsset = Inventory::all()->where(['team_id','=',Auth::user()->blueteam],['asset_id','=', $assetId]);
-            if($currAsset == ""){
+            if($currAsset->isEmpty()){
                 $currAsset = new Inventory();
                 $currAsset->team_id = Auth::user()->blueteam;
                 $currAsset->asset_id = $assetId;
@@ -57,9 +59,7 @@ class BlueTeamController extends Controller {
     }
 
     public function store(){
-        $user = Auth::user();
-        $blueid = $user->blueteam;
-        $blueteam = Team::find($blueid);
+        $blueteam = Team::find(Auth::user()->blueteam);
         $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
         return view('blueteam.store')->with(compact('blueteam', 'assets'));
     }
@@ -71,6 +71,7 @@ class BlueTeamController extends Controller {
         }
         $user = Auth::user();
         $blueteam = Team::all()->where('name', '=', $request->result);
+        if($blueteam->isEmpty()) throw new Exception("TeamDoesNotExist");
         $user->blueteam = substr($blueteam->pluck('id'), 1, 1);
         $user->update();
         return view('blueteam.home')->with('blueteam',$blueteam);
@@ -78,7 +79,7 @@ class BlueTeamController extends Controller {
 
     public function create(request $request){
         if($request->name == "") return view('blueteam.create'); 
-        $request->validate([
+        $this->validate($request, [
             'name' => ['required', 'unique:teams', 'string', 'max:255'],
         ]);
         $blueteam = new Team();
@@ -95,7 +96,11 @@ class BlueTeamController extends Controller {
 
     public function delete(request $request){
         $team = Team::all()->where('name', '=', $request->name);
-        $team->delete();
+        if($team->isEmpty()) {
+            throw new Exception("TeamDoesNotExist");
+        }
+        $id = substr($team->pluck('id'), 1, 1);
+        Team::destroy($id);
         return view('home');
     }
 

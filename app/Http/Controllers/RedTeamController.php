@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Models\Asset;
-Use Auth;
-Use View;
+use Auth;
+use View;
+use Exception;
 
 class RedTeamController extends Controller {
 
@@ -27,9 +28,7 @@ class RedTeamController extends Controller {
     }
 
     public function store(){
-        $user = Auth::user();
-        $redid = $user->redteam;
-        $redteam = Team::find($redid);
+        $redteam = Team::find(Auth::user()->redteam);
         $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
         return view('redteam.store')->with(compact('redteam', 'assets'));
     }
@@ -53,7 +52,11 @@ class RedTeamController extends Controller {
 
     public function delete(request $request){
         $team = Team::all()->where('name', '=', $request->name);
-        $team->delete();
+        if($team->isEmpty()) {
+            throw new Exception("TeamDoesNotExist");
+        }
+        $id = substr($team->pluck('id'), 1, 1);
+        Team::destroy($id);
         return view('home');
     }
 }
