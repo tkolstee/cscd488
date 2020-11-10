@@ -20,10 +20,10 @@ class BlueTeamTest extends TestCase
 {
     use DatabaseMigrations;
 
-    /*public function setUp(){
+    public function setUp(): void{
         parent::setUp();
         $this->login();
-    }*/
+    }
 
     public function login(){
         $user = new User([
@@ -34,7 +34,6 @@ class BlueTeamTest extends TestCase
     }
 
     public function testCreateValid(){
-        $this->login();
         $request = Request::create('/create', 'POST', [
             'name' => 'test',
         ]);
@@ -47,7 +46,6 @@ class BlueTeamTest extends TestCase
     }
 
     public function testCreateNameAlreadyExists(){
-        $this->login();
         $team = Team::factory()->make();
         $team->save();
         $controller = new BlueTeamController();
@@ -59,7 +57,6 @@ class BlueTeamTest extends TestCase
     }
 
     public function testDeleteValid(){
-        $this->login();
         $team = Team::factory()->make();
         $team->save();
         $controller = new BlueTeamController();
@@ -71,7 +68,6 @@ class BlueTeamTest extends TestCase
     }
 
     public function testDeleteInvalid(){
-        $this->login();
         $request = Request::create('/delete', 'POST', [
             'name' => 'test',
         ]);
@@ -81,7 +77,6 @@ class BlueTeamTest extends TestCase
     }
 
     public function testJoinValid(){
-        $this->login();
         $controller = new BlueTeamController();
         $team = Team::factory()->make();
         $team->save();
@@ -93,7 +88,6 @@ class BlueTeamTest extends TestCase
     }
 
     public function testJoinInvalid(){
-        $this->login();
         $controller = new BlueTeamController();
         $request = Request::create('/join', 'POST', [
             'result' => 'invalid name',

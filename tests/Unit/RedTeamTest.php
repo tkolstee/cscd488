@@ -20,10 +20,10 @@ class RedTeamTest extends TestCase
 {
     use DatabaseMigrations;
 
-    /*public function setUp(){
+    public function setUp(): void{
         parent::setUp();
         $this->login();
-    }*/
+    }
 
     public function login(){
         $user = new User([
@@ -34,7 +34,6 @@ class RedTeamTest extends TestCase
     }
 
     public function testCreateValid(){
-        $this->login();
         $request = Request::create('/create', 'POST', [
             'name' => 'test',
         ]);
@@ -47,7 +46,6 @@ class RedTeamTest extends TestCase
     }
 
     public function testCreateNameAlreadyExists(){
-        $this->login();
         $team = Team::factory()->red()->make();
         $team->save();
         $controller = new RedTeamController();
@@ -59,7 +57,6 @@ class RedTeamTest extends TestCase
     }
 
     public function testDeleteValid(){
-        $this->login();
         $team = Team::factory()->red()->make();
         $team->save();
         $controller = new RedTeamController();
@@ -71,7 +68,6 @@ class RedTeamTest extends TestCase
     }
 
     public function testDeleteInvalid(){
-        $this->login();
         $request = Request::create('/delete', 'POST', [
             'name' => 'test',
         ]);
