@@ -10,7 +10,7 @@
             </td>
             @if ($blueteam->name  ?? '' != "")
                 <td width="50%">
-                <strong>{{  $blueteam->name ?? '' }}</strong>
+                <strong>{{  $blueteam->name ?? '' }} </strong>
                     Revenue: {{ $blueteam->balance ?? '' }}    Reputation: {{ $blueteam->reputation ?? '' }}
                 </td>
             @endif

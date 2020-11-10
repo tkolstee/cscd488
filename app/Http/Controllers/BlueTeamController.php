@@ -32,16 +32,19 @@ class BlueTeamController extends Controller {
         $assetNames = $request->input('results');
         $totalCost = 0;
         foreach($assetNames as $assetName){
-            $asset = Asset::all()->where('name','=',$assetName);
-            echo $asset;
+            $asset = Asset::all()->where('name','=',$assetName)->first();
             $totalCost += $asset->purchase_cost;
         }
         $blueteam = Team::find(Auth::user()->blueteam);
-        if($blueteam->revenue < $totalCost)
-            return view('blueteam.store')->with('not-enough-money','not-enough-money');
+        $blueteam->balance = 10000;//Testing Purposes
+        if($blueteam->balance < $totalCost){
+            $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
+            $error = "not-enough-money";
+            return view('blueteam.store')->with(compact('assets','error'));
+        }
         foreach($assetNames as $asset){
             //add asset to inventory and charge team
-            $assetId = substr(Asset::all()->where('name','=',$asset->name)->pluck('id'), 1, 1);
+            $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
             $currAsset = Inventory::all()->where(['team_id','=',Auth::user()->blueteam],['asset_id','=', $assetId]);
             if($currAsset->isEmpty()){
                 $currAsset = new Inventory();
@@ -54,9 +57,9 @@ class BlueTeamController extends Controller {
                 $currAsset->update();
             }
         }
-        $blueteam->revenue -= $totalCost;
+        $blueteam->balance -= $totalCost;
+        $blueteam->update();
         return view('blueteam.home')->with('blueteam', $blueteam);
-        
     }
 
     public function store(){
