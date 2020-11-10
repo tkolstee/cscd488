@@ -52,12 +52,8 @@ class BlueTeamTest extends TestCase
         ]);
         $controller = new BlueTeamController();
         $response = $controller->create($request);
-        try{$response = $controller->create($request);}
-        catch(ValidationException $e){
-            $this->assertTrue(true);
-            return;
-        }
-        $this->assertTrue(false);
+        $this->expectException(ValidationException::class);
+        $response = $controller->create($request);
     }
 
     public function testDeleteValid(){
@@ -80,12 +76,8 @@ class BlueTeamTest extends TestCase
             'name' => 'test',
         ]);
         $controller = new BlueTeamController();
-        try{$response = $controller->delete($request);}
-        catch(Exception $e){
-            $this->assertEquals('TeamDoesNotExist', $e->getMessage());
-            return;
-        }
-        $this->assertTrue(false);
-        
+        $this->expectException(Exception::class);
+        $response = $controller->delete($request);
     }
+
 }
