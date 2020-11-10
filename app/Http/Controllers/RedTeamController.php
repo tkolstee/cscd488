@@ -26,7 +26,8 @@ class RedTeamController extends Controller {
 
     public function buy(request $request){
         $assetNames = $request->input('results');
-        if(count($assetNames) == 0){
+        if($assetNames == null){
+            $redteam = Team::find(Auth::user()->redteam);
             $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
             $error = "no-asset-selected";
             return view('redteam.store')->with(compact('assets','error'));

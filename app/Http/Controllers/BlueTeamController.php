@@ -30,10 +30,11 @@ class BlueTeamController extends Controller {
  
     public function buy(request $request){
         $assetNames = $request->input('results');
-        if(count($assetNames) == 0){
+        if($assetNames == null){
+            $blueteam = Team::find(Auth::user()->blueteam);
             $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
             $error = "no-asset-selected";
-            return view('blueteam.store')->with(compact('assets','error'));
+            return view('blueteam.store')->with(compact('assets','error', 'blueteam'));
         }
         $totalCost = 0;
         foreach($assetNames as $assetName){
