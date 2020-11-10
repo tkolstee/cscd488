@@ -27,19 +27,20 @@ class BlueTeamController extends Controller {
     }
  
     public function buy(request $request){
-        $assets = $request->get('results');
+        $assetNames = $request->input('results');
         $totalCost = 0;
-        if($assets == "") return view('blueteam.store')->with('nothing-selected', 'nothing-selected');
-        foreach($assets as $asset){
-            $totalCost += Asset::all()->where('name','=',$asset)->purchase_cost;
+        foreach($assetNames as $assetName){
+            $asset = Asset::all()->where('name','=',$assetName);
+            echo $asset;
+            $totalCost += $asset->purchase_cost;
         }
         $blueteam = Team::find(Auth::user()->blueteam);
         if($blueteam->revenue < $totalCost)
             return view('blueteam.store')->with('not-enough-money','not-enough-money');
-        foreach($assets as $asset){
-            //add asset to inventory and charge user
+        foreach($assetNames as $asset){
+            //add asset to inventory and charge team
             $assetId = substr(Asset::all()->where('name','=',$asset->name)->pluck('id'), 1, 1);
-            $currAsset = Inventory::all()->where(['team_id','=',Auth::user()->blueteam],['asset_id','=', $assetId]);
+            $currAsset = Inventory::all()->where(['team_id','=',$blueteam],['asset_id','=', $assetId]);
             if($currAsset == ""){
                 $currAsset = new Inventory();
                 $currAsset->team_id = Auth::user()->blueteam;
