@@ -30,7 +30,7 @@ class RedTeamController extends Controller {
             $redteam = Team::find(Auth::user()->redteam);
             $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
             $error = "no-asset-selected";
-            return view('redteam.store')->with(compact('assets','error'));
+            return view('redteam.store')->with(compact('assets','error','redteam'));
         }
         $totalCost = 0;
         foreach($assetNames as $assetName){
@@ -47,7 +47,7 @@ class RedTeamController extends Controller {
         if($redteam->balance < $totalCost){
             $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
             $error = "not-enough-money";
-            return view('redteam.store')->with(compact('assets','error'));
+            return view('redteam.store')->with(compact('assets','error','redteam'));
         }
         foreach($assetNames as $asset){
             //add asset to inventory and charge team

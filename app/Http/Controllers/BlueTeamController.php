@@ -24,6 +24,7 @@ class BlueTeamController extends Controller {
             case 'create': return $this->create($request); break;
             case 'join': return $this->join($request); break;
             case 'buy': return $this->buy($request); break;
+            case 'inventory': return $this->inventory(); break;
         }
 
     }
@@ -51,7 +52,7 @@ class BlueTeamController extends Controller {
         if($blueteam->balance < $totalCost){
             $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
             $error = "not-enough-money";
-            return view('blueteam.store')->with(compact('assets','error'));
+            return view('blueteam.store')->with(compact('assets','error','blueteam'));
         }
         foreach($assetNames as $asset){
             //add asset to inventory and charge team
