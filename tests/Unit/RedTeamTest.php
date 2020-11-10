@@ -5,6 +5,7 @@ namespace Tests\Unit;
 //use PHPUnit\Framework\TestCase;
 use Tests\TestCase;
 use App\Http\Controllers\RedTeamController;
+use App\Http\Controllers\AssetController;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -31,6 +32,19 @@ class RedTeamTest extends TestCase
             'name' => 'test',
         ]);
         $this->be($user);
+    }
+
+    public function assignTeam(){
+        $user = Auth::user();
+        $team = Team::factory()->red()->make();
+        $team->balance = 1000;
+        $team->save();
+        $user->redteam = 1;
+    }
+
+    public function prefillAssets(){
+        $controller = new AssetController();
+        $controller->prefillTest();
     }
 
     public function testCreateValid(){
@@ -76,4 +90,62 @@ class RedTeamTest extends TestCase
         $response = $controller->delete($request);
     }
 
+    public function testBuyValid(){
+        $this->prefillAssets();
+        $this->assignTeam();
+        $controller = new RedTeamController();
+        $request = Request::create('/buy','POST', [
+            'results' => ['TestAssetRed']
+        ]);
+        $redteam = Team::find(Auth::user()->redteam);
+        $balanceBefore = $redteam->balance;
+        $response = $controller->buy($request);
+        $this->assertEquals($balanceBefore-200, $response->redteam->balance);
+    }
+
+    public function testBuyInvalidAssetName(){
+        $this->prefillAssets();
+        $this->assignTeam();
+        $controller = new RedTeamController();
+        $request = Request::create('/buy','POST', [
+            'results' => ['InvalidName']
+        ]);
+        $this->expectException(Exception::class);
+        $response = $controller->buy($request);
+    }
+
+    public function testBuyInvalidTeam(){
+        $this->prefillAssets();
+        $controller = new RedTeamController();
+        $request = Request::create('/buy','POST', [
+            'results' => ['TestAssetRed']
+        ]);
+        $this->expectException(Exception::class);
+        $response = $controller->buy($request);
+    }
+
+    public function testBuyNotEnoughMoney(){
+        $this->prefillAssets();
+        $this->assignTeam();
+        $controller = new RedTeamController();
+        $request = Request::create('/buy','POST', [
+            'results' => ['TestAssetRed']
+        ]);
+        $redteam = Team::find(Auth::user()->redteam);
+        $redteam->balance = 0;
+        $redteam->update();
+        $response = $controller->buy($request);
+        $this->assertEquals('not-enough-money', $response->error);
+    }
+
+    public function testBuyNoAssetSelected(){
+        $this->prefillAssets();
+        $this->assignTeam();
+        $controller = new RedTeamController();
+        $request = Request::create('/buy','POST', [
+            'results' => []
+        ]);
+        $response = $controller->buy($request);
+        $this->assertEquals('no-asset-selected', $response->error);
+    }
 }

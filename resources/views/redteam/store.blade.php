@@ -4,11 +4,11 @@
 
 @section('pagecontent')
     <p>This is the red team store.</p>
-    @csrf
     @if($assets->isEmpty())
         <p>No items are available for purchase right now.</p>
     @else
     <form method="POST" action="/redteam/buy">
+        @csrf
         @foreach ($assets as $asset)
 
         <input type="checkbox" name="results[]" id="{{ $asset->name }}" value="{{ $asset->name }}">

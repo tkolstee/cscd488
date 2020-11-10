@@ -7,10 +7,10 @@ use App\Models\Asset;
 
 class AssetController extends Controller
 {
-    public function prefill(){
+    public function prefillTest(){
         if(Asset::all()->isEmpty()){
             $asset = new Asset();
-            $asset->name = "TestAssetName";
+            $asset->name = "TestAssetBlue";
             $asset->type = 1;
             $asset->purchase_cost = 100;
             $asset->ownership_cost = 1;
@@ -18,7 +18,7 @@ class AssetController extends Controller
             $asset->buyable = 1;
             $asset->save();
             $asset = new Asset();
-            $asset->name = "TestAssetName2";
+            $asset->name = "TestAssetRed";
             $asset->type = 1;
             $asset->purchase_cost = 200;
             $asset->ownership_cost = 2;
