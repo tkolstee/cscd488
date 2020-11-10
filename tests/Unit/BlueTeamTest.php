@@ -12,6 +12,8 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use App\Models\Inventory;
+use App\Models\Asset;
 use View;
 use Auth;
 use Exception;
@@ -120,7 +122,10 @@ class BlueTeamTest extends TestCase
         $blueteam = Team::find(Auth::user()->blueteam);
         $balanceBefore = $blueteam->balance;
         $response = $controller->buy($request);
+        $inventory = Inventory::find(1);
         $this->assertEquals($balanceBefore-100, $response->blueteam->balance);
+        $this->assertEquals(1, $inventory->team_id);
+        $this->assertEquals(substr(Asset::where('name','=','TestAssetBlue')->pluck('id'),1,1), $inventory->asset_id);
     }
 
     public function testBuyInvalidAssetName(){
