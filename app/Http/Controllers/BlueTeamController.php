@@ -42,7 +42,7 @@ class BlueTeamController extends Controller {
             //add asset to inventory and charge user
             $assetId = substr(Asset::all()->where('name','=',$asset->name)->pluck('id'), 1, 1);
             $currAsset = Inventory::all()->where(['team_id','=',Auth::user()->blueteam],['asset_id','=', $assetId]);
-            if($currAsset == ""){
+            if($currAsset->isEmpty()){
                 $currAsset = new Inventory();
                 $currAsset->team_id = Auth::user()->blueteam;
                 $currAsset->asset_id = $assetId;
@@ -59,9 +59,7 @@ class BlueTeamController extends Controller {
     }
 
     public function store(){
-        $user = Auth::user();
-        $blueid = $user->blueteam;
-        $blueteam = Team::find($blueid);
+        $blueteam = Team::find(Auth::user()->blueteam);
         $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
         return view('blueteam.store')->with(compact('blueteam', 'assets'));
     }
@@ -97,10 +95,11 @@ class BlueTeamController extends Controller {
     }
 
     public function delete(request $request){
-        if(Team::all()->where('name', '=', $request->name)->isEmpty()) {
+        $team = Team::all()->where('name', '=', $request->name);
+        if($team->isEmpty()) {
             throw new Exception("TeamDoesNotExist");
         }
-        $id = substr(Team::all()->where('name', '=', $request->name)->pluck('id'), 1, 1);
+        $id = substr($team->pluck('id'), 1, 1);
         Team::destroy($id);
         return view('home');
     }

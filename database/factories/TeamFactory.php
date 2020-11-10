@@ -28,4 +28,17 @@ class TeamFactory extends Factory
             'blue' => 1,
         ];
     }
+
+    /**
+     * Indicate that the team is red
+     * 
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function red(){
+        return $this->state(function (array $attributes){
+            return [
+                'blue' => 0,
+            ];
+        });
+    }
 }
