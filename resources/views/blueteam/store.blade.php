@@ -4,6 +4,9 @@
 
 @section('pagecontent')
     <p>This is the blue team store.</p>
+    @if(! empty($error))
+        <p>{{ error }}</p>
+    @endif
     @if($assets->isEmpty())
         <p>No items are available for purchase right now.</p>
     @else
