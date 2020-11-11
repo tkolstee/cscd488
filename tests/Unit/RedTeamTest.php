@@ -8,7 +8,7 @@ use App\Http\Controllers\RedTeamController;
 use App\Http\Controllers\AssetController;
 use Illuminate\Http\Request;
 use App\Models\Team;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
@@ -19,7 +19,7 @@ use Exception;
 
 class RedTeamTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     public function setUp(): void{
         parent::setUp();
@@ -47,7 +47,7 @@ class RedTeamTest extends TestCase
         $controller->prefillTest();
     }
 
-    public function testCreateValid(){
+    public function testCreateValidRedTeam(){
         $request = Request::create('/create', 'POST', [
             'name' => 'test',
         ]);
@@ -59,7 +59,7 @@ class RedTeamTest extends TestCase
         ]);
     }
 
-    public function testCreateNameAlreadyExists(){
+    public function testCreateRedTeamNameAlreadyExists(){
         $team = Team::factory()->red()->make();
         $team->save();
         $controller = new RedTeamController();
@@ -70,7 +70,7 @@ class RedTeamTest extends TestCase
         $response = $controller->create($request);
     }
 
-    public function testDeleteValid(){
+    public function testDeleteValidRedTeam(){
         $team = Team::factory()->red()->make();
         $team->save();
         $controller = new RedTeamController();
@@ -81,7 +81,7 @@ class RedTeamTest extends TestCase
         $this->assertTrue(Team::all()->where('name', '=', $team->name)->isEmpty());
     }
 
-    public function testDeleteInvalid(){
+    public function testDeleteInvalidRedTeam(){
         $request = Request::create('/delete', 'POST', [
             'name' => 'test',
         ]);
@@ -90,7 +90,7 @@ class RedTeamTest extends TestCase
         $response = $controller->delete($request);
     }
 
-    public function testBuyValid(){
+    public function testRedBuyValidAsset(){
         $this->prefillAssets();
         $this->assignTeam();
         $controller = new RedTeamController();
@@ -103,7 +103,7 @@ class RedTeamTest extends TestCase
         $this->assertEquals($balanceBefore-200, $response->redteam->balance);
     }
 
-    public function testBuyInvalidAssetName(){
+    public function testRedBuyInvalidAssetName(){
         $this->prefillAssets();
         $this->assignTeam();
         $controller = new RedTeamController();
@@ -114,7 +114,7 @@ class RedTeamTest extends TestCase
         $response = $controller->buy($request);
     }
 
-    public function testBuyInvalidTeam(){
+    public function testInvalidRedTeamCannotBuy(){
         $this->prefillAssets();
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
@@ -124,7 +124,7 @@ class RedTeamTest extends TestCase
         $response = $controller->buy($request);
     }
 
-    public function testBuyNotEnoughMoney(){
+    public function testRedTeamBuyNotEnoughMoney(){
         $this->prefillAssets();
         $this->assignTeam();
         $controller = new RedTeamController();
@@ -138,7 +138,7 @@ class RedTeamTest extends TestCase
         $this->assertEquals('not-enough-money', $response->error);
     }
 
-    public function testBuyNoAssetSelected(){
+    public function testRedTeamBuyNoAssetSelected(){
         $this->prefillAssets();
         $this->assignTeam();
         $controller = new RedTeamController();
