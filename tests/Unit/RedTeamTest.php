@@ -8,7 +8,7 @@ use App\Http\Controllers\RedTeamController;
 use App\Http\Controllers\AssetController;
 use Illuminate\Http\Request;
 use App\Models\Team;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
@@ -19,7 +19,7 @@ use Exception;
 
 class RedTeamTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     public function setUp(): void{
         parent::setUp();
