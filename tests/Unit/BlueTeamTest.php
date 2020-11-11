@@ -286,9 +286,9 @@ class BlueTeamTest extends TestCase
     public function testDisplayTeamMembersNoTeam(){
         $controller = new BlueTeamController();
         $response = $controller->home();
-        $this->assertTrue(empty($blueteam));
-        $this->assertTrue(empty($leader));
-        $this->assertTrue(empty($members));
+        $this->assertTrue(empty($response->blueteam));
+        $this->assertTrue(empty($response->leader));
+        $this->assertTrue(empty($response->members));
     }
 
     public function testDisplayTeamLeaderValid(){
