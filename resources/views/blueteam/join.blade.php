@@ -5,7 +5,7 @@
 @section('pagecontent')
 
     <h2>Join A Team</h2>
-    <form method="POST" action="{{ route('blueteam/join') }}">
+    <form method="POST" action="/blueteam/join">
     @csrf
     @foreach ($blueteams as $blueteam)
 

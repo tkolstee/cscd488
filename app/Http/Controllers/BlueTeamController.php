@@ -69,8 +69,8 @@ class BlueTeamController extends Controller {
                 $blueteam->update();
                 return view('blueteam.store')->with(compact('blueteam', 'assets'));
             }
-        }//end sell
-    }
+        }
+    }//end sell
 
     public function storeInventory(){
         $blueteam = Team::find(Auth::user()->blueteam);
