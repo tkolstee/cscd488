@@ -21,7 +21,58 @@ class RedTeamController extends Controller {
             case 'status': return view('redteam.status')->with('redteam',$redteam); break;
             case 'create': return $this->create($request); break;
             case 'buy': return $this->buy($request); break;
+            case 'storeinventory': return $this->storeInventory(); break;
+            case 'sell': return $this->sell($request); break;
         }
+    }
+
+    public function sell(request $request){
+        //change this to proportion sell rate
+        $sellRate = 1;
+        $assetNames = $request->input('results');
+        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
+        if($assetNames == null){
+            $redteam = Team::find(Auth::user()->redteam);
+            $error = "no-asset-selected";
+            return view('redteam.store')->with(compact('assets','error', 'redteam'));
+        }
+        $totalCost = 0;
+        foreach($assetNames as $assetName){
+            $asset = Asset::all()->where('name','=',$assetName)->first();
+            if($asset == null){
+                throw new Exception("invalid-asset-name");
+            }
+            $totalCost += ($asset->purchase_cost * $sellRate);
+        }
+        $redteam = Team::find(Auth::user()->redteam);
+        if($redteam == null){
+            throw new Exception("invalid-team-selected");
+        }
+        foreach($assetNames as $asset){
+            //add asset to inventory and charge team
+            $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
+            $currAsset = Inventory::all()->where('team_id','=',Auth::user()->redteam)->where('asset_id','=', $assetId)->first();
+            if($currAsset == null){
+                throw new Exception("do-not-own-asset");
+            }else{
+                $currAsset->quantity -= 1;
+                if($currAsset->quantity == 0){
+                    Inventory::destroy(substr($currAsset->pluck('id'),1,1));
+                }else{
+                    $currAsset->update();
+                }
+                $redteam->balance += $totalCost;
+                $redteam->update();
+                return view('redteam.store')->with(compact('redteam', 'assets'));
+            }
+        }//end sell
+    }
+
+    public function storeInventory(){
+        $redteam = Team::find(Auth::user()->redteam);
+        $inventory = Inventory::all()->where('team_id','=', Auth::user()->redteam);
+        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
+        return view('redteam.store')->with(compact('redteam', 'assets', 'inventory'));
     }
 
     public function buy(request $request){
@@ -52,8 +103,8 @@ class RedTeamController extends Controller {
         foreach($assetNames as $asset){
             //add asset to inventory and charge team
             $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
-            $currAsset = Inventory::all()->where(['team_id','=',Auth::user()->redteam],['asset_id','=', $assetId]);
-            if($currAsset->isEmpty()){
+            $currAsset = Inventory::all()->where('team_id','=',Auth::user()->redteam)->where('asset_id','=', $assetId)->first();
+            if($currAsset == null){
                 $currAsset = new Inventory();
                 $currAsset->team_id = Auth::user()->redteam;
                 $currAsset->asset_id = $assetId;
