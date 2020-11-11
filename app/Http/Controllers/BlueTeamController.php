@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Models\Asset;
 use App\Models\Inventory;
+use App\Models\User;
 use View;
 use Auth;
 use Exception;
@@ -16,7 +17,7 @@ class BlueTeamController extends Controller {
 
         $blueteam = Team::find(Auth::user()->blueteam);
         switch ($page) {
-            case 'home': return view('blueteam.home')->with('blueteam',$blueteam); break;
+            case 'home': return $this->home(); break;
             case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
             case 'status': return view('blueteam.status')->with('blueteam',$blueteam); break;
             case 'store': return $this->store();
@@ -30,6 +31,15 @@ class BlueTeamController extends Controller {
 
     }
  
+    public function home(){
+        $blueid = Auth::user()->blueteam;
+        $blueteam = Team::find($blueid);
+        if($blueid == "") return view('blueteam.home')->with(compact('blueteam'));
+        $leader = User::all()->where('blueteam','=',$blueid)->where('leader','=',1)->first();
+        $members = User::all()->where('blueteam','=',$blueid)->where('leader','=',0);
+        return  view('blueteam.home')->with(compact('blueteam','leader','members'));
+    }
+
     public function sell(request $request){
         //change this to proportion sell rate
         $sellRate = 1;
@@ -141,7 +151,7 @@ class BlueTeamController extends Controller {
         if($blueteam->isEmpty()) throw new Exception("TeamDoesNotExist");
         $user->blueteam = substr($blueteam->pluck('id'), 1, 1);
         $user->update();
-        return view('blueteam.home')->with('blueteam',$blueteam);
+        return $this->home();
     }
 
     public function create(request $request){
@@ -157,8 +167,9 @@ class BlueTeamController extends Controller {
         $blueteam->save();
         $user = Auth::user();
         $user->blueteam = substr(Team::all()->where('name', '=', $request->name)->pluck('id'), 1, 1);
+        $user->leader = 1;
         $user->update();
-        return view('blueteam.home')->with('blueteam',$blueteam);
+        return $this->home();
     }
 
     public function delete(request $request){
