@@ -8,7 +8,7 @@ use App\Http\Controllers\BlueTeamController;
 use App\Http\Controllers\AssetController;
 use Illuminate\Http\Request;
 use App\Models\Team;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
@@ -19,14 +19,14 @@ use Exception;
 
 class BlueTeamTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     public function setUp(): void{
         parent::setUp();
         $this->login();
     }
 
-    public function login(){
+    private function login(){
         $user = new User([
             'id' => 1,
             'name' => 'test',
@@ -34,7 +34,7 @@ class BlueTeamTest extends TestCase
         $this->be($user);
     }
 
-    public function assignTeam(){
+    private function assignTeam(){
         $user = Auth::user();
         $team = Team::factory()->make();
         $team->balance = 1000;
@@ -42,7 +42,7 @@ class BlueTeamTest extends TestCase
         $user->blueteam = 1;
     }
     
-    public function prefillAssets(){
+    private function prefillAssets(){
         $controller = new AssetController();
         $controller->prefillTest();
     }
