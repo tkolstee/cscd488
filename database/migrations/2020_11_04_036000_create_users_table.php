@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->integer('is_admin')->default(0);
             $table->foreignId('redteam')->nullable()->constrained('teams');
             $table->foreignId('blueteam')->nullable()->constrained('teams');
+            $table->integer('leader')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

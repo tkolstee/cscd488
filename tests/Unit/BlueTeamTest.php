@@ -29,10 +29,8 @@ class BlueTeamTest extends TestCase
     }
 
     private function login(){
-        $user = new User([
-            'id' => 1,
-            'name' => 'test',
-        ]);
+        $user = User::factory()->make();
+        $user->save();
         $this->be($user);
     }
 
@@ -41,7 +39,10 @@ class BlueTeamTest extends TestCase
         $team = Team::factory()->make();
         $team->balance = 1000;
         $team->save();
-        $user->blueteam = 1;
+        $teamid = substr(Team::all()->where('name','=',$team->name)->pluck('id'),1,1);
+        $user->blueteam = $teamid;
+        $user->leader = 1;
+        $user->update();
     }
     
     private function prefillAssets(){
@@ -69,6 +70,7 @@ class BlueTeamTest extends TestCase
         $this->assertDatabaseHas('teams',[
             'name' => 'test'
         ]);
+        $this->assertEquals(1, Auth::user()->leader);
     }
 
     public function testCreateBlueTeamNameAlreadyExists(){
@@ -110,7 +112,8 @@ class BlueTeamTest extends TestCase
             'result' => $team->name,
         ]);
         $controller->join($request);
-        $this->assertNotEquals(Auth::user()->blueteam, null);
+        $this->assertNotEquals(Auth::user()->blueteam, "");
+        $this->assertEquals(0, Auth::user()->leader);
     }
 
     public function testJoinInvalidBlueTeam(){
@@ -278,6 +281,46 @@ class BlueTeamTest extends TestCase
         ]);
         $this->expectException(Exception::class);
         $response = $controller->sell($request);
+    }
+
+    public function testDisplayTeamMembersNoTeam(){
+        $controller = new BlueTeamController();
+        $response = $controller->home();
+        $this->assertTrue(empty($blueteam));
+        $this->assertTrue(empty($leader));
+        $this->assertTrue(empty($members));
+    }
+
+    public function testDisplayTeamLeaderValid(){
+        $this->assignTeam();
+        $controller = new BlueTeamController();
+        $response = $controller->home();
+        $username = Auth::user()->name;
+        $leader = $response->leader;
+        $this->assertEquals(Team::find(1)->name, $response->blueteam->name);
+        $leadername = $leader->name;
+        $this->assertEquals($username, $leadername);
+        $this->assertTrue($response->members->isEmpty());
+    }
+
+    private function fillTeam(){
+        $teamid = Auth::user()->blueteam;
+        $member1 = User::factory()->make();
+        $member1->blueteam = $teamid;
+        $member2 = User::factory()->make();
+        $member2->blueteam = $teamid;
+        $member1->save();
+        $member2->save();
+    }
+
+    public function testDisplayTeamMembersValid(){
+        $this->assignTeam();
+        $this->fillTeam();
+        $controller = new BlueTeamController();
+        $response = $controller->home();
+        $this->assertEquals(Team::find(1)->name, $response->blueteam->name);
+        $this->assertEquals(Auth::user()->name, $response->leader->name);
+        $this->assertEquals(2,count($response->members));
     }
 
 }
