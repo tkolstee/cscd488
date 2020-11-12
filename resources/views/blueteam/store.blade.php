@@ -3,9 +3,6 @@
 @section('title', 'Blue Team Store')
 
 @section('pagecontent')
-    @if(! empty($error))
-        <p>{{ $error }}</p>
-    @endif
     @if (empty($inventory))
         <form method="POST" action="/blueteam/storeinventory">
             @csrf

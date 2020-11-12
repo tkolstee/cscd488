@@ -31,7 +31,9 @@
         </div>
         <h1>Generic page template</h1>
         <div style="align: center; vertical-align: center; padding: 80px;">
-            
+            @if(! empty($error))
+            <p>{{ $error }}</p>
+            @endif
             @yield('basecontent')
         </div>
     </body>
