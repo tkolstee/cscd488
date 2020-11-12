@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Attack extends Model
+class Prereq extends Model
 {
     use HasFactory;
     /**
@@ -14,6 +14,7 @@ class Attack extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
+        'attack_id',
+        'asset_id',
     ];
 }
