@@ -17,7 +17,7 @@ class RedTeamController extends Controller {
         $redteam = Team::find(Auth::user()->redteam);
         switch ($page) {
             case 'home': return view('redteam.home')->with('redteam',$redteam); break;
-            case 'attacks': return view('redteam.attacks')->with('redteam',$redteam); break;
+            case 'attacks': return $this->attacks(); break;
             case 'learn': return view('redteam.learn')->with('redteam',$redteam); break;
             case 'store': return $this->store();break;
             case 'status': return view('redteam.status')->with('redteam',$redteam); break;
@@ -28,7 +28,43 @@ class RedTeamController extends Controller {
             case 'startattack': return $this->startAttack(); break;
             case 'chooseattack': return $this->chooseAttack($request); break;
             case 'performattack': return $this->performAttack($request); break;
+            case 'attackhandler': return $this->attackHandler($request); break;
         }
+    }
+
+    public function home(){
+        $redteam = Team::find(Auth::user()->redteam);
+        return view('redteam.home')->with('redteam',$redteam);
+    }
+
+    public function attackHandler(request $request){
+        if($request->result == ""){
+            $error = "No-Attack-Selected";
+            return $this->chooseAttack($request)->with(compact('error'));
+        }
+        $redteam = Team::find(Auth::user()->redteam);
+        $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
+        //TEST HANDLER UNTIL WE KNOW MORE ABOUT ATTACKS
+        if($request->result == "success"){
+            $redteam->balance += 1000;
+            $redteam->update();
+            $attMsg = "Success in Attacking";
+        }else{
+            $attMsg = "Failure in Attacking";
+        }
+        return $this->home()->with(compact('attMsg'));
+    }
+
+    public function attacks(){
+        $possibleAttacks = $this->possibleAttacks();
+        return view('redteam.attacks')->with(compact('redteam','possibleAttacks')); 
+    }
+
+    private function possibleAttacks(){
+        $assets = Inventory::all()->where('team_id','=', Auth::user()->redteam);
+        $notPossibleAttackIDs = Prereq::all()->whereNotIn('asset_id',$assets->pluck('id')); //attackIDs you have prereqs for
+        $possibleAttacks = Attack::all()->whereNotIn('id',$notPossibleAttackIDs->pluck('attack_id')); //attacks you have prereqs for
+        return $possibleAttacks;
     }
 
     public function performAttack(request $request){
@@ -38,9 +74,11 @@ class RedTeamController extends Controller {
         }
         $user = Auth::user();
         $redteam = Team::find(Auth::user()->redteam);
-        $asset = Asset::all()->where('name', '=', $request->asset);
-        if($asset->isEmpty()) throw new Exception("AssetDoesNotExist");
-        //Continue Working Here
+        $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
+        $attack = Attack::all()->where('name', '=', $request->result);
+        if($attack->isEmpty()) throw new Exception("AssetDoesNotExist");
+        $attack = $attack->first();
+        return view('redteam.performAttack')->with(compact('redteam','blueteam','attack'));
     }
 
     public function chooseAttack(request $request){
@@ -53,11 +91,9 @@ class RedTeamController extends Controller {
         $blueteam = Team::all()->where('name', '=', $request->result);
         if($blueteam->isEmpty()) throw new Exception("TeamDoesNotExist");
         $blueteam = $blueteam->first();
-        $assets = Inventory::all()->where('team_id','=', Auth::user()->redteam);
         $targetAssets = Inventory::all()->where('team_id','=', $blueteam);
-        $notPossibleAttackIDs = Prereq::all()->whereNotIn('asset_id',$assets->pluck('id')); //attackIDs you have prereqs for
         $notPossibleBlueAttackIDs = Prereq::all()->whereIn('asset_id',$targetAssets->pluck('id')); //attackIDs you can do against blue
-        $possibleAttacks = Attack::all()->whereNotIn('id',$notPossibleAttackIDs->pluck('attack_id')); //attacks you have prereqs for
+        $possibleAttacks = $this->possibleAttacks(); //attacks you have prereqs for
         $uselessPossibleAttacks = $possibleAttacks->whereIn('id', $notPossibleBlueAttackIDs->pluck('id'));
         $possibleAttacks = $possibleAttacks->whereNotIn('id',$notPossibleBlueAttackIDs->pluck('id')); //only attacks you can do against blue
         return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks','uselessPossibleAttacks'));
