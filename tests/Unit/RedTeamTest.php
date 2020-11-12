@@ -29,10 +29,7 @@ class RedTeamTest extends TestCase
     }
 
     public function login(){
-        $user = new User([
-            'id' => 1,
-            'name' => 'test',
-        ]);
+        $user = User::factory()->create();
         $this->be($user);
     }
 
@@ -42,6 +39,7 @@ class RedTeamTest extends TestCase
         $team->balance = 1000;
         $team->save();
         $user->redteam = 1;
+        $user->update();
     }
 
     public function prefillAssets(){
@@ -255,4 +253,18 @@ class RedTeamTest extends TestCase
         $this->expectException(Exception::class);
         $response = $controller->sell($request);
     }
+
+    public function testChooseAttackValidTeam(){
+        $this->assignTeam();
+        $blueteam = Team::factory()->create();
+        $controller = new RedTeamController();
+        $request = Request::create('/chooseattack','POST',[
+            'result' => $blueteam->name
+        ]);
+        $response = $controller->chooseAttack($request);
+        $this->assertEquals(Team::find(Auth::user()->redteam), $response->redteam);
+        $this->assertEquals($blueteam->name, $response->blueteam->name);
+        $this->assertNotNull($response->assets);
+    }
+
 }
