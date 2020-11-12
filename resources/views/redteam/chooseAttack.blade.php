@@ -3,12 +3,11 @@
 @section('title', 'Red Team Home')
 
 @section('pagecontent')
-@if (!$possibleAttacks ?? []->isEmpty())
+@if (!$possibleAttacks->isEmpty())
 <h3>Select a method of attack against {{ $blueteam->name }}:</h3>
 <form method="POST" action="/redteam/performattack">
     @csrf
     @foreach ($possibleAttacks ?? [] as $attack)
-        <?php $asset = Asset::find($inv->asset_id);?>
         <input type="radio" name="result" id="{{ $attack->name }}" value="{{ $attack->name }}">
         <label for="{{ $attack->name }}">{{ $attack->name }}</label>
         <br>
@@ -19,6 +18,7 @@
         {{ $attack->name }}<br>
         @endforeach
     @endif
+    <input type="hidden" name="blueteam" value="{{ $blueteam->name }}">
     <div class="form-group row mb-0">
         <div class="col-md-8 offset-md-4">
             <button type="submit" class="btn btn-primary">

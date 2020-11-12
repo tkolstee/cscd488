@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Asset;
+use App\Models\Attack;
 
 class AssetController extends Controller
 {
@@ -25,6 +26,11 @@ class AssetController extends Controller
             $asset->blue = 0;
             $asset->buyable = 1;
             $asset->save();
+        }
+        if(Attack::all()->isEmpty()){
+            $attack = new Attack();
+            $attack->name = "TestAttackName";
+            $attack->save();
         }
         return view('home');
     }
