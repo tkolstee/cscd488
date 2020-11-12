@@ -37,23 +37,28 @@ class BlueTeamFeatureTest extends TestCase
     public function testUserCanJoinBlueTeam()
     {
         $team = Team::factory()->create();
+        $leaderUser = User::factory()->create([
+            'leader' => 1,
+            'blueteam' => $team->id,
+        ]);
         $user = User::factory()->create();
         $response = $this->actingAs($user)->post('/blueteam/join', [
             'result' => $team->name,
         ]);
         $response->assertViewIs('blueteam.home');
-        $response->assertSee($team->name);
+        $response->assertSee([$team->name, $team->balance, $leaderUser->name, $user->name]);
     }
 
     public function testBlueTeamHomePageDisplaysTeamInfo()
     {
         $team = Team::factory()->create();
-        $user = User::factory()->create([
+        $leaderUser = User::factory()->create([
             'blueteam' => $team->id,
+            'leader' => 1,
         ]);
-        $response = $this->actingAs($user)->get('/blueteam/home');
+        $response = $this->actingAs($leaderUser)->get('/blueteam/home');
         $response->assertViewIs('blueteam.home');
-        $response->assertSee([$team->name, $team->balance]);
+        $response->assertSee([$team->name, $team->balance, $leaderUser->name]);
     }
 
     public function testBlueTeamCanViewAssetsInStore()
