@@ -77,6 +77,7 @@ class RedTeamController extends Controller {
 
     public function buy(request $request){
         $assetNames = $request->input('results');
+        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
         if($assetNames == null){
             $redteam = Team::find(Auth::user()->redteam);
             $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
@@ -96,7 +97,6 @@ class RedTeamController extends Controller {
             throw new Exception("invalid-team-selected");
         }
         if($redteam->balance < $totalCost){
-            $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
             $error = "not-enough-money";
             return view('redteam.store')->with(compact('assets','error','redteam'));
         }
@@ -117,7 +117,7 @@ class RedTeamController extends Controller {
         }
         $redteam->balance -= $totalCost;
         $redteam->update();
-        return view('redteam.home')->with('redteam', $redteam);
+        return view('redteam.store')->with(compact('redteam', 'assets'));
     }
 
     public function store(){
