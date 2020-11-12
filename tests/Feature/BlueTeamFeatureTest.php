@@ -56,7 +56,7 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertSee([$team->name, $team->balance]);
     }
 
-    public function testUserCanViewAssetsInStore()
+    public function testBlueTeamCanViewAssetsInStore()
     {
         $asset = Asset::factory()->create();
         $team = Team::factory()->create();
@@ -68,7 +68,7 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertSee($asset->name);
     }
 
-    public function testUserCanBuyAssets()
+    public function testBlueTeamCanBuyAssets()
     {
         $asset = Asset::factory()->create();
         $team = Team::factory()->create([
@@ -85,7 +85,7 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertSee('Revenue: ' . $expectedBalance);
     }
 
-    public function testUserCannotBuyWithNoMoney()
+    public function testBlueTeamCannotBuyWithNoMoney()
     {
         $asset = Asset::factory()->create();
         $team = Team::factory()->create([
