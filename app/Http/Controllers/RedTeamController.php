@@ -23,7 +23,42 @@ class RedTeamController extends Controller {
             case 'buy': return $this->buy($request); break;
             case 'storeinventory': return $this->storeInventory(); break;
             case 'sell': return $this->sell($request); break;
+            case 'startattack': return $this->startAttack(); break;
+            case 'chooseattack': return $this->chooseAttack($request); break;
+            case 'performattack': return $this->performAttack($request); break;
         }
+    }
+
+    public function performAttack(request $request){
+        if($request->result == ""){
+            $error = "No-Attack-Selected";
+            return $this->chooseAttack($request)->with(compact('error'));
+        }
+        $user = Auth::user();
+        $redteam = Team::find(Auth::user()->redteam);
+        $asset = Asset::all()->where('name', '=', $request->asset);
+        if($asset->isEmpty()) throw new Exception("AssetDoesNotExist");
+        //Continue Working Here
+    }
+
+    public function chooseAttack(request $request){
+        if($request->result == ""){
+            $error = "No-Team-Selected";
+            return $this->startAttack()->with(compact('error'));
+        }
+        $user = Auth::user();
+        $redteam = Team::find(Auth::user()->redteam);
+        $blueteam = Team::all()->where('name', '=', $request->result);
+        if($blueteam->isEmpty()) throw new Exception("TeamDoesNotExist");
+        $blueteam = $blueteam->first();
+        $assets = Inventory::all()->where('team_id','=', Auth::user()->redteam);
+        return view('redteam.chooseAttack')->with(compact('redteam','blueteam','assets'));
+    }
+
+    public function startAttack(){
+        $targets = Team::all()->where('blue','=','1');
+        $redteam = Team::find(Auth::user()->redteam);
+        return view('redteam.startAttack')->with(compact('targets','redteam'));
     }
 
     public function sell(request $request){
