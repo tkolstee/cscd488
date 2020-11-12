@@ -41,7 +41,7 @@ class BlueTeamFeatureTest extends TestCase
         $response = $this->actingAs($user)->post('/blueteam/join', [
             'result' => $team->name,
         ]);
-        $response->assertViewIs('blueteam.join');
+        $response->assertViewIs('blueteam.home');
         $response->assertSee($team->name);
     }
 
@@ -79,11 +79,10 @@ class BlueTeamFeatureTest extends TestCase
         ]);
         $expectedBalance = ($team->balance) - ($asset->purchase_cost);
         $response = $this->actingAs($user)->post('/blueteam/buy', [
-            'result' => [$asset->name],
+            'results' => [$asset->name],
         ]);
-
         $response->assertViewIs('blueteam.store');
-        //$response->assertSee($expectedBalance);
+        $response->assertSee('Revenue: ' . $expectedBalance);
     }
 
     public function testUserCannotBuyWithNoMoney()
@@ -97,9 +96,9 @@ class BlueTeamFeatureTest extends TestCase
         ]);
         $expectedBalance = $team->balance;
         $response = $this->actingAs($user)->post('/blueteam/buy', [
-            'result' => [$asset->name],
+            'results' => [$asset->name],
         ]);
         $response->assertViewIs('blueteam.store');
-        $response->assertSee($expectedBalance);
+        $response->assertSee('Revenue: ' . $expectedBalance);
     }
 }

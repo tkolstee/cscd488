@@ -141,6 +141,7 @@ class BlueTeamController extends Controller {
         if($blueteam->isEmpty()) throw new Exception("TeamDoesNotExist");
         $user->blueteam = substr($blueteam->pluck('id'), 1, 1);
         $user->update();
+        $blueteam = $blueteam->first();
         return view('blueteam.home')->with('blueteam',$blueteam);
     }
 
