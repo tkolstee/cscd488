@@ -19,11 +19,14 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\AssetController::class, 'prefillTest'])->name('home');
+Route::group(['middleware' => ['auth']], function() {
 
-Route::any('/blueteam/{page}', [App\Http\Controllers\BlueTeamController::class, 'page'])->name('blueteam');
+    Route::any('/blueteam/{page}', [App\Http\Controllers\BlueTeamController::class, 'page'])->name('blueteam');
 
-Route::any('/redteam/{page}', [App\Http\Controllers\RedTeamController::class, 'page'])->name('redteam');
+    Route::any('/redteam/{page}', [App\Http\Controllers\RedTeamController::class, 'page'])->name('redteam');
+
+    Route::get('/home', [App\Http\Controllers\AssetController::class, 'prefillTest'])->name('home');
+});
 
 //TestFill Assets
 Route::any('/asset/prefillTest', [App\Http\Controllers\AssetController::class, 'prefillTest'])->name('prefillAssets');
