@@ -264,7 +264,8 @@ class RedTeamTest extends TestCase
         $response = $controller->chooseAttack($request);
         $this->assertEquals(Team::find(Auth::user()->redteam), $response->redteam);
         $this->assertEquals($blueteam->name, $response->blueteam->name);
-        $this->assertNotNull($response->assets);
+        $this->assertNotNull($response->possibleAttacks);
+        $this->assertNotNull($response->uselessPossibleAttacks);
     }
 
 }
