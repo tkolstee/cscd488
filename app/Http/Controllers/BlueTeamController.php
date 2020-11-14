@@ -45,12 +45,15 @@ class BlueTeamController extends Controller {
     public function sell(request $request){
         //change this to proportion sell rate
         $sellRate = 1;
-        $assetNames = $request->input('results');
+        $blueteam = Team::find(Auth::user()->blueteam);
         $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
+        $assetNames = $request->input('results');
         if($assetNames == null){
-            $blueteam = Team::find(Auth::user()->blueteam);
             $error = "no-asset-selected";
             return view('blueteam.store')->with(compact('assets','error', 'blueteam'));
+        }
+        else if($blueteam == null){
+            throw new TeamNotFoundException();
         }
         $totalCost = 0;
         foreach($assetNames as $assetName){
@@ -60,12 +63,8 @@ class BlueTeamController extends Controller {
             }
             $totalCost += ($asset->purchase_cost * $sellRate);
         }
-        $blueteam = Team::find(Auth::user()->blueteam);
-        if($blueteam == null){
-            throw new TeamNotFoundException();
-        }
         foreach($assetNames as $asset){
-            //add asset to inventory and charge team
+            //remove asset to inventory and pay team
             $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
             $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $assetId)->first();
             if($currAsset == null){
@@ -94,8 +93,11 @@ class BlueTeamController extends Controller {
     public function buy(request $request){
         $assetNames = $request->input('results');
         $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
+        $blueteam = Team::find(Auth::user()->blueteam);
+        if($blueteam == null){
+            throw new TeamNotFoundException();
+        }
         if($assetNames == null){
-            $blueteam = Team::find(Auth::user()->blueteam);
             $error = "no-asset-selected";
             return view('blueteam.store')->with(compact('assets','error', 'blueteam'));
         }
@@ -107,11 +109,6 @@ class BlueTeamController extends Controller {
             }
             $totalCost += $asset->purchase_cost;
         }
-        $blueteam = Team::find(Auth::user()->blueteam);
-        if($blueteam == null){
-            throw new TeamNotFoundException();
-        }
-        //$blueteam->balance = 1000; //DELETE THIS IS FOR TESTING PURPOSES
         if($blueteam->balance < $totalCost){
             $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
             $error = "not-enough-money";
@@ -122,11 +119,11 @@ class BlueTeamController extends Controller {
             $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
             $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $assetId)->first();
             if($currAsset == null){
-                $currAsset = new Inventory();
-                $currAsset->team_id = Auth::user()->blueteam;
-                $currAsset->asset_id = $assetId;
-                $currAsset->quantity = 1;
-                $currAsset->save();
+                Inventory::factory()->create([
+                    'team_id' => $blueteam,
+                    'asset_id' => $assetId,
+                    'quantity' => 1,
+                ]);
             }else{
                 $currAsset->quantity += 1;
                 $currAsset->update();
