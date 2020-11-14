@@ -5,16 +5,13 @@ namespace Tests\Unit;
 //use PHPUnit\Framework\TestCase;
 use Tests\TestCase;
 use App\Http\Controllers\RedTeamController;
-use App\Http\Controllers\AssetController;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\Asset;
 use App\Models\Inventory;
-use View;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
@@ -27,10 +24,6 @@ class RedTeamTest extends TestCase
 
     public function setUp(): void{
         parent::setUp();
-        $this->login();
-    }
-
-    public function login(){
         $user = User::factory()->create();
         $this->be($user);
     }
@@ -79,7 +72,7 @@ class RedTeamTest extends TestCase
             'name' => $team->name,
         ]);
         $this->expectException(ValidationException::class);
-        $response = $controller->create($request);
+        $controller->create($request);
     }
 
     public function testDeleteValidRedTeam(){
@@ -89,7 +82,7 @@ class RedTeamTest extends TestCase
         $request = Request::create('/delete', 'POST', [
             'name' => $team->name,
         ]);
-        $response = $controller->delete($request);
+        $controller->delete($request);
         $this->assertTrue(Team::all()->where('name', '=', $team->name)->isEmpty());
     }
 
@@ -99,7 +92,7 @@ class RedTeamTest extends TestCase
         ]);
         $controller = new RedTeamController();
         $this->expectException(TeamNotFoundException::class);
-        $response = $controller->delete($request);
+        $controller->delete($request);
     }
 
     public function testRedBuyValidAsset(){
@@ -142,7 +135,7 @@ class RedTeamTest extends TestCase
             'results' => ['InvalidName']
         ]);
         $this->expectException(AssetNotFoundException::class);
-        $response = $controller->buy($request);
+        $controller->buy($request);
     }
 
     public function testInvalidRedTeamCannotBuy(){
@@ -152,7 +145,7 @@ class RedTeamTest extends TestCase
             'results' => [$assetName]
         ]);
         $this->expectException(TeamNotFoundException::class);
-        $response = $controller->buy($request);
+        $controller->buy($request);
     }
 
     public function testRedTeamBuyNotEnoughMoney(){
@@ -219,7 +212,7 @@ class RedTeamTest extends TestCase
             'results' => [$assetName]
         ]);
         $this->expectException(InventoryNotFoundException::class);
-        $response = $controller->sell($request);
+        $controller->sell($request);
     }
 
     public function testSellNoItem(){
@@ -243,7 +236,7 @@ class RedTeamTest extends TestCase
             'results' => ['invalidName']
         ]);
         $this->expectException(AssetNotFoundException::class);
-        $response = $controller->sell($request);
+        $controller->sell($request);
     }
 
     public function testSellInvalidTeam(){
@@ -253,7 +246,7 @@ class RedTeamTest extends TestCase
             'results' => [$assetName]
         ]);
         $this->expectException(TeamNotFoundException::class);
-        $response = $controller->sell($request);
+        $controller->sell($request);
     }
 
     public function testChooseAttackValidTeam(){

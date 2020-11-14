@@ -5,16 +5,13 @@ namespace Tests\Unit;
 //use PHPUnit\Framework\TestCase;
 use Tests\TestCase;
 use App\Http\Controllers\BlueTeamController;
-use App\Http\Controllers\AssetController;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\Inventory;
 use App\Models\Asset;
-use View;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
@@ -27,12 +24,7 @@ class BlueTeamTest extends TestCase
 
     public function setUp(): void{
         parent::setUp();
-        $this->login();
-    }
-
-    private function login(){
-        $user = User::factory()->make();
-        $user->save();
+        $user = User::factory()->create();
         $this->be($user);
     }
 
@@ -83,7 +75,7 @@ class BlueTeamTest extends TestCase
             'name' => $team->name,
         ]);
         $this->expectException(ValidationException::class);
-        $response = $controller->create($request);
+        $controller->create($request);
     }
 
     public function testDeleteValidBlueTeam(){
@@ -93,7 +85,7 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/delete', 'POST', [
             'name' => $team->name,
         ]);
-        $response = $controller->delete($request);
+        $controller->delete($request);
         $this->assertTrue(Team::all()->where('name', '=', $team->name)->isEmpty());
     }
 
@@ -103,7 +95,7 @@ class BlueTeamTest extends TestCase
         ]);
         $controller = new BlueTeamController();
         $this->expectException(TeamNotFoundException::class);
-        $response = $controller->delete($request);
+        $controller->delete($request);
     }
 
     public function testJoinValidBlueTeam(){
@@ -124,7 +116,7 @@ class BlueTeamTest extends TestCase
             'result' => 'invalid name',
         ]);
         $this->expectException(TeamNotFoundException::class);
-        $response = $controller->join($request);
+        $controller->join($request);
     }
 
     public function testBlueBuyValidAsset(){
@@ -170,7 +162,7 @@ class BlueTeamTest extends TestCase
             'results' => ['InvalidName']
         ]);
         $this->expectException(AssetNotFoundException::class);
-        $response = $controller->buy($request);
+        $controller->buy($request);
     }
 
     public function testInvalidBlueTeamCannotBuy(){
@@ -180,7 +172,7 @@ class BlueTeamTest extends TestCase
             'results' => [$assetName]
         ]);
         $this->expectException(TeamNotFoundException::class);
-        $response = $controller->buy($request);
+        $controller->buy($request);
     }
 
     public function testBlueTeamBuyNotEnoughMoney(){
@@ -248,7 +240,7 @@ class BlueTeamTest extends TestCase
             'results' => [$assetName]
         ]);
         $this->expectException(InventoryNotFoundException::class);
-        $response = $controller->sell($request);
+        $controller->sell($request);
     }
 
     public function testSellNoItem(){
@@ -264,7 +256,7 @@ class BlueTeamTest extends TestCase
     }
 
     public function testSellInvalidName(){
-        $assetName = $this->prefillAssets();
+        $this->prefillAssets();
         $this->assignTeam();
         $this->buyAssets();
         $controller = new BlueTeamController();
@@ -272,7 +264,7 @@ class BlueTeamTest extends TestCase
             'results' => ['invalidName']
         ]);
         $this->expectException(AssetNotFoundException::class);
-        $response = $controller->sell($request);
+        $controller->sell($request);
     }
 
     public function testSellInvalidTeam(){
@@ -282,7 +274,7 @@ class BlueTeamTest extends TestCase
             'results' => [$assetName]
         ]);
         $this->expectException(TeamNotFoundException::class);
-        $response = $controller->sell($request);
+        $controller->sell($request);
     }
 
     public function testDisplayTeamMembersNoTeam(){
