@@ -9,7 +9,9 @@ use App\Models\Prereq;
 use App\Models\Attack;
 use Auth;
 use View;
-use Exception;
+use App\Exceptions\AssetNotFoundException;
+use App\Exceptions\TeamNotFoundException;
+use App\Exceptions\InventoryNotFoundException;
 
 class RedTeamController extends Controller {
 
@@ -76,7 +78,7 @@ class RedTeamController extends Controller {
         $redteam = Team::find(Auth::user()->redteam);
         $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
         $attack = Attack::all()->where('name', '=', $request->result);
-        if($attack->isEmpty()) throw new Exception("AssetDoesNotExist");
+        if($attack->isEmpty()) throw new AssetNotFoundException();
         $attack = $attack->first();
         return view('redteam.performAttack')->with(compact('redteam','blueteam','attack'));
     }
@@ -89,7 +91,7 @@ class RedTeamController extends Controller {
         $user = Auth::user();
         $redteam = Team::find(Auth::user()->redteam);
         $blueteam = Team::all()->where('name', '=', $request->result);
-        if($blueteam->isEmpty()) throw new Exception("TeamDoesNotExist");
+        if($blueteam->isEmpty()) throw new TeamNotFoundException();
         $blueteam = $blueteam->first();
         $targetAssets = Inventory::all()->where('team_id','=', $blueteam);
         $notPossibleBlueAttackIDs = Prereq::all()->whereIn('asset_id',$targetAssets->pluck('id')); //attackIDs you can do against blue
@@ -119,20 +121,20 @@ class RedTeamController extends Controller {
         foreach($assetNames as $assetName){
             $asset = Asset::all()->where('name','=',$assetName)->first();
             if($asset == null){
-                throw new Exception("invalid-asset-name");
+                throw new AssetNotFoundException();
             }
             $totalCost += ($asset->purchase_cost * $sellRate);
         }
         $redteam = Team::find(Auth::user()->redteam);
         if($redteam == null){
-            throw new Exception("invalid-team-selected");
+            throw new TeamNotFoundException();
         }
         foreach($assetNames as $asset){
             //add asset to inventory and charge team
             $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
             $currAsset = Inventory::all()->where('team_id','=',Auth::user()->redteam)->where('asset_id','=', $assetId)->first();
             if($currAsset == null){
-                throw new Exception("do-not-own-asset");
+                throw new InventoryNotFoundException();
             }else{
                 $currAsset->quantity -= 1;
                 if($currAsset->quantity == 0){
@@ -167,13 +169,13 @@ class RedTeamController extends Controller {
         foreach($assetNames as $assetName){
             $asset = Asset::all()->where('name','=',$assetName)->first();
             if($asset == null){
-                throw new Exception("invalid-asset-name");
+                throw new AssetNotFoundException();
             }
             $totalCost += $asset->purchase_cost;
         }
         $redteam = Team::find(Auth::user()->redteam);
         if($redteam == null){
-            throw new Exception("invalid-team-selected");
+            throw new TeamNotFoundException();
         }
         if($redteam->balance < $totalCost){
             $error = "not-enough-money";
@@ -226,7 +228,7 @@ class RedTeamController extends Controller {
     public function delete(request $request){
         $team = Team::all()->where('name', '=', $request->name);
         if($team->isEmpty()) {
-            throw new Exception("TeamDoesNotExist");
+            throw new TeamNotFoundException();
         }
         $id = substr($team->pluck('id'), 1, 1);
         Team::destroy($id);

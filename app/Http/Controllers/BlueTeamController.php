@@ -8,7 +8,9 @@ use App\Models\Inventory;
 use App\Models\User;
 use View;
 use Auth;
-use Exception;
+use App\Exceptions\AssetNotFoundException;
+use App\Exceptions\TeamNotFoundException;
+use App\Exceptions\InventoryNotFoundException;
 
 
 class BlueTeamController extends Controller {
@@ -54,20 +56,20 @@ class BlueTeamController extends Controller {
         foreach($assetNames as $assetName){
             $asset = Asset::all()->where('name','=',$assetName)->first();
             if($asset == null){
-                throw new Exception("invalid-asset-name");
+                throw new AssetNotFoundException();
             }
             $totalCost += ($asset->purchase_cost * $sellRate);
         }
         $blueteam = Team::find(Auth::user()->blueteam);
         if($blueteam == null){
-            throw new Exception("invalid-team-selected");
+            throw new TeamNotFoundException();
         }
         foreach($assetNames as $asset){
             //add asset to inventory and charge team
             $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
             $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $assetId)->first();
             if($currAsset == null){
-                throw new Exception("do-not-own-asset");
+                throw new InventoryNotFoundException();
             }else{
                 $currAsset->quantity -= 1;
                 if($currAsset->quantity == 0){
@@ -101,13 +103,13 @@ class BlueTeamController extends Controller {
         foreach($assetNames as $assetName){
             $asset = Asset::all()->where('name','=',$assetName)->first();
             if($asset == null){
-                throw new Exception("invalid-asset-name");
+                throw new AssetNotFoundException();
             }
             $totalCost += $asset->purchase_cost;
         }
         $blueteam = Team::find(Auth::user()->blueteam);
         if($blueteam == null){
-            throw new Exception("invalid-team-selected");
+            throw new TeamNotFoundException();
         }
         //$blueteam->balance = 1000; //DELETE THIS IS FOR TESTING PURPOSES
         if($blueteam->balance < $totalCost){
@@ -148,7 +150,7 @@ class BlueTeamController extends Controller {
         }
         $user = Auth::user();
         $blueteam = Team::all()->where('name', '=', $request->result);
-        if($blueteam->isEmpty()) throw new Exception("TeamDoesNotExist");
+        if($blueteam->isEmpty()) throw new TeamNotFoundException();
         $user->blueteam = substr($blueteam->pluck('id'), 1, 1);
         $user->update();
         return $this->home();
@@ -175,7 +177,7 @@ class BlueTeamController extends Controller {
     public function delete(request $request){
         $team = Team::all()->where('name', '=', $request->name);
         if($team->isEmpty()) {
-            throw new Exception("TeamDoesNotExist");
+            throw new TeamNotFoundException();
         }
         $id = substr($team->pluck('id'), 1, 1);
         Team::destroy($id);

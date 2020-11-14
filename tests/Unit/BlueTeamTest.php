@@ -16,7 +16,9 @@ use App\Models\Inventory;
 use App\Models\Asset;
 use View;
 use Auth;
-use Exception;
+use App\Exceptions\AssetNotFoundException;
+use App\Exceptions\TeamNotFoundException;
+use App\Exceptions\InventoryNotFoundException;
 
 
 class BlueTeamTest extends TestCase
@@ -100,7 +102,7 @@ class BlueTeamTest extends TestCase
             'name' => 'test',
         ]);
         $controller = new BlueTeamController();
-        $this->expectException(Exception::class);
+        $this->expectException(TeamNotFoundException::class);
         $response = $controller->delete($request);
     }
 
@@ -121,7 +123,7 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/join', 'POST', [
             'result' => 'invalid name',
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(TeamNotFoundException::class);
         $response = $controller->join($request);
     }
 
@@ -167,7 +169,7 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/buy','POST', [
             'results' => ['InvalidName']
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(AssetNotFoundException::class);
         $response = $controller->buy($request);
     }
 
@@ -177,7 +179,7 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/buy','POST', [
             'results' => [$assetName]
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(TeamNotFoundException::class);
         $response = $controller->buy($request);
     }
 
@@ -245,7 +247,7 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => [$assetName]
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(InventoryNotFoundException::class);
         $response = $controller->sell($request);
     }
 
@@ -269,7 +271,7 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => ['invalidName']
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(AssetNotFoundException::class);
         $response = $controller->sell($request);
     }
 
@@ -279,7 +281,7 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => [$assetName]
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(TeamNotFoundException::class);
         $response = $controller->sell($request);
     }
 

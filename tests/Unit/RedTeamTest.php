@@ -16,7 +16,9 @@ use App\Models\Asset;
 use App\Models\Inventory;
 use View;
 use Auth;
-use Exception;
+use App\Exceptions\AssetNotFoundException;
+use App\Exceptions\TeamNotFoundException;
+use App\Exceptions\InventoryNotFoundException;
 
 
 class RedTeamTest extends TestCase
@@ -96,7 +98,7 @@ class RedTeamTest extends TestCase
             'name' => 'test',
         ]);
         $controller = new RedTeamController();
-        $this->expectException(Exception::class);
+        $this->expectException(TeamNotFoundException::class);
         $response = $controller->delete($request);
     }
 
@@ -139,7 +141,7 @@ class RedTeamTest extends TestCase
         $request = Request::create('/buy','POST', [
             'results' => ['InvalidName']
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(AssetNotFoundException::class);
         $response = $controller->buy($request);
     }
 
@@ -149,7 +151,7 @@ class RedTeamTest extends TestCase
         $request = Request::create('/buy','POST', [
             'results' => [$assetName]
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(TeamNotFoundException::class);
         $response = $controller->buy($request);
     }
 
@@ -216,7 +218,7 @@ class RedTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => [$assetName]
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(InventoryNotFoundException::class);
         $response = $controller->sell($request);
     }
 
@@ -240,7 +242,7 @@ class RedTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => ['invalidName']
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(AssetNotFoundException::class);
         $response = $controller->sell($request);
     }
 
@@ -250,7 +252,7 @@ class RedTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => [$assetName]
         ]);
-        $this->expectException(Exception::class);
+        $this->expectException(TeamNotFoundException::class);
         $response = $controller->sell($request);
     }
 
