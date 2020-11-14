@@ -11,7 +11,7 @@ class LoginTest extends TestCase
 {
     use DatabaseMigrations;
     protected $user;
-    
+
     public function testUserCanViewLoginPage()
     {
         $response = $this->get('/login');
@@ -33,7 +33,7 @@ class LoginTest extends TestCase
         ]);
 
         $response = $this->post('/login', [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => $password,
         ]);
 
@@ -48,7 +48,7 @@ class LoginTest extends TestCase
         ]);
 
         $this->post('/login', [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => 'wrongPass',
         ]);
         $this->assertGuest();
@@ -61,7 +61,7 @@ class LoginTest extends TestCase
         ]);
 
         $this->post('/login', [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => $password,
         ]);
         $response = $this->post('/logout');
