@@ -31,6 +31,7 @@ class RedTeamController extends Controller {
             case 'chooseattack': return $this->chooseAttack($request); break;
             case 'performattack': return $this->performAttack($request); break;
             case 'attackhandler': return $this->attackHandler($request); break;
+            default: return $this->home(); break;
         }
     }
 

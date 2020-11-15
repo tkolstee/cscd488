@@ -29,6 +29,7 @@ class BlueTeamController extends Controller {
             case 'buy': return $this->buy($request); break;
             case 'storeinventory': return $this->storeInventory(); break;
             case 'sell': return $this->sell($request); break;
+            default: return $this->home(); break;
         }
 
     }
