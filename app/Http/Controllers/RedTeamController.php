@@ -129,16 +129,15 @@ class RedTeamController extends Controller {
             $currInventory = Inventory::all()->where('team_id','=',$redteam->id)->where('asset_id','=', $asset->id)->first();
             if($currInventory == null){
                 throw new InventoryNotFoundException();
-            }else{
-                $currInventory->quantity -= 1;
-                if($currInventory->quantity == 0){
-                    Inventory::destroy(substr($currInventory->pluck('id'),1,1));
-                }else{
-                    $currInventory->update();
-                }
-                $redteam->balance += ($asset->purchase_cost)*$sellRate;
-                $redteam->update();
             }
+            $currInventory->quantity -= 1;
+            if($currInventory->quantity == 0){
+                Inventory::destroy(substr($currInventory->pluck('id'),1,1));
+            }else{
+                $currInventory->update();
+            }
+            $redteam->balance += ($asset->purchase_cost)*$sellRate;
+            $redteam->update();
         }
         return view('redteam.store')->with(compact('redteam', 'assets'));
     }//end sell

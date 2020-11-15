@@ -64,16 +64,15 @@ class BlueTeamController extends Controller {
             $currInventory = Inventory::all()->where('team_id','=',$blueteam->id)->where('asset_id','=', $asset->id)->first();
             if($currInventory == null){
                 throw new InventoryNotFoundException();
-            }else{
-                $currInventory->quantity -= 1;
-                if($currInventory->quantity == 0){
-                    Inventory::destroy($currInventory->id);
-                }else{
-                    $currInventory->update();
-                }
-                $blueteam->balance += ($asset->purchase_cost)*$sellRate;
-                $blueteam->update();
             }
+            $currInventory->quantity -= 1;
+            if($currInventory->quantity == 0){
+                Inventory::destroy($currInventory->id);
+            }else{
+                $currInventory->update();
+            }
+            $blueteam->balance += ($asset->purchase_cost)*$sellRate;
+            $blueteam->update();
         }
         return view('blueteam.store')->with(compact('blueteam', 'assets'));
     }//end sell
