@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -37,4 +38,36 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    /**
+     * The the login username to be used by the controller.
+     * OVERRIDES laravel framework in vendor/laravel/ui/auth-backend
+     *
+     * @return string
+     *
+     */
+    public function username() { return 'username'; }
+
+     /**
+     * Validate the user login request.
+     * OVERRIDES laravel framework in vendor/laravel/ui/auth-backend
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     *
+     */
+    protected function validateLogin(Request $request) {
+        $messages = [
+            'username.required' => 'Username cannot be empty',
+            'username.exists'   => 'Username is already registered',
+            'password.required' => 'Password cannot be empty',
+        ];
+        $request->validate([
+            'username' => 'required|string|exists:users',
+            'password' => 'required|string',
+        ]);
+    }
+
 }
