@@ -29,27 +29,13 @@ class RedTeamTest extends TestCase
     }
 
     public function assignTeam(){
+        $team = Team::factory()->red()->create([
+            'balance' => 1000,
+        ]);
         $user = Auth::user();
-        $team = Team::factory()->red()->make();
-        $team->balance = 1000;
-        $team->save();
-        $user->redteam = 1;
+        $user->redteam = $team->id;
         $user->update();
-    }
-
-    public function prefillAssets(){
-        $asset = Asset::factory()->red()->make();
-        $asset->save();
-        return $asset->name;
-    }
-
-    private function buyAssets(){
-        $inventory = Inventory::factory()->make();
-        $inventory->save();
-    }
-    private function buyManyAssets(){
-        $inventory = Inventory::factory()->many()->make();
-        $inventory->save();
+        return $team;
     }
     
     public function testCreateValidRedTeam(){
@@ -96,39 +82,41 @@ class RedTeamTest extends TestCase
     }
 
     public function testRedBuyValidAsset(){
-        $assetName = $this->prefillAssets();
+        $asset = Asset::factory()->create();
         $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => [$assetName]
+            'results' => [$asset->name]
         ]);
         $redteam = Team::find(Auth::user()->redteam);
-        $balanceBefore = $redteam->balance;
-        $response = $controller->buy($request);
-        $this->assertEquals($balanceBefore-200, $response->redteam->balance);
-    }
-
-    public function testBuyAlreadyOwned(){
-        $assetName = $this->prefillAssets();
-        $this->assignTeam();
-        $this->buyAssets();
-        $controller = new RedTeamController();
-        $request = Request::create('/buy','POST', [
-            'results' => [$assetName]
-        ]);
-        $redteam = Team::find(Auth::user()->redteam);
-        $quantBefore = Inventory::all()->where('team_id','=',Auth::user()->redteam)->first()->quantity;
         $balanceBefore = $redteam->balance;
         $response = $controller->buy($request);
         $inventory = Inventory::find(1);
-        $this->assertEquals($balanceBefore-200, $response->redteam->balance);
-        $this->assertEquals(1, $inventory->team_id);
-        $this->assertEquals(substr(Asset::where('name','=',$assetName)->pluck('id'),1,1), $inventory->asset_id);
+        $this->assertEquals($balanceBefore-($asset->purchase_cost), $response->redteam->balance);
+        $this->assertEquals(1, $inventory->quantity);
+    }
+
+    public function testBuyAlreadyOwned(){
+        $redteam = $this->assignTeam();
+        $asset = Asset::factory()->create();
+        $inventory = Inventory::factory()->create([
+            'asset_id' => $asset->id,
+            'team_id' => $redteam->id,
+            'quantity' => 1
+        ]);
+        $controller = new RedTeamController();
+        $request = Request::create('/buy','POST', [
+            'results' => [$asset->name]
+        ]);
+        $quantBefore = Inventory::all()->where('team_id','=',$redteam->id)->first()->quantity;
+        $balanceBefore = $redteam->balance;
+        $response = $controller->buy($request);
+        $inventory = Inventory::find($inventory->id);
+        $this->assertEquals($balanceBefore-$asset->purchase_cost, $response->redteam->balance);
         $this->assertEquals($quantBefore + 1, $inventory->quantity);
     }
 
     public function testBuyInvalidAssetName(){
-        $assetName = $this->prefillAssets();
         $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
@@ -139,23 +127,22 @@ class RedTeamTest extends TestCase
     }
 
     public function testInvalidRedTeamCannotBuy(){
-        $assetName = $this->prefillAssets();
+        $asset = Asset::factory()->create();
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => [$assetName]
+            'results' => [$asset->name]
         ]);
         $this->expectException(TeamNotFoundException::class);
         $controller->buy($request);
     }
 
     public function testRedTeamBuyNotEnoughMoney(){
-        $assetName = $this->prefillAssets();
-        $this->assignTeam();
+        $asset = Asset::factory()->create();
+        $redteam = $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => [$assetName]
+            'results' => [$asset->name]
         ]);
-        $redteam = Team::find(Auth::user()->redteam);
         $redteam->balance = 0;
         $redteam->update();
         $response = $controller->buy($request);
@@ -163,7 +150,6 @@ class RedTeamTest extends TestCase
     }
 
     public function testRedTeamBuyNoAssetSelected(){
-        $assetName = $this->prefillAssets();
         $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
@@ -172,53 +158,59 @@ class RedTeamTest extends TestCase
         $response = $controller->buy($request);
         $this->assertEquals('no-asset-selected', $response->error);
     }
+
     public function testSellItemOwnedOneValid(){
-        $assetName = $this->prefillAssets();
-        $this->assignTeam();
-        $this->buyAssets();
+        $asset = Asset::factory()->create();
+        $redteam = $this->assignTeam();
+        $inventory = Inventory::factory()->create([
+            'asset_id' => $asset->id,
+            'team_id' => $redteam->id,
+            'quantity' => 1,
+        ]);
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$assetName]
+            'results' => [$asset->name]
         ]);
-        $balBefore = Team::find(Auth::user()->redteam)->balance;
-        $assetPrice = Asset::find(1)->purchase_cost;
+        $balBefore = $redteam->balance;
         $response = $controller->sell($request);
-        $inventory = Inventory::all()->where('team_id','=',Auth::user()->redteam);
-        $this->assertEquals($balBefore+$assetPrice, $response->redteam->balance);
-        $this->assertTrue($inventory->isEmpty());
+        $inventory = Inventory::find($inventory->id);
+        $this->assertEquals($balBefore+$asset->purchase_cost, $response->redteam->balance);
+        $this->assertTrue($inventory == null);
     }
+
     public function testSellItemOwnedManyValid(){
-        $assetName = $this->prefillAssets();
-        $this->assignTeam();
-        $this->buyManyAssets();
+        $asset = Asset::factory()->create();
+        $redteam = $this->assignTeam();
+        $inventory = Inventory::factory()->create([
+            'asset_id' => $asset->id,
+            'team_id' => $redteam->id,
+            'quantity' => 5,
+        ]);
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$assetName]
+            'results' => [$asset->name]
         ]);
-        $balBefore = Team::find(Auth::user()->redteam)->balance;
-        $assetPrice = Asset::find(1)->purchase_cost;
-        $quantBefore = Inventory::all()->where('team_id','=',Auth::user()->redteam)->first()->quantity;
+        $balBefore = $redteam->balance;
+        $quantBefore = $inventory->quantity;
         $response = $controller->sell($request);
-        $inventory = Inventory::all()->where('team_id','=',Auth::user()->redteam)->first();
-        $this->assertEquals($balBefore+$assetPrice, $response->redteam->balance);
+        $inventory = Inventory::find($inventory->id);
+        $this->assertEquals($balBefore+$asset->purchase_cost, $response->redteam->balance);
         $this->assertEquals($quantBefore - 1, $inventory->quantity);
     }
 
     public function testSellItemNotOwned(){
-        $assetName = $this->prefillAssets();
+        $asset = Asset::factory()->red()->create();
         $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$assetName]
+            'results' => [$asset->name]
         ]);
         $this->expectException(InventoryNotFoundException::class);
         $controller->sell($request);
     }
 
     public function testSellNoItem(){
-        $assetName = $this->prefillAssets();
         $this->assignTeam();
-        $this->buyAssets();
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
             'results' => []
@@ -228,9 +220,7 @@ class RedTeamTest extends TestCase
     }
 
     public function testSellInvalidName(){
-        $assetName = $this->prefillAssets();
         $this->assignTeam();
-        $this->buyAssets();
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
             'results' => ['invalidName']
@@ -240,24 +230,24 @@ class RedTeamTest extends TestCase
     }
 
     public function testSellInvalidTeam(){
-        $assetName = $this->prefillAssets();
+        $asset = Asset::factory()->red()->create();
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$assetName]
+            'results' => [$asset->name]
         ]);
         $this->expectException(TeamNotFoundException::class);
         $controller->sell($request);
     }
 
     public function testChooseAttackValidTeam(){
-        $this->assignTeam();
+        $redteam = $this->assignTeam();
         $blueteam = Team::factory()->create();
         $controller = new RedTeamController();
         $request = Request::create('/chooseattack','POST',[
             'result' => $blueteam->name
         ]);
         $response = $controller->chooseAttack($request);
-        $this->assertEquals(Team::find(Auth::user()->redteam), $response->redteam);
+        $this->assertEquals($redteam->name, $response->redteam->name);
         $this->assertEquals($blueteam->name, $response->blueteam->name);
         $this->assertNotNull($response->possibleAttacks);
         $this->assertNotNull($response->uselessPossibleAttacks);
