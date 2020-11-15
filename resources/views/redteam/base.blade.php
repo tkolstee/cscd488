@@ -10,7 +10,8 @@
             @if ($redteam->name  ?? '' != "")
                 <td width="50%">
                 <strong>{{  $redteam->name ?? '' }} </strong>
-                    Cash: {{ $redteam->balance ?? '' }}    Reputation: {{ $redteam->reputation ?? '' }}
+                    <br>Cash: {{ $redteam->balance ?? '' }}    Reputation: {{ $redteam->reputation ?? '' }}
+                    <br>Turn: {{ App\Models\Setting::get('turn') }}
                 </td>
             @endif
         </tr></table>

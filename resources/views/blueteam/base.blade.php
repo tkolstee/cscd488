@@ -11,7 +11,8 @@
             @if ($blueteam->name  ?? '' != "")
                 <td width="50%">
                 <strong>{{  $blueteam->name ?? '' }} </strong>
-                    Revenue: {{ $blueteam->balance ?? '' }}    Reputation: {{ $blueteam->reputation ?? '' }}
+                    <br>Revenue: {{ $blueteam->balance ?? '' }}    Reputation: {{ $blueteam->reputation ?? '' }}
+                    <br>Turn: {{ App\Models\Game::turnNumber() }}
                 </td>
             @endif
         </tr></table>
