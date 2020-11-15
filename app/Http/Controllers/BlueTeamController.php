@@ -37,7 +37,7 @@ class BlueTeamController extends Controller {
     public function home(){
         $blueid = Auth::user()->blueteam;
         $blueteam = Team::find($blueid);
-        if($blueid == "") return view('blueteam.home')->with(compact('blueteam'));
+        if($blueid == ""){ return view('blueteam.home')->with(compact('blueteam'));}
         $leader = User::all()->where('blueteam','=',$blueid)->where('leader','=',1)->first();
         $members = User::all()->where('blueteam','=',$blueid)->where('leader','=',0);
         return  view('blueteam.home')->with(compact('blueteam','leader','members'));

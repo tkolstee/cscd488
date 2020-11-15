@@ -10,7 +10,6 @@ use Tests\TestCase;
 class LoginTest extends TestCase
 {
     use DatabaseMigrations;
-    protected $user;
     
     public function testUserCanViewLoginPage()
     {

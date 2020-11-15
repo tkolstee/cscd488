@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-//use PHPUnit\Framework\TestCase;
 use Tests\TestCase;
 use App\Http\Controllers\RedTeamController;
 use Illuminate\Http\Request;

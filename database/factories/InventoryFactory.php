@@ -33,7 +33,7 @@ class InventoryFactory extends Factory
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
     public function many(){
-        return $this->state(function (array $attributes){
+        return $this->state(function (){
             return [
                 'quantity' => 5,
             ];

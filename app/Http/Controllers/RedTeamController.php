@@ -80,7 +80,7 @@ class RedTeamController extends Controller {
         $redteam = Team::find(Auth::user()->redteam);
         $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
         $attack = Attack::all()->where('name', '=', $request->result);
-        if($attack->isEmpty()) throw new AssetNotFoundException();
+        if($attack->isEmpty()){ throw new AssetNotFoundException();}
         $attack = $attack->first();
         return view('redteam.performAttack')->with(compact('redteam','blueteam','attack'));
     }
@@ -93,7 +93,7 @@ class RedTeamController extends Controller {
         $user = Auth::user();
         $redteam = Team::find(Auth::user()->redteam);
         $blueteam = Team::all()->where('name', '=', $request->result);
-        if($blueteam->isEmpty()) throw new TeamNotFoundException();
+        if($blueteam->isEmpty()){ throw new TeamNotFoundException();}
         $blueteam = $blueteam->first();
         $targetAssets = Inventory::all()->where('team_id','=', $blueteam);
         $notPossibleBlueAttackIDs = Prereq::all()->whereIn('asset_id',$targetAssets->pluck('id')); //attackIDs you can do against blue
@@ -202,7 +202,7 @@ class RedTeamController extends Controller {
     }
 
     public function create(request $request){
-        if($request->name == "") return view('redteam.create'); 
+        if($request->name == ""){ return view('redteam.create');} 
         $request->validate([
             'name' => ['required', 'unique:teams', 'string', 'max:255'],
         ]);
