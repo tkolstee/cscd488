@@ -22,6 +22,8 @@ class RedTeamFeatureTest extends TestCase
         $response->assertStatus(200);
         $response = $this->actingAs($user)->get('/redteam/store');
         $response->assertStatus(200);
+        $response = $this->actingAs($user)->get('/redteam/attacks');
+        $response->assertStatus(200);
     }
 
     public function testUserCanCreateRedTeam()

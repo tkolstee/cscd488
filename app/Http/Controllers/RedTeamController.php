@@ -18,7 +18,7 @@ class RedTeamController extends Controller {
     public function page($page, Request $request) {
         $redteam = Team::find(Auth::user()->redteam);
         switch ($page) {
-            case 'home': return view('redteam.home')->with('redteam',$redteam); break;
+            case 'home': return $this->home(); break;
             case 'attacks': return $this->attacks(); break;
             case 'learn': return view('redteam.learn')->with('redteam',$redteam); break;
             case 'store': return $this->store();break;
@@ -59,6 +59,7 @@ class RedTeamController extends Controller {
 
     public function attacks(){
         $possibleAttacks = $this->possibleAttacks();
+        $redteam = Team::find(Auth::user()->redteam);
         return view('redteam.attacks')->with(compact('redteam','possibleAttacks')); 
     }
 
