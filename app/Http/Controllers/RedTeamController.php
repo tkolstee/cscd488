@@ -120,33 +120,28 @@ class RedTeamController extends Controller {
             $error = "no-asset-selected";
             return view('redteam.store')->with(compact('assets','error', 'redteam'));
         }
-        $totalCost = 0;
         foreach($assetNames as $assetName){
+            //remove asset from inventory and pay team
             $asset = Asset::all()->where('name','=',$assetName)->first();
-            if($asset == null){
+            if ($asset == null){
                 throw new AssetNotFoundException();
             }
-            $totalCost += ($asset->purchase_cost * $sellRate);
-        }
-        foreach($assetNames as $asset){
-            //remove asset to inventory and pay team
-            $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
-            $currAsset = Inventory::all()->where('team_id','=',Auth::user()->redteam)->where('asset_id','=', $assetId)->first();
-            if($currAsset == null){
+            $currInventory = Inventory::all()->where('team_id','=',$redteam->id)->where('asset_id','=', $asset->id)->first();
+            if($currInventory == null){
                 throw new InventoryNotFoundException();
             }else{
-                $currAsset->quantity -= 1;
-                if($currAsset->quantity == 0){
-                    Inventory::destroy(substr($currAsset->pluck('id'),1,1));
+                $currInventory->quantity -= 1;
+                if($currInventory->quantity == 0){
+                    Inventory::destroy(substr($currInventory->pluck('id'),1,1));
                 }else{
-                    $currAsset->update();
+                    $currInventory->update();
                 }
-                $redteam->balance += $totalCost;
+                $redteam->balance += ($asset->purchase_cost)*$sellRate;
                 $redteam->update();
-                return view('redteam.store')->with(compact('redteam', 'assets'));
             }
-        }//end sell
-    }
+        }
+        return view('redteam.store')->with(compact('redteam', 'assets'));
+    }//end sell
 
     public function storeInventory(){
         $redteam = Team::find(Auth::user()->redteam);

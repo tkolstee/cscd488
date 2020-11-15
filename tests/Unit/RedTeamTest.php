@@ -198,6 +198,39 @@ class RedTeamTest extends TestCase
         $this->assertEquals($quantBefore - 1, $inventory->quantity);
     }
 
+    public function testRedSellMultipleItems(){
+        $redteam = $this->assignTeam();
+        $asset1 = Asset::factory()->create();
+        $inventory1 = Inventory::factory()->create([
+            'asset_id' => $asset1->id,
+            'team_id' => $redteam->id,
+            'quantity' => 3,
+        ]);
+        $asset2 = Asset::factory()->create();
+        $inventory2 = Inventory::factory()->create([
+            'asset_id' => $asset2->id,
+            'team_id' => $redteam->id,
+            'quantity' => 5
+        ]);
+
+        $controller = new RedTeamController();
+        $request = Request::create('/sell','POST',[
+            'results' => [$asset1->name, $asset2->name]
+        ]);
+        $balanceBefore = $redteam->balance;
+        $qtyBefore1 = $inventory1->quantity;
+        $qtyBefore2 = $inventory2->quantity;
+
+        $controller->sell($request);
+        $inventory1 = Inventory::find($inventory1->id);
+        $inventory2 = Inventory::find($inventory2->id);
+        $redteam = Team::find($redteam->id);
+        $this->assertEquals($qtyBefore1-1, $inventory1->quantity);
+        $this->assertEquals($qtyBefore2-1, $inventory2->quantity);
+        $expectedBalance = $balanceBefore + $asset1->purchase_cost + $asset2->purchase_cost;
+        $this->assertEquals($expectedBalance, $redteam->balance);
+    }
+
     public function testSellItemNotOwned(){
         $asset = Asset::factory()->red()->create();
         $this->assignTeam();
