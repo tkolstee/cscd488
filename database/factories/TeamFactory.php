@@ -35,7 +35,7 @@ class TeamFactory extends Factory
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
     public function red(){
-        return $this->state(function (array $attributes){
+        return $this->state(function (){
             return [
                 'blue' => 0,
             ];

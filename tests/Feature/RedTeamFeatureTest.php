@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use App\Models\User;
 use App\Models\Team;
 use App\Models\Asset;
@@ -21,6 +20,8 @@ class RedTeamFeatureTest extends TestCase
         $response = $this->actingAs($user)->get('/redteam/status');
         $response->assertStatus(200);
         $response = $this->actingAs($user)->get('/redteam/store');
+        $response->assertStatus(200);
+        $response = $this->actingAs($user)->get('/redteam/attacks');
         $response->assertStatus(200);
     }
 
