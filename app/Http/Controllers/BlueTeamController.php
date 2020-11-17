@@ -159,8 +159,18 @@ class BlueTeamController extends Controller {
             throw new Exception("invalid-team-selected");
         }
         $cart = session('cart');
+        $alreadySold = [];
             if($cart != null){
+                $nextIsSell = 0;
                 foreach($cart as $item){
+                    if($nextIsSell == 1){
+                        $alreadySold[] = $item;
+                    }
+                    if($item == -1){
+                        $nextIsSell = 1;
+                    }else{
+                        $nextIsSell = 0;
+                    }
                     $newCart[] = $item;
                 }
             }
@@ -173,6 +183,15 @@ class BlueTeamController extends Controller {
             $actAsset = Asset::find($assetId);
             if($actAsset == null){
                 throw new Exception("invalid-asset-name");
+            }
+            foreach($alreadySold as $itemSold){
+                if($itemSold == $asset){
+                    $currAsset->quantity--;
+                    if($currAsset->quantity == 0){
+                        $error = "not-enough-owned-".$asset;
+                        return view('blueteam.store')->with(compact('blueteam','assets','error'));
+                    }
+                }
             }
             $newCart[] = -1;
             $newCart[] = $asset;

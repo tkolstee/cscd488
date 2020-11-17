@@ -61,6 +61,11 @@ class BlueTeamTurnTest extends TestCase
         $inventory->save();
     }
 
+    private function buyManyAssets(){
+        $inventory = Inventory::factory()->many()->make();
+        $inventory->save();
+    }
+
     public function testEndTurnNoSessionValid(){
         $controller = new BlueTeamController();
         $response = $controller->endTurn();
@@ -75,18 +80,31 @@ class BlueTeamTurnTest extends TestCase
         $cart[] = $asset->name;
         session(['cart' => $cart]);
         $balBefore = Team::find($teamID)->balance;
-        $invBefore = Inventory::all()->where(['team_id','=', $teamID], ['asset_id','=',1])->first();
         $response = $controller->endTurn();
         $turnTakenAfter = Blueteam::all()->where('team_id','=', $teamID)->first()->turn_taken;
         $this->assertEquals(1, $turnTakenAfter);
         $balAfter = Team::find($teamID)->balance;
         $this->assertEquals($balBefore - $asset->purchase_cost, $balAfter);
         $invAfter = Inventory::all()->where('team_id','=', $teamID)->where('asset_id','=',1)->first();
-        if($invBefore == null){
-            $this->assertEquals(1, $invAfter->quantity);
-        }else{
-            $this->assertEquals($invBefore->quantity + 1, $invAfter->quantity);
-        }
+        $this->assertEquals(1, $invAfter->quantity);
+    }
+
+    public function testEndTurnBuyOneAlreadyOwnedValid(){
+        $controller = new BlueTeamController();
+        $teamID = Auth::user()->blueteam;
+        $asset = Asset::find(1);
+        $cart[] = $asset->name;
+        session(['cart' => $cart]);
+        $balBefore = Team::find($teamID)->balance;
+        $this->buyAssets();
+        $invBefore = Inventory::all()->where('team_id','=', $teamID)->where('asset_id','=',1)->first();
+        $response = $controller->endTurn();
+        $turnTakenAfter = Blueteam::all()->where('team_id','=', $teamID)->first()->turn_taken;
+        $this->assertEquals(1, $turnTakenAfter);
+        $balAfter = Team::find($teamID)->balance;
+        $this->assertEquals($balBefore - $asset->purchase_cost, $balAfter);
+        $invAfter = Inventory::all()->where('team_id','=', $teamID)->where('asset_id','=',1)->first();
+        $this->assertEquals($invBefore->quantity + 1, $invAfter->quantity);
     }
 
     public function testEndTurnBuyOneNotEnoughMoney(){
@@ -129,6 +147,25 @@ class BlueTeamTurnTest extends TestCase
         session(['cart' => $cart]);
         $this->expectException(Exception::class);
         $response = $controller->endTurn();
+    }
+
+    public function testEndTurnSellOwnManyValid(){
+        $controller = new BlueTeamController();
+        $teamID = Auth::user()->blueteam;
+        $asset = Asset::find(1);
+        $cart[] = -1;
+        $cart[] = $asset->name;
+        session(['cart' => $cart]);
+        $balBefore = Team::find($teamID)->balance;
+        $this->buyManyAssets();
+        $invBefore = Inventory::all()->where('team_id','=', $teamID)->where('asset_id','=',1)->first();
+        $response = $controller->endTurn();
+        $turnTakenAfter = Blueteam::all()->where('team_id','=', $teamID)->first()->turn_taken;
+        $this->assertEquals(1, $turnTakenAfter);
+        $balAfter = Team::find($teamID)->balance;
+        $this->assertEquals($balBefore + $asset->purchase_cost, $balAfter);
+        $invAfter = Inventory::all()->where('team_id','=', $teamID)->where('asset_id','=',1)->first();
+        $this->assertEquals($invBefore->quantity - 1, $invAfter->quantity);
     }
 
     public function testEndTurnSellAndBuy(){
