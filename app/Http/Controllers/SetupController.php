@@ -44,12 +44,14 @@ class SetupController extends Controller {
             case 'create-admin':
                 $request->validate([
                     'name' => ['required', 'string', 'max:255'],
-                    'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                    'username' => ['required', 'string', 'max:255', 'unique:users'],
+                    'email' => ['required', 'string', 'email', 'max:255'],
                     'password' => ['required', 'string', 'min:8', 'confirmed'],
                 ]);
                 $user = new User();
                 $user->name = $request->name;
                 $user->email = $request->email;
+                $user->username = $request->username;
                 $user->password = Hash::make($request->password);
                 $user->is_admin = 1;
                 $user->save();
