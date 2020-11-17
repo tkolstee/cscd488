@@ -6,6 +6,8 @@ use App\Models\Team;
 use App\Models\Asset;
 use App\Models\Inventory;
 use App\Models\User;
+use App\Models\Blueteam;
+use App\Models\Setting;
 use View;
 use Auth;
 use Exception;
@@ -15,7 +17,16 @@ class BlueTeamController extends Controller {
 
     public function page($page, Request $request) {
 
+        if($page == 'startturn') return $this->startTurn(); //Testing Purposes
         $blueteam = Team::find(Auth::user()->blueteam);
+        if($blueteam != null){
+            $team_id = Auth::user()->blueteam;
+            $turn = Blueteam::all()->where('team_id','=',$team_id)->first()->turn_taken;
+            if($turn == 1){
+                $endTime = Setting::get('turn_end_time');
+                return $this->home()->with(compact('turn', 'endTime'));
+            }
+        }
         switch ($page) {
             case 'home': return $this->home(); break;
             case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
@@ -27,17 +38,38 @@ class BlueTeamController extends Controller {
             case 'buy': return $this->buy($request); break;
             case 'storeinventory': return $this->storeInventory(); break;
             case 'sell': return $this->sell($request); break;
+            case 'endturn': return $this->endTurn(); break;
         }
 
     }
  
+    public function startTurn(){ //Testing Purposes
+        $teamID = Auth::user()->blueteam;
+        $blueteam = Blueteam::all()->where('team_id','=',$teamID)->first();
+        $blueteam->turn_taken = 0;
+        $blueteam->update();
+        $turn = 0;
+        return $this->home()->with(compact('turn'));
+    }
+
+    public function endTurn(){
+        $teamID = Auth::user()->blueteam;
+        $blueteam = Blueteam::all()->where('team_id','=',$teamID)->first();
+        $blueteam->turn_taken = 1;
+        $blueteam->update();
+        $turn = 1;
+        $endTime = Setting::get('turn_end_time');
+        return $this->home()->with(compact('turn', 'endTime'));
+    }
+
     public function home(){
         $blueid = Auth::user()->blueteam;
         $blueteam = Team::find($blueid);
         if($blueid == "") return view('blueteam.home')->with(compact('blueteam'));
         $leader = User::all()->where('blueteam','=',$blueid)->where('leader','=',1)->first();
         $members = User::all()->where('blueteam','=',$blueid)->where('leader','=',0);
-        return  view('blueteam.home')->with(compact('blueteam','leader','members'));
+        $turn = 0;
+        return  view('blueteam.home')->with(compact('blueteam','leader','members', 'turn'));
     }
 
     public function sell(request $request){
@@ -159,14 +191,18 @@ class BlueTeamController extends Controller {
         $this->validate($request, [
             'name' => ['required', 'unique:teams', 'string', 'max:255'],
         ]);
-        $blueteam = new Team();
-        $blueteam->name = $request->name;
-        $blueteam->balance = 0;
-        $blueteam->blue = 1;
-        $blueteam->reputation = 0;
+        $team = new Team();
+        $team->name = $request->name;
+        $team->balance = 0;
+        $team->blue = 1;
+        $team->reputation = 0;
+        $team->save();
+        $blueteam = new Blueteam();
+        $teamID = substr(Team::all()->where('name', '=', $request->name)->pluck('id'), 1, 1);
+        $blueteam->team_id = $teamID;
         $blueteam->save();
         $user = Auth::user();
-        $user->blueteam = substr(Team::all()->where('name', '=', $request->name)->pluck('id'), 1, 1);
+        $user->blueteam = $teamID;
         $user->leader = 1;
         $user->update();
         return $this->home();

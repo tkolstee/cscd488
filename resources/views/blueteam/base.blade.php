@@ -26,6 +26,13 @@
             <a href="/blueteam/status"><button>Status</button></a>
             <a href="/blueteam/store"><button>Store</button></a>
             <a href="/blueteam/training"><button>Training</button></a>
+            @if ($blueteam != null)
+                @if (($turn ?? 0) != 1)
+                <a href="/blueteam/endturn"><button>End Turn</button></a>
+                @else
+                <a href="/blueteam/startturn"><button>Start Turn</button></a>
+                @endif
+            @endif
         </div>
     </div>
 
