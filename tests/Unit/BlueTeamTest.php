@@ -132,16 +132,13 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/buy','POST', [
             'results' => [$assetName]
         ]);
-        $blueteam = Team::find(Auth::user()->blueteam);
-        $balanceBefore = $blueteam->balance;
-        $response = $controller->buy($request);
-        $inventory = Inventory::find(1);
-        $this->assertEquals($balanceBefore-100, $response->blueteam->balance);
-        $this->assertEquals(1, $inventory->team_id);
-        $this->assertEquals(substr(Asset::where('name','=',$assetName)->pluck('id'),1,1), $inventory->asset_id);
+        $result = $controller->buy($request);
+        $cart = session('cart');
+        $this->assertEquals(1, count($cart));
+        $this->assertEquals($assetName, $cart[0]);
     }
 
-    public function testBuyAlreadyOwned(){
+    /*public function testBuyAlreadyOwned(){
         $assetName = $this->prefillAssets();
         $this->assignTeam();
         $this->buyAssets();
@@ -158,7 +155,7 @@ class BlueTeamTest extends TestCase
         $this->assertEquals(1, $inventory->team_id);
         $this->assertEquals(substr(Asset::where('name','=',$assetName)->pluck('id'),1,1), $inventory->asset_id);
         $this->assertEquals($quantBefore + 1, $inventory->quantity);
-    }
+    }*/
 
     public function testBuyInvalidAssetName(){
         $this->prefillAssets();
@@ -181,7 +178,7 @@ class BlueTeamTest extends TestCase
         $response = $controller->buy($request);
     }
 
-    public function testBlueTeamBuyNotEnoughMoney(){
+    /*public function testBlueTeamBuyNotEnoughMoney(){
         $assetName = $this->prefillAssets();
         $this->assignTeam();
         $controller = new BlueTeamController();
@@ -193,7 +190,7 @@ class BlueTeamTest extends TestCase
         $blueteam->update();
         $response = $controller->buy($request);
         $this->assertEquals('not-enough-money', $response->error);
-    }
+    }*/
 
     public function testBlueTeamBuyNoAssetSelected(){
         $this->prefillAssets();
@@ -214,14 +211,14 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => [$assetName]
         ]);
-        $balBefore = Team::find(Auth::user()->blueteam)->balance;
-        $assetPrice = Asset::find(1)->purchase_cost;
         $response = $controller->sell($request);
-        $inventory = Inventory::all()->where('team_id','=',Auth::user()->blueteam);
-        $this->assertEquals($balBefore+$assetPrice, $response->blueteam->balance);
-        $this->assertTrue($inventory->isEmpty());
+        $cart = session('cart');
+        $this->assertEquals(2, count($cart));
+        $this->assertEquals(-1, $cart[0]);
+        $this->assertEquals($assetName, $cart[1]);
     }
-    public function testSellItemOwnedManyValid(){
+
+    /*public function testSellItemOwnedManyValid(){
         $assetName = $this->prefillAssets();
         $this->assignTeam();
         $this->buyManyAssets();
@@ -236,7 +233,7 @@ class BlueTeamTest extends TestCase
         $inventory = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->first();
         $this->assertEquals($balBefore+$assetPrice, $response->blueteam->balance);
         $this->assertEquals($quantBefore - 1, $inventory->quantity);
-    }
+    }*/
 
     public function testSellItemNotOwned(){
         $assetName = $this->prefillAssets();
