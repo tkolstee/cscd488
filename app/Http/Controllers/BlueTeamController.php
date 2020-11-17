@@ -21,6 +21,12 @@ class BlueTeamController extends Controller {
         $blueteam = Team::find(Auth::user()->blueteam);
         if($blueteam != null){
             $team_id = Auth::user()->blueteam;
+            $blueteam = Blueteam::all()->where('team_id','=',$team_id)->first();
+            if($blueteam == null){
+                $blueteam = new Blueteam();
+                $blueteam->team_id = $team_id;
+                $blueteam->save();
+            }
             $turn = Blueteam::all()->where('team_id','=',$team_id)->first()->turn_taken;
             if($turn == 1){
                 $endTime = Setting::get('turn_end_time');
@@ -60,9 +66,9 @@ class BlueTeamController extends Controller {
         if($team == null){
             throw new Exception("invalid-team-selected");
         }
+        $totalBalance = 0;
         if(!empty($cart)){
-            $totalBalance = 0;
-            $length = count($cart) - 1;
+            $length = count($cart);
             for($i = 0; $i < $length; $i++){
                 if($cart[$i] == -1){ //Selling next item
                     $sellRate = 1;
