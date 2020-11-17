@@ -20,6 +20,7 @@
             <p>Wait until {{ $endTime ?? '' }} for your team's next turn.</p>
         @else
             <p>This is the blue team home page. Much Wow.</p>
+            
         @endif
 
     @endif
