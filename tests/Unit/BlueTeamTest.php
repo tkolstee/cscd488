@@ -247,4 +247,68 @@ class BlueTeamTest extends TestCase
         $this->assertEquals(2,count($response->members));
     }
 
+    public function testSettingsNoParamValid(){
+        $controller = new BlueTeamController();
+        $blueteam = $this->assignTeam();
+        $request = Request::create('/settings','POST',[]);
+        $response = $controller->settings($request);
+        $this->assertEquals($blueteam->id, $response->blueteam->id);
+        $this->assertEquals(Auth::user()->id, $response->leader->id);
+        $this->assertEquals(0 , count($response->members));
+        $this->assertFalse($response->changeName);
+        $this->assertFalse($response->leaveTeam);
+    }
+
+    public function testSettingsNoTeamThrows(){
+        $controller = new BlueTeamController();
+        $request = Request::create('/settings','POST',[]);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->settings($request);
+    }
+
+    public function testSettingsChangeNameValid(){
+        $controller = new BlueTeamController();
+        $blueteam = $this->assignTeam();
+        $request = Request::create('/settings','POST',[
+           'changeNameBtn' => 1, 
+        ]);
+        $response = $controller->settings($request);
+        $this->assertEquals($blueteam->id, $response->blueteam->id);
+        $this->assertEquals(Auth::user()->id, $response->leader->id);
+        $this->assertEquals(0 , count($response->members));
+        $this->assertTrue($response->changeName);
+        $this->assertFalse($response->leaveTeam);
+    }
+
+    public function testSettingsLeaveTeamValid(){
+        $controller = new BlueTeamController();
+        $blueteam = $this->assignTeam();
+        $request = Request::create('/settings','POST',[
+           'leaveTeamBtn' => 1, 
+        ]);
+        $response = $controller->settings($request);
+        $this->assertEquals($blueteam->id, $response->blueteam->id);
+        $this->assertEquals(Auth::user()->id, $response->leader->id);
+        $this->assertEquals(0 , count($response->members));
+        $this->assertFalse($response->changeName);
+        $this->assertTrue($response->leaveTeam);
+    }
+
+    public function testSettingsHasMembersValid(){
+        $controller = new BlueTeamController();
+        $blueteam = $this->assignTeam();
+        $member1 = User::factory()->create([
+            'blueteam' => $blueteam->id,
+        ]);
+        $member2 = User::factory()->create([
+            'blueteam' => $blueteam->id,
+        ]);
+        $request = Request::create('/settings','POST',[]);
+        $response = $controller->settings($request);
+        $this->assertEquals($blueteam->id, $response->blueteam->id);
+        $this->assertEquals(Auth::user()->id, $response->leader->id);
+        $this->assertEquals(2 , count($response->members));
+        $this->assertFalse($response->changeName);
+        $this->assertFalse($response->leaveTeam);
+    }
 }

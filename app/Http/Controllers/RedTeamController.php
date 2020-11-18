@@ -17,6 +17,9 @@ class RedTeamController extends Controller {
 
     public function page($page, Request $request) {
         $redteam = Team::find(Auth::user()->redteam);
+        if($redteam == null && $page != 'create'){
+            return $this->home(); 
+        }
         switch ($page) {
             case 'home': return $this->home(); break;
             case 'attacks': return $this->attacks(); break;
@@ -31,8 +34,65 @@ class RedTeamController extends Controller {
             case 'chooseattack': return $this->chooseAttack($request); break;
             case 'performattack': return $this->performAttack($request); break;
             case 'attackhandler': return $this->attackHandler($request); break;
+            case 'settings': return $this->settings($request); break;
+            case 'changename': return $this->changeName($request); break;
+            case 'leaveteam': return $this->leaveTeam($request); break;
             default: return $this->home(); break;
         }
+    }
+
+    public function leaveTeam(request $request){
+        if($request->result == "stay"){
+            return $this->settings($request);
+        }
+        else if($request->result != "leave"){
+            $error = "invalid-choice";
+            return $this->settings($request)->with(compact('error'));
+        }
+        $user = Auth::user();
+        $teamID = $user->redteam;
+        $user->redteam = null;
+        $user->update();
+        $team = Team::find($teamID);
+        if($team == null){
+            throw new TeamNotFoundException();
+        }
+        Team::destroy($teamID);
+        return $this->home();
+    }
+
+    public function changeName(request $request){
+        if(!Team::all()->where('name','=',$request->name)->isEmpty()){
+            $error = "name-taken";
+            return $this->settings($request)->with(compact('error'));
+        }
+        $teamID = Auth::user()->redteam;
+        $team = Team::find($teamID);
+        $team->name = $request->name;
+        $team->update();
+        $newTeam = Team::find($teamID);
+        if($newTeam->name == $request->name){
+            return $this->settings($request);
+        }else{
+            throw new Exception("Name unchanged");
+        }
+    }
+
+    public function settings($request){
+        $changeName = false;
+        $leaveTeam = false;
+        if($request->changeNameBtn == 1){
+            $changeName = true;
+        }
+        if($request->leaveTeamBtn == 1){
+            $leaveTeam = true;
+        }
+        $teamID = Auth::user()->redteam;
+        $redteam = Team::find($teamID);
+        if($redteam == null){
+            throw new TeamNotFoundException();
+        }
+        return view('redteam/settings')->with(compact('redteam','changeName','leaveTeam'));
     }
 
     public function home(){
