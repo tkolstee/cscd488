@@ -5,7 +5,6 @@ use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Models\Asset;
 use App\Models\Inventory;
-use App\Models\Prereq;
 use App\Models\Attack;
 use Auth;
 use View;
@@ -149,11 +148,8 @@ class RedTeamController extends Controller {
         if($blueteam->isEmpty()){ throw new TeamNotFoundException();}
         $blueteam = $blueteam->first();
         $targetAssets = Inventory::all()->where('team_id','=', $blueteam);
-        $notPossibleBlueAttackIDs = Prereq::all()->whereIn('asset_id',$targetAssets->pluck('id')); //attackIDs you can do against blue
         $possibleAttacks = Attack::all();
-        $uselessPossibleAttacks = $possibleAttacks->whereIn('id', $notPossibleBlueAttackIDs->pluck('id'));
-        $possibleAttacks = $possibleAttacks->whereNotIn('id',$notPossibleBlueAttackIDs->pluck('id')); //only attacks you can do against blue
-        return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks','uselessPossibleAttacks'));
+        return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks'));
     }
 
     public function startAttack(){
@@ -250,7 +246,6 @@ class RedTeamController extends Controller {
     public function store(){
         $redteam = Team::find(Auth::user()->redteam);
         $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
-        //$prereqs = Prereq::all()->whereIn('asset_id',$assets->pluck('id'));
         return view('redteam.store')->with(compact('redteam', 'assets'));
     }
 

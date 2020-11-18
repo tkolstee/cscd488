@@ -12,12 +12,6 @@
         <label for="{{ $attack->name }}">{{ $attack->name }}</label>
         <br>
     @endforeach
-    @if (!$uselessPossibleAttacks->isEmpty())
-        <strong>Opponent doesn't have assets for:</strong><br>
-        @foreach ($uselessPossibleAttacks ?? [] as $attack)
-        {{ $attack->name }}<br>
-        @endforeach
-    @endif
     <input type="hidden" name="blueteam" value="{{ $blueteam->name }}">
     <div class="form-group row mb-0">
         <div class="col-md-8 offset-md-4">

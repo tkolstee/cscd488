@@ -282,7 +282,6 @@ class RedTeamTest extends TestCase
         $this->assertEquals($redteam->name, $response->redteam->name);
         $this->assertEquals($blueteam->name, $response->blueteam->name);
         $this->assertNotNull($response->possibleAttacks);
-        $this->assertNotNull($response->uselessPossibleAttacks);
     }
 
     public function testSettingsNoParamValid(){
