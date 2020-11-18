@@ -115,22 +115,16 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/buy','POST', [
             'results' => [$asset->name]
         ]);
-        $blueteam = Team::find(Auth::user()->blueteam);
-        $balanceBefore = $blueteam->balance;
-        $response = $controller->buy($request);
-        $inventory = Inventory::find(1);
-        $this->assertEquals($balanceBefore-($asset->purchase_cost), $response->blueteam->balance);
-        $this->assertEquals(1, $inventory->quantity);
+        $result = $controller->buy($request);
+        $cart = session('cart');
+        $this->assertEquals(1, count($cart));
+        $this->assertEquals($assetName, $cart[0]);
     }
 
-    public function testBuyAlreadyOwned(){
-        $blueteam = $this->assignTeam();
-        $asset = Asset::factory()->create();
-        $inventory = Inventory::factory()->create([
-            'asset_id' => $asset->id,
-            'team_id' => $blueteam->id,
-            'quantity' => 1
-        ]);
+    /*public function testBuyAlreadyOwned(){
+        $assetName = $this->prefillAssets();
+        $this->assignTeam();
+        $this->buyAssets();
         $controller = new BlueTeamController();
         $request = Request::create('/buy','POST', [
             'results' => [$asset->name]
@@ -141,7 +135,7 @@ class BlueTeamTest extends TestCase
         $inventory = Inventory::find($inventory->id);
         $this->assertEquals($balanceBefore-$asset->purchase_cost, $response->blueteam->balance);
         $this->assertEquals($quantBefore + 1, $inventory->quantity);
-    }
+    }*/
 
     public function testBuyInvalidAssetName(){
         $this->assignTeam();
@@ -163,9 +157,9 @@ class BlueTeamTest extends TestCase
         $controller->buy($request);
     }
 
-    public function testBlueTeamBuyNotEnoughMoney(){
-        $asset = Asset::factory()->create();
-        $blueteam = $this->assignTeam();
+    /*public function testBlueTeamBuyNotEnoughMoney(){
+        $assetName = $this->prefillAssets();
+        $this->assignTeam();
         $controller = new BlueTeamController();
         $request = Request::create('/buy','POST', [
             'results' => [$asset->name]
@@ -174,7 +168,7 @@ class BlueTeamTest extends TestCase
         $blueteam->update();
         $response = $controller->buy($request);
         $this->assertEquals('not-enough-money', $response->error);
-    }
+    }*/
 
     public function testBlueTeamBuyNoAssetSelected(){
         $this->assignTeam();
@@ -198,21 +192,17 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => [$asset->name]
         ]);
-        $balBefore = $blueteam->balance;
         $response = $controller->sell($request);
-        $inventory = Inventory::find($inventory->id);
-        $this->assertEquals($balBefore+$asset->purchase_cost, $response->blueteam->balance);
-        $this->assertTrue($inventory == null);
+        $cart = session('cart');
+        $this->assertEquals(2, count($cart));
+        $this->assertEquals(-1, $cart[0]);
+        $this->assertEquals($assetName, $cart[1]);
     }
 
-    public function testSellItemOwnedManyValid(){
-        $asset = Asset::factory()->create();
-        $blueteam = $this->assignTeam();
-        $inventory = Inventory::factory()->create([
-            'asset_id' => $asset->id,
-            'team_id' => $blueteam->id,
-            'quantity' => 5,
-        ]);
+    /*public function testSellItemOwnedManyValid(){
+        $assetName = $this->prefillAssets();
+        $this->assignTeam();
+        $this->buyManyAssets();
         $controller = new BlueTeamController();
         $request = Request::create('/sell','POST',[
             'results' => [$asset->name]
@@ -223,7 +213,7 @@ class BlueTeamTest extends TestCase
         $inventory = Inventory::find($inventory->id);
         $this->assertEquals($balBefore+$asset->purchase_cost, $response->blueteam->balance);
         $this->assertEquals($quantBefore - 1, $inventory->quantity);
-    }
+    }*/
 
     public function testBlueSellMultipleItems(){
         $blueteam = $this->assignTeam();

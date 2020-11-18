@@ -1,19 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Controllers\SettingController;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class SetupController extends Controller {
-
-    private $sc;
-
-    public function __construct() {
-        $this->sc = new SettingController();
-    }
 
     public function page (Request $request) {
         $setc = $this->sc;
@@ -23,8 +17,18 @@ class SetupController extends Controller {
         } elseif ( $setc->get('setup_settings_edited') != 'true' ) {
             return view('setup/settings', ['settings' => Setting::all()]);
         } else {
-            return redirect('/');
+            return redirect('/admin/home');
         }
+    }
+
+    public function prefill_settings() {
+        $g = new Game();
+        $g->turn = 0;
+        $g->save();
+
+        Setting::set('setup_admin_created', 'true');
+        Setting::set('turn_end_time',       '01:00');
+
     }
 
     public function process_form_data($request) {

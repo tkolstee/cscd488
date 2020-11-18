@@ -11,13 +11,25 @@
             @if ($blueteam->name  ?? '' != "")
                 <td width="50%">
                 <strong>{{  $blueteam->name ?? '' }} </strong>
-                    Revenue: {{ $blueteam->balance ?? '' }}    Reputation: {{ $blueteam->reputation ?? '' }}
+                    <br>Revenue: {{ $blueteam->balance ?? '' }}    Reputation: {{ $blueteam->reputation ?? '' }}
+                    <br>Turn: {{ App\Models\Game::turnNumber() }}
                 </td>
             @endif
         </tr></table>
 
         <div style="background-color: #77F; padding: 80px; align: center; vertical-align: center;">
             @yield('pagecontent')
+            @if (!empty(session('cart')))
+                <p>Shopping Cart: </p>
+                <?php $cart = session('cart'); ?>
+                @foreach ($cart as $item)
+                    @if($item == -1)
+                        Selling: 
+                    @else
+                        {{ $item }} <br>
+                    @endif
+                @endforeach
+            @endif
         </div>
         <div>
             <a href="/blueteam/home"><button>Home</button></a>
@@ -25,6 +37,13 @@
             <a href="/blueteam/status"><button>Status</button></a>
             <a href="/blueteam/store"><button>Store</button></a>
             <a href="/blueteam/training"><button>Training</button></a>
+            @if ($blueteam ?? null != null)
+                @if (($turn ?? 0) != 1)
+                <a href="/blueteam/endturn"><button>End Turn</button></a>
+                @else
+                <a href="/blueteam/startturn"><button>Start Turn</button></a>
+                @endif
+            @endif
         </div>
     </div>
 
