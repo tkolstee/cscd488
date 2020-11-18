@@ -18,6 +18,7 @@ class AttackLog extends Model
         'blueteam_id',
         'redteam_id',
         'difficulty',
-        'detection_chance'
+        'detection_chance',
+        'success'
     ];
 }

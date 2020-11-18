@@ -20,6 +20,7 @@ class CreateAttackLogsTable extends Migration
             $table->foreignId('redteam_id')->constrained('teams');
             $table->integer('difficulty');
             $table->float('detection_chance');
+            $table->boolean('success');
             $table->timestamps();
         });
     }
