@@ -285,4 +285,45 @@ class RedTeamTest extends TestCase
         $this->assertNotNull($response->uselessPossibleAttacks);
     }
 
+    public function testSettingsNoParamValid(){
+        $controller = new RedTeamController();
+        $redteam = $this->assignTeam();
+        $request = Request::create('/settings','POST',[]);
+        $response = $controller->settings($request);
+        $this->assertEquals($redteam->id, $response->redteam->id);
+        $this->assertFalse($response->changeName);
+        $this->assertFalse($response->leaveTeam);
+    }
+
+    public function testSettingsNoTeamThrows(){
+        $controller = new RedTeamController();
+        $request = Request::create('/settings','POST',[]);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->settings($request);
+    }
+
+    public function testSettingsChangeNameValid(){
+        $controller = new RedTeamController();
+        $redteam = $this->assignTeam();
+        $request = Request::create('/settings','POST',[
+           'changeNameBtn' => 1, 
+        ]);
+        $response = $controller->settings($request);
+        $this->assertEquals($redteam->id, $response->redteam->id);
+        $this->assertTrue($response->changeName);
+        $this->assertFalse($response->leaveTeam);
+    }
+
+    public function testSettingsLeaveTeamValid(){
+        $controller = new RedTeamController();
+        $redteam = $this->assignTeam();
+        $request = Request::create('/settings','POST',[
+           'leaveTeamBtn' => 1, 
+        ]);
+        $response = $controller->settings($request);
+        $this->assertEquals($redteam->id, $response->redteam->id);
+        $this->assertFalse($response->changeName);
+        $this->assertTrue($response->leaveTeam);
+    }
+
 }

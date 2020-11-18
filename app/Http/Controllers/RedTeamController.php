@@ -89,6 +89,9 @@ class RedTeamController extends Controller {
         }
         $teamID = Auth::user()->redteam;
         $redteam = Team::find($teamID);
+        if($redteam == null){
+            throw new TeamNotFoundException();
+        }
         return view('redteam/settings')->with(compact('redteam','changeName','leaveTeam'));
     }
 

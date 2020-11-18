@@ -113,6 +113,9 @@ class BlueTeamController extends Controller {
         }
         $teamID = Auth::user()->blueteam;
         $blueteam = Team::find($teamID);
+        if($blueteam == null){
+            throw new TeamNotFoundException();
+        }
         $leader = User::all()->where('blueteam','=',$teamID)->where('leader','=',1)->first();
         $members = User::all()->where('blueteam','=',$teamID)->where('leader','=',0);
         return view('blueteam/settings')->with(compact('blueteam','leader','members','changeName','leaveTeam'));
