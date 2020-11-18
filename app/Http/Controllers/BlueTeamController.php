@@ -46,8 +46,8 @@ class BlueTeamController extends Controller {
             case 'buy': return $this->buy($request); break;
             case 'storeinventory': return $this->storeInventory(); break;
             case 'sell': return $this->sell($request); break;
-            default: return $this->home(); break;
             case 'endturn': return $this->endTurn(); break;
+            default: return $this->home(); break;
         }
 
     }
@@ -190,7 +190,6 @@ class BlueTeamController extends Controller {
             if($currAsset == null){
                 throw new InventoryNotFoundException();
             }
-           
             foreach($alreadySold as $itemSold){
                 if($itemSold == $asset){
                     $currAsset->quantity--;
