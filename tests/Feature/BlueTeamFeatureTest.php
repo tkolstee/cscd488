@@ -38,7 +38,6 @@ class BlueTeamFeatureTest extends TestCase
         $response = $this->actingAs($user)->post('/blueteam/create', [
             'name' => 'blueteamname',
         ]);
-        //$this->assertEquals(1,$response->content());
         $response->assertViewIs('blueteam.home');
         $response->assertSee('blueteamname');
     }
@@ -82,9 +81,10 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertSee($asset->name);
     }
 
-    public function testBlueTeamCanBuyAssets()
+    public function testBlueTeamCanAddToCart()
     {
-        $asset = Asset::factory()->create();
+        $asset1 = Asset::factory()->create();
+        $asset2 = Asset::factory()->create();
         $team = Team::factory()->create([
             'balance' => 1000,
         ]);
@@ -92,24 +92,28 @@ class BlueTeamFeatureTest extends TestCase
             'blueteam' => $team->id
         ]);
         $response = $this->actingAs($user)->post('/blueteam/buy', [
-            'results' => [$asset->name],
+            'results' => [$asset1->name, $asset2->name],
         ]);
         $response->assertViewIs('blueteam.store');
-        $response->assertSee($asset->name);
+        $response->assertSee([$asset1->name, $asset2->name]);
     }
 
-    public function testBlueTeamCannotBuyWithNoMoney()
+    public function testBlueTeamCanBuyAssets()
     {
         $asset = Asset::factory()->create();
         $team = Team::factory()->create([
-            'balance' => 0,
+            'balance' => 1000,
         ]);
         $user = User::factory()->create([
-            'blueteam' => $team->id
+            'blueteam' => $team->id,
+            'leader' => 1,
         ]);
-        $response = $this->actingAs($user)->post('/blueteam/buy', [
+        $this->actingAs($user)->post('/blueteam/buy', [
             'results' => [$asset->name],
         ]);
-        $response->assertViewIs('blueteam.store');
+        $expectedBalance = $team->balance - $asset->purchase_cost;
+        $response = $this->actingAs($user)->get('/blueteam/endturn');
+        $response->assertViewIs('blueteam.home');
+        $response->assertSee('Revenue: ' . $expectedBalance);
     }
 }
