@@ -119,16 +119,9 @@ class RedTeamController extends Controller {
     }
 
     public function attacks(){
-        $possibleAttacks = $this->possibleAttacks();
+        $possibleAttacks = Attack::all();
         $redteam = Team::find(Auth::user()->redteam);
         return view('redteam.attacks')->with(compact('redteam','possibleAttacks')); 
-    }
-
-    private function possibleAttacks(){
-        $assets = Inventory::all()->where('team_id','=', Auth::user()->redteam);
-        $notPossibleAttackIDs = Prereq::all()->whereNotIn('asset_id',$assets->pluck('id')); //attackIDs you have prereqs for
-        $possibleAttacks = Attack::all()->whereNotIn('id',$notPossibleAttackIDs->pluck('attack_id')); //attacks you have prereqs for
-        return $possibleAttacks;
     }
 
     public function performAttack(request $request){
@@ -157,7 +150,7 @@ class RedTeamController extends Controller {
         $blueteam = $blueteam->first();
         $targetAssets = Inventory::all()->where('team_id','=', $blueteam);
         $notPossibleBlueAttackIDs = Prereq::all()->whereIn('asset_id',$targetAssets->pluck('id')); //attackIDs you can do against blue
-        $possibleAttacks = $this->possibleAttacks(); //attacks you have prereqs for
+        $possibleAttacks = Attack::all();
         $uselessPossibleAttacks = $possibleAttacks->whereIn('id', $notPossibleBlueAttackIDs->pluck('id'));
         $possibleAttacks = $possibleAttacks->whereNotIn('id',$notPossibleBlueAttackIDs->pluck('id')); //only attacks you can do against blue
         return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks','uselessPossibleAttacks'));
