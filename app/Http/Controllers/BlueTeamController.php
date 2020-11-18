@@ -19,9 +19,11 @@ class BlueTeamController extends Controller {
 
     public function page($page, Request $request) {
 
-        if($page == 'startturn') return $this->startTurn(); //Testing Purposes
         $blueteam = Team::find(Auth::user()->blueteam);
         if($blueteam != null){
+            //methods available while not on a turn
+            if($page == 'startturn') return $this->startTurn(); //Testing Purposes
+            if($page == 'settings') return $this->settings($request);
             $team_id = Auth::user()->blueteam;
             $blueteam = Blueteam::all()->where('team_id','=',$team_id)->first();
             if($blueteam == null){
@@ -52,6 +54,14 @@ class BlueTeamController extends Controller {
 
     }
  
+    public function settings(request $request){
+        $teamID = Auth::user()->blueteam;
+        $blueteam = Team::find($teamID);
+        $inventories = Inventory::all()->where('team_id','=',$teamID);
+        $turn = $blueteam->turn_taken;
+        return view('blueteam/settings')->with(compact('blueteam','inventories','turn'));
+    }
+
     public function startTurn(){ //Testing Purposes
         $teamID = Auth::user()->blueteam;
         $blueteam = Blueteam::all()->where('team_id','=',$teamID)->first();
