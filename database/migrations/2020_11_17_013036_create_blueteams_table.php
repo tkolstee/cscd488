@@ -15,7 +15,7 @@ class CreateBlueteamsTable extends Migration
     {
         Schema::create('blueteams', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('team_id')->constrained('teams');
+            $table->foreignId('team_id')->constrained('teams')->onDelete('cascade');
             $table->integer('turn_taken')->default(0);
             $table->timestamps();
         });

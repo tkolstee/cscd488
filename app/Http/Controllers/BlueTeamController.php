@@ -49,17 +49,73 @@ class BlueTeamController extends Controller {
             case 'storeinventory': return $this->storeInventory(); break;
             case 'sell': return $this->sell($request); break;
             case 'endturn': return $this->endTurn(); break;
+            case 'changename': return $this->changeName($request); break;
+            case 'leaveteam': return $this->leaveTeam($request); break;
             default: return $this->home(); break;
         }
 
     }
  
+    public function leaveTeam(request $request){
+        if($request->result == "stay"){
+            return $this->settings($request);
+        }
+        else if($request->result != "leave"){
+            $error = "invalid-choice";
+            return $this->settings($request)->with(compact('error'));
+        }
+        $user = Auth::user();
+        $teamID = $user->blueteam;
+        $user->blueteam = null;
+        $user->update();
+        $team = Team::find($teamID);
+        if($team == null){
+            throw new TeamNotFoundException();
+        }
+        if($user->leader == 1){
+            $members = User::all()->where('blueteam','=',$teamID)->where('leader','=',0);
+            if($members->isEmpty()){
+                Team::destroy($teamID);
+            }else{
+                $newLeader = $members->first();
+                $newLeader->leader = 1;
+                $newLeader->update();
+            }
+        }
+        return $this->home();
+    }
+
+    public function changeName(request $request){
+        if(!Team::all()->where('name','=',$request->name)->isEmpty()){
+            $error = "name-taken";
+            return $this->settings($request)->with(compact('error'));
+        }
+        $teamID = Auth::user()->blueteam;
+        $team = Team::find($teamID);
+        $team->name = $request->name;
+        $team->update();
+        $newTeam = Team::find($teamID);
+        if($newTeam->name == $request->name){
+            return $this->settings($request);
+        }else{
+            throw new Exception("Name unchanged");
+        }
+    }
+
     public function settings(request $request){
+        $changeName = false;
+        $leaveTeam = false;
+        if($request->changeNameBtn == 1){
+            $changeName = true;
+        }
+        if($request->leaveTeamBtn == 1){
+            $leaveTeam = true;
+        }
         $teamID = Auth::user()->blueteam;
         $blueteam = Team::find($teamID);
-        $inventories = Inventory::all()->where('team_id','=',$teamID);
-        $turn = $blueteam->turn_taken;
-        return view('blueteam/settings')->with(compact('blueteam','inventories','turn'));
+        $leader = User::all()->where('blueteam','=',$teamID)->where('leader','=',1)->first();
+        $members = User::all()->where('blueteam','=',$teamID)->where('leader','=',0);
+        return view('blueteam/settings')->with(compact('blueteam','leader','members','changeName','leaveTeam'));
     }
 
     public function startTurn(){ //Testing Purposes

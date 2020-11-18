@@ -15,8 +15,8 @@ class CreatePrereqsTable extends Migration
     {
         Schema::create('prereqs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('attack_id')->constrained('attacks');
-            $table->foreignId('asset_id')->constrained('assets');
+            $table->foreignId('attack_id')->constrained('attacks')->onDelete('cascade');
+            $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
             $table->timestamps();
         });
     }

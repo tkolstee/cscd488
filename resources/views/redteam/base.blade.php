@@ -20,11 +20,12 @@
             @yield('pagecontent')
         </div>
         <div>
-            <a href="/redteam/home"><button>home</button></a>
-            <a href="/redteam/attacks"><button>attacks</button></a>
-            <a href="/redteam/learn"><button>learn</button></a>
-            <a href="/redteam/store"><button>store</button></a>
-            <a href="/redteam/status"><button>status</button></a>
+            <a href="/redteam/home"><button>Home</button></a>
+            <a href="/redteam/attacks"><button>Attacks</button></a>
+            <a href="/redteam/learn"><button>Learn</button></a>
+            <a href="/redteam/store"><button>Store</button></a>
+            <a href="/redteam/status"><button>Status</button></a>
+            <a href="/redteam/settings"><button>Team Settings</button></a>
         </div>
     </div>
 @endsection
