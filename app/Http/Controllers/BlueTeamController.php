@@ -67,7 +67,7 @@ class BlueTeamController extends Controller {
         $teamID = Auth::user()->blueteam;
         $team = Team::find($teamID);
         if($team == null){
-            throw new Exception("invalid-team-selected");
+            throw new TeamNotFoundException();
         }
         $totalBalance = 0;
         if(!empty($cart)){
@@ -78,13 +78,13 @@ class BlueTeamController extends Controller {
                     $i++;
                     $asset = Asset::all()->where('name','=',$cart[$i])->first();
                     if($asset == null){
-                        throw new Exception("invalid-asset-name");
+                        throw new AssetNotFoundException();
                     }
                     $totalBalance += ($asset->purchase_cost * $sellRate);
                 }else{
                     $asset = Asset::all()->where('name','=',$cart[$i])->first();
                     if($asset == null){
-                        throw new Exception("invalid-asset-name");
+                        throw new AssetNotFoundException();
                     }
                     $totalBalance -= ($asset->purchase_cost);
                 }
@@ -102,7 +102,7 @@ class BlueTeamController extends Controller {
                     $assetId = substr(Asset::all()->where('name','=',$cart[$i])->pluck('id'), 1, 1);
                     $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $assetId)->first();
                     if($currAsset == null){
-                        throw new Exception("do-not-own-asset");
+                        throw new InventoryNotFoundException();
                     }
                     $currAsset->quantity -= 1;
                     if($currAsset->quantity == 0){
@@ -162,7 +162,7 @@ class BlueTeamController extends Controller {
         }
         $blueteam = Team::find(Auth::user()->blueteam);
         if($blueteam == null){
-            throw new Exception("invalid-team-selected");
+            throw new TeamNotFoundException();
         }
         $cart = session('cart');
         $alreadySold = [];
@@ -182,14 +182,15 @@ class BlueTeamController extends Controller {
             }
         foreach($assetNames as $asset){
             $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
-            $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $assetId)->first();
-            if($currAsset == null){
-                throw new Exception("do-not-own-asset");
-            }
             $actAsset = Asset::find($assetId);
             if($actAsset == null){
-                throw new Exception("invalid-asset-name");
+                throw new AssetNotFoundException();
             }
+            $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $assetId)->first();
+            if($currAsset == null){
+                throw new InventoryNotFoundException();
+            }
+           
             foreach($alreadySold as $itemSold){
                 if($itemSold == $asset){
                     $currAsset->quantity--;
@@ -226,7 +227,7 @@ class BlueTeamController extends Controller {
         }
         $blueteam = Team::find(Auth::user()->blueteam);
         if($blueteam == null){
-            throw new Exception("invalid-team-selected");
+            throw new TeamNotFoundException();
         }
         $blueteam->balance = 1000; $blueteam->update(); //DELETE THIS IS FOR TESTING PURPOSES
         $cart = session('cart');
@@ -238,7 +239,7 @@ class BlueTeamController extends Controller {
         foreach($assetNames as $asset){
             $actAsset = Asset::all()->where('name','=',$asset)->first();
             if($actAsset == null){
-                throw new Exception("invalid-asset-name");
+                throw new AssetNotFoundException();
             }
             $newCart[] = $asset;
             session(['cart' => $newCart]);
