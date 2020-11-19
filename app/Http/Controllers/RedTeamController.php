@@ -11,6 +11,7 @@ use View;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use App\Exceptions\InventoryNotFoundException;
+use App\Models\AttackLog;
 
 class RedTeamController extends Controller {
 
@@ -99,24 +100,6 @@ class RedTeamController extends Controller {
         return view('redteam.home')->with('redteam',$redteam);
     }
 
-    public function attackHandler(request $request){
-        if($request->result == ""){
-            $error = "No-Attack-Selected";
-            return $this->chooseAttack($request)->with(compact('error'));
-        }
-        $redteam = Team::find(Auth::user()->redteam);
-        $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
-        //TEST HANDLER UNTIL WE KNOW MORE ABOUT ATTACKS
-        if($request->result == "success"){
-            $redteam->balance += 1000;
-            $redteam->update();
-            $attMsg = "Success in Attacking";
-        }else{
-            $attMsg = "Failure in Attacking";
-        }
-        return $this->home()->with(compact('attMsg'));
-    }
-
     public function attacks(){
         $possibleAttacks = Attack::all();
         $redteam = Team::find(Auth::user()->redteam);
@@ -128,13 +111,30 @@ class RedTeamController extends Controller {
             $error = "No-Attack-Selected";
             return $this->chooseAttack($request)->with(compact('error'));
         }
-        $user = Auth::user();
         $redteam = Team::find(Auth::user()->redteam);
         $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
-        $attack = Attack::all()->where('name', '=', $request->result);
-        if($attack->isEmpty()){ throw new AssetNotFoundException();}
-        $attack = $attack->first();
-        return view('redteam.performAttack')->with(compact('redteam','blueteam','attack'));
+        $attack = Attack::all()->where('name', '=', $request->result)->first();
+        if($attack == null){ throw new AssetNotFoundException();}
+        
+        $attackLog = AttackLog::factory()->make([
+            'attack_id' => $attack->id,
+            'redteam_id' => $redteam->id,
+            'blueteam_id' => $blueteam->id,
+            'difficulty' => $attack->difficulty,
+            'detection_chance' => $attack->detection_chance,
+        ]);
+        $attackLog = $redteam->onPreAttack($attackLog);
+        $attackLog = $blueteam->onPreAttack($attackLog);
+        //call onPreAttack for the attack itself?
+        $attackLog->save();
+        $attMsg = "Success: ";
+        if ($attackLog->success){ // this could be neater 
+            $attMsg .= "true";
+        }
+        else {
+            $attMsg .= "false";
+        }
+        return $this->home()->with(compact('attMsg'));
     }
 
     public function chooseAttack(request $request){
