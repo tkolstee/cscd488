@@ -25,7 +25,7 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::any('/redteam/{page}', [App\Http\Controllers\RedTeamController::class, 'page'])->name('redteam');
 
-    Route::get('/home', [App\Http\Controllers\AssetController::class, 'prefillTest'])->name('home');
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
 
 //TestFill Assets
