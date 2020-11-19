@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Attacks;
 
 use App\Interfaces\AttackHandler;
+use App\Models\Attack;
 
 class SQLInjectionAttack extends Attack implements AttackHandler
 {

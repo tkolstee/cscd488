@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Assets;
 
 use App\Interfaces\AttackHandler;
+use App\Models\Asset;
 
 class SQLDatabaseAsset extends Asset implements AttackHandler
 {
