@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         \App\Models\Asset::factory()->create([
-            'name' => 'testAssetBlue',
+            'name' => 'SQLDatabase',
             'type' => 1,
             'purchase_cost' => 100,
             'ownership_cost' => 1,
@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $attack = new \App\Models\Attack();
-        $attack->name = "TestAttackName";
+        $attack->name = "SQLInjection";
         $attack->difficulty = 5;
         $attack->detection_chance = 1;
         $attack->save();
