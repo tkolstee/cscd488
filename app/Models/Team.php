@@ -6,6 +6,7 @@ use App\Interfaces\AttackHandler;
 use Error;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Exceptions\AssetNotFoundException;
 
 class Team extends Model implements AttackHandler
 {
@@ -34,6 +35,7 @@ class Team extends Model implements AttackHandler
             }
             catch (Error $e) {
                 //Caused by specific asset model class not existing. So onPreAttack() cannot be called
+                throw new AssetNotFoundException();
             }
         }
         return $attackLog;

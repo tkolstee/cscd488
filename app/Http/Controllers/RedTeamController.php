@@ -37,6 +37,7 @@ class RedTeamController extends Controller {
             case 'settings': return $this->settings($request); break;
             case 'changename': return $this->changeName($request); break;
             case 'leaveteam': return $this->leaveTeam($request); break;
+            case 'minigamecomplete': return $this->minigameComplete($request); break;
             default: return $this->home(); break;
         }
     }
@@ -106,6 +107,49 @@ class RedTeamController extends Controller {
         return view('redteam.attacks')->with(compact('redteam','possibleAttacks')); 
     }
 
+    public function minigameComplete(request $request){
+        $attackLog = AttackLog::find($request->attackLogID);
+        $redteam = Team::find($attackLog->redteam_id);
+        $blueteam = Team::find($attackLog->blueteam_id);
+        $attMsg = "Success: ";
+        if($request->result == 1){
+            $balanceAcquired = 1000; //change later based on attack
+            $balanceLost = $balanceAcquired / 2; //change later
+            $attackLog->success = 1;
+            $redteam->balance += 1000;
+            $blueteam->balance -= $balanceLost;
+            if($blueteam->balance < 0){
+                $blueteam->balance = 0;
+            }
+            $redteam->update();
+            $blueteam->update();
+            $attMsg .= "true";
+        }else{
+            $attackLog->success = 0;
+            $attMsg .= "false";
+        }
+        $attackLog->update();
+        return $this->home()->with(compact('attMsg'));
+    }
+
+    public function minigameStart($attackLog){
+        if($attackLog->possible == 0){
+            $error = "attack-not-possible";
+            return $this->home()->with(compact('error'));
+        }
+        //possibly find the minigame for that attack, then return different view or minigame
+        $redteam = Team::find($attackLog->redteam_id);
+        $blueteam = Team::find($attackLog->blueteam_id);
+        $attack = Attack::find($attackLog->attack_id);
+        if($redteam == null || $blueteam == null){
+            throw new TeamNotFoundException();
+        }
+        if($attack == null){
+            throw new AssetNotFoundException();
+        }
+        return view('redteam.minigame')->with(compact('attackLog','redteam','blueteam','attack'));
+    }
+
     public function performAttack(request $request){
         if($request->result == ""){
             $error = "No-Attack-Selected";
@@ -115,7 +159,6 @@ class RedTeamController extends Controller {
         $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
         $attack = Attack::all()->where('name', '=', $request->result)->first();
         if($attack == null){ throw new AssetNotFoundException();}
-        
         $attackLog = AttackLog::factory()->make([
             'attack_id' => $attack->id,
             'redteam_id' => $redteam->id,
@@ -123,18 +166,18 @@ class RedTeamController extends Controller {
             'difficulty' => $attack->difficulty,
             'detection_chance' => $attack->detection_chance,
         ]);
+        $class = "\\App\\Models\\Attacks\\" . $attack->name . "Attack";
+        try{
+            $attackHandler = new $class();
+            $attackLog = $attackHandler->onPreAttack($attackLog);
+        }catch(Error $e){
+            throw new AssetNotFoundException();
+        }
         $attackLog = $redteam->onPreAttack($attackLog);
         $attackLog = $blueteam->onPreAttack($attackLog);
         //call onPreAttack for the attack itself?
         $attackLog->save();
-        $attMsg = "Success: ";
-        if ($attackLog->success){ // this could be neater 
-            $attMsg .= "true";
-        }
-        else {
-            $attMsg .= "false";
-        }
-        return $this->home()->with(compact('attMsg'));
+        return $this->minigameStart($attackLog);
     }
 
     public function chooseAttack(request $request){

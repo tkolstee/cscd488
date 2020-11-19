@@ -15,12 +15,13 @@ class CreateAttackLogsTable extends Migration
     {
         Schema::create('attack_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('attack_id')->constrained('attacks');
-            $table->foreignId('blueteam_id')->constrained('teams');
-            $table->foreignId('redteam_id')->constrained('teams');
+            $table->foreignId('attack_id')->constrained('attacks')->onDelete('cascade');
+            $table->foreignId('blueteam_id')->constrained('teams')->onDelete('cascade');
+            $table->foreignId('redteam_id')->constrained('teams')->onDelete('cascade');
             $table->integer('difficulty');
             $table->float('detection_chance');
             $table->boolean('success');
+            $table->integer('possible');
             $table->timestamps();
         });
     }

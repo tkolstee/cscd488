@@ -13,7 +13,7 @@ class SQLDatabaseAsset extends Asset implements AttackHandler
         $attack = Attack::find($attackLog->attack_id);
         //Test for now! attack will succeed if blue team has a sqldatabase
         if ($attack->name == "SQLInjection") {
-            $attackLog->success = true;
+            $attackLog->possible = 1;
         }
         return $attackLog;
     }

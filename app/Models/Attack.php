@@ -15,6 +15,7 @@ class Attack extends Model
      */
     protected $fillable = [
         'name',
+        'possible',
         'difficulty',
         'detection_chance'
     ];

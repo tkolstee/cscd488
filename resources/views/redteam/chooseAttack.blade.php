@@ -22,7 +22,7 @@
     </div>
 </form>
 @else
-<strong>You have no methods of attack against {{ $blueteam->name }}</strong><br>
-<a href="/redteam/startattack"><button>Pick a Different Team</button></a>
+    <strong>You have no methods of attack against {{ $blueteam->name }}</strong><br>
+    <a href="/redteam/startattack"><button>Pick a Different Team</button></a>
 @endif
 @endsection

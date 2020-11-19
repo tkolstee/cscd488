@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
 
         $attack = new \App\Models\Attack();
         $attack->name = "SQLInjection";
+        $attack->possible = 0;
         $attack->difficulty = 5;
         $attack->detection_chance = 1;
         $attack->save();
