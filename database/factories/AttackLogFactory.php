@@ -28,6 +28,7 @@ class AttackLogFactory extends Factory
             'difficulty' => 5,
             'detection_chance' => 1,
             'success' => false,
+            'possible' => false,
         ];
     }
 }

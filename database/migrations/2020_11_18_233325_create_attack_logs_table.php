@@ -21,7 +21,7 @@ class CreateAttackLogsTable extends Migration
             $table->integer('difficulty');
             $table->float('detection_chance');
             $table->boolean('success');
-            $table->integer('possible');
+            $table->boolean('possible');
             $table->timestamps();
         });
     }

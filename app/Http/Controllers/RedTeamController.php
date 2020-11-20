@@ -133,7 +133,7 @@ class RedTeamController extends Controller {
     }
 
     public function minigameStart($attackLog){
-        if($attackLog->possible == 0){
+        if(!$attackLog->possible){
             $error = "attack-not-possible";
             return $this->home()->with(compact('error'));
         }
