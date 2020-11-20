@@ -24,6 +24,12 @@ class Team extends Model implements AttackHandler
     ];
 
     public function onPreAttack($attackLog) {
+        if ($this->blue == 1){
+            $attackLog->blueteam_id = $this->id;
+        }
+        else if ($this->blue == 0){
+            $attackLog->redteam_id = $this->id;
+        }
         //check all assets and call onPreAttack() if possible
         $inventories = Inventory::all()->where('team_id','=', $this->id);
         foreach($inventories as $inventory){

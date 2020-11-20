@@ -12,6 +12,7 @@ use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use App\Exceptions\InventoryNotFoundException;
 use App\Models\AttackLog;
+use Error;
 
 class RedTeamController extends Controller {
 
@@ -159,10 +160,9 @@ class RedTeamController extends Controller {
         $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
         $attack = Attack::all()->where('name', '=', $request->result)->first();
         if($attack == null){ throw new AssetNotFoundException();}
+        elseif($blueteam == null || $redteam == null){ throw new TeamNotFoundException();}
         $attackLog = AttackLog::factory()->make([
             'attack_id' => $attack->id,
-            'redteam_id' => $redteam->id,
-            'blueteam_id' => $blueteam->id,
             'difficulty' => $attack->difficulty,
             'detection_chance' => $attack->detection_chance,
         ]);
