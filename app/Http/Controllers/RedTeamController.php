@@ -110,26 +110,22 @@ class RedTeamController extends Controller {
 
     public function minigameComplete(request $request){
         $attackLog = AttackLog::find($request->attackLogID);
-        $redteam = Team::find($attackLog->redteam_id);
-        $blueteam = Team::find($attackLog->blueteam_id);
         $attMsg = "Success: ";
         if($request->result == 1){
-            $balanceAcquired = 1000; //change later based on attack
-            $balanceLost = $balanceAcquired / 2; //change later
-            $attackLog->success = 1;
-            $redteam->balance += 1000;
-            $blueteam->balance -= $balanceLost;
-            if($blueteam->balance < 0){
-                $blueteam->balance = 0;
-            }
-            $redteam->update();
-            $blueteam->update();
+            $attackLog->success = true;
             $attMsg .= "true";
         }else{
-            $attackLog->success = 0;
+            $attackLog->success = false;
             $attMsg .= "false";
         }
         $attackLog->update();
+        try {
+            $attack = Attack::find($attackLog->attack_id);
+            $attack->onAttackComplete($attackLog);
+        }
+        catch (TeamNotFoundException $e){
+            $attMsg = "Error while executing attack. Attack was not completed.";
+        }
         return $this->home()->with(compact('attMsg'));
     }
 
