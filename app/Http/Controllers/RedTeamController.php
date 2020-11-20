@@ -134,8 +134,8 @@ class RedTeamController extends Controller {
 
     public function minigameStart($attackLog){
         if(!$attackLog->possible){
-            $error = "attack-not-possible";
-            return $this->home()->with(compact('error'));
+            $attMsg = "Success: impossible";
+            return $this->home()->with(compact('attMsg'));
         }
         //possibly find the minigame for that attack, then return different view or minigame
         $redteam = Team::find($attackLog->redteam_id);
