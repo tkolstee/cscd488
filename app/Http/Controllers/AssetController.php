@@ -32,6 +32,8 @@ class AssetController extends Controller
         if(Attack::all()->isEmpty()){
             $attack = new Attack();
             $attack->name = "TestAttackName";
+            $attack->difficulty = 3;
+            $attack->detection_risk = 3;
             $attack->save();
         }
         if(Game::all()->isEmpty()){

@@ -18,7 +18,7 @@ class RedTeamController extends Controller {
     public function page($page, Request $request) {
         $redteam = Team::find(Auth::user()->redteam);
         if($redteam == null && $page != 'create'){
-            return $this->home(); 
+            return $this->home();
         }
         switch ($page) {
             case 'home': return $this->home(); break;
@@ -121,7 +121,7 @@ class RedTeamController extends Controller {
     public function attacks(){
         $possibleAttacks = $this->possibleAttacks();
         $redteam = Team::find(Auth::user()->redteam);
-        return view('redteam.attacks')->with(compact('redteam','possibleAttacks')); 
+        return view('redteam.attacks')->with(compact('redteam','possibleAttacks'));
     }
 
     private function possibleAttacks(){
@@ -262,7 +262,7 @@ class RedTeamController extends Controller {
     }
 
     public function create(request $request){
-        if($request->name == ""){ return view('redteam.create');} 
+        if($request->name == ""){ return view('redteam.create');}
         $request->validate([
             'name' => ['required', 'unique:teams', 'string', 'max:255'],
         ]);

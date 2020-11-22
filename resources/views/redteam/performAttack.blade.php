@@ -3,7 +3,7 @@
 @section('title', 'Red Team Home')
 
 @section('pagecontent')
-<h3>Performing {{ $attack->name }} 
+<h3>Performing {{ $attack->name }}
 against {{ $blueteam->name }}:</h3>
 <form method="POST" action="/redteam/attackhandler">
     @csrf

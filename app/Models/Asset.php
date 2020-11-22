@@ -21,4 +21,7 @@ class Asset extends Model
         'purchase_cost',
         'ownership_cost',
     ];
+
+    public function onPreAttack($attack) { }
+
 }
