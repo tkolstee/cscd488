@@ -23,8 +23,6 @@
     width:40%;
 }
 
-
-
 .btn.btn-primary {
     background-color: #00CC99;
     border: none;
@@ -137,6 +135,7 @@
     
     width: 100%;
     background-color: rgba(212, 212, 212, 0.301);
+    height: 677px;
    }
 .informationSection{
     width: 20%;
@@ -144,7 +143,7 @@
     background-color: white;
 }
 .footer {
-        height:75px;
+       
         background-color: black;
         text-align: center;
 }
@@ -157,11 +156,109 @@
 }
 
 
-/*****************************************************LOGIN.php BELOW*******************************/
-.card-header{
-    
+/*****************************************************LOGIN/REGISTER/APP BELOW*******************************/
+
+
+.tests{
+    width:50%;
 }
 
+.testss{
+    display:flex;
+}
 
+.py-4 a{
+    color:blue;
+}
+.py-4 a:hover{
+    color:black;
+}
 
-
+.login-title{
+    padding-bottom:6%;
+    font-size:18pt;
+    font-weight: bold;
+    padding-left:22%;
+}
+.card{ 
+    width:110%;
+    margin-top:15%;
+}
+  
+  form {
+    margin:auto;/* nice thing of auto margin if display:flex; it center both horizontal and vertical :) */
+    width:100%;
+    color:black;
+  }
+.form-check-label {
+    padding-left:17%;
+    width:60%;
+}
+.btn.btn-primary2 {
+    background-color: #00CC99;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 23px 204px;
+    cursor: pointer;
+    width:41%;
+    margin-right:5%;
+}
+.btn.btn-primary2:hover {
+    background-color: #00FFCC;
+    
+}
+#remember{
+   
+   width:15%;
+   padding-left:30%;
+}
+.container_left{
+    width:50%;
+}
+.container_right{
+    float:right;
+    width:50%;
+}
+.card-body{
+    float:right;
+    padding:0;
+}
+.container{
+    height:577px;
+    background: white;   
+}
+.lContainer{
+    width:51%;
+    height: 677px;
+    float:left;
+}
+.rContainer{
+    width:49%;
+    height: 677px;
+   
+    float:right;
+    background-color:white;
+}
+.form-group {
+    padding-top:15px;
+    width:116%;
+}
+.offset-md-4{
+    margin-left:10%;
+}
+.btn-link{
+    padding-left:31%;
+}
+.card-header{
+   
+    font-weight: bold;
+    font-size: 16pt;
+}
+.offset-md-4Register{
+    margin-left:45%;
+}
