@@ -248,8 +248,8 @@ class BlueTeamController extends Controller {
     }//end sell
 
     public function storeInventory(){
-        $blueteam = Team::find(Auth::user()->blueteam);
-        $inventory = Inventory::all()->where('team_id','=', Auth::user()->blueteam);
+        $blueteam = Auth::user()->getBlueTeam();
+        $inventory = $blueteam->inventories();
         $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
         return view('blueteam.store')->with(compact('blueteam', 'assets', 'inventory'));
     }

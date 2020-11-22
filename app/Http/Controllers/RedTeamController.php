@@ -218,8 +218,8 @@ class RedTeamController extends Controller {
     }//end sell
 
     public function storeInventory(){
-        $redteam = Team::find(Auth::user()->redteam);
-        $inventory = Inventory::all()->where('team_id','=', Auth::user()->redteam);
+        $redteam = Auth::user()->getRedTeam();
+        $inventory = $redteam->inventories();
         $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
         return view('redteam.store')->with(compact('redteam', 'assets', 'inventory'));
     }

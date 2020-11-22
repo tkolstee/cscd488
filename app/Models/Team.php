@@ -56,11 +56,12 @@ class Team extends Model implements AttackHandler
     }
 
     public function assets() {
-        return $this->hasManyThrough('App\Models\Asset', 'App\Models\Inventory');
+        return $this->belongstoManyThrough('App\Models\Asset', 'App\Models\Inventory');
     }
 
     public function inventories() {
-        return $this->hasMany('App\Models\Inventory');
+        return Inventory::all()->where('team_id', '=', $this->id);
+        //return $this->hasMany('App\Models\Inventory');
     }
 
     public function setName($newName) {
