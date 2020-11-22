@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Asset;
 use App\Models\Attack;
+use App\Models\Game;
+use App\Models\Setting;
 
 class AssetController extends Controller
 {
@@ -31,6 +33,13 @@ class AssetController extends Controller
             $attack = new Attack();
             $attack->name = "TestAttackName";
             $attack->save();
+        }
+        if(Game::all()->isEmpty()){
+            $game = new Game();
+            $game->save();
+        }
+        if(Setting::get('turn_end_time') == null){
+            Setting::set('turn_end_time', '7:00');
         }
         return view('home');
     }

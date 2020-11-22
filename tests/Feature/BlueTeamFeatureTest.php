@@ -3,15 +3,23 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use App\Models\User;
 use App\Models\Team;
 use App\Models\Asset;
+use App\Models\Game;
 use Tests\TestCase;
 
 class BlueTeamFeatureTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function setUp(): void{
+        parent::setUp();
+        if(Game::all()->isEmpty()){
+            $game = new Game();
+            $game->save();
+        }
+    }
 
     public function testUserCanViewBlueTeamPages()
     {
@@ -73,6 +81,23 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertSee($asset->name);
     }
 
+    public function testBlueTeamCanAddToCart()
+    {
+        $asset1 = Asset::factory()->create();
+        $asset2 = Asset::factory()->create();
+        $team = Team::factory()->create([
+            'balance' => 1000,
+        ]);
+        $user = User::factory()->create([
+            'blueteam' => $team->id
+        ]);
+        $response = $this->actingAs($user)->post('/blueteam/buy', [
+            'results' => [$asset1->name, $asset2->name],
+        ]);
+        $response->assertViewIs('blueteam.store');
+        $response->assertSee([$asset1->name, $asset2->name]);
+    }
+
     public function testBlueTeamCanBuyAssets()
     {
         $asset = Asset::factory()->create();
@@ -80,30 +105,15 @@ class BlueTeamFeatureTest extends TestCase
             'balance' => 1000,
         ]);
         $user = User::factory()->create([
-            'blueteam' => $team->id
+            'blueteam' => $team->id,
+            'leader' => 1,
         ]);
-        $expectedBalance = ($team->balance) - ($asset->purchase_cost);
-        $response = $this->actingAs($user)->post('/blueteam/buy', [
+        $this->actingAs($user)->post('/blueteam/buy', [
             'results' => [$asset->name],
         ]);
-        $response->assertViewIs('blueteam.store');
-        $response->assertSee('Revenue: ' . $expectedBalance);
-    }
-
-    public function testBlueTeamCannotBuyWithNoMoney()
-    {
-        $asset = Asset::factory()->create();
-        $team = Team::factory()->create([
-            'balance' => 0,
-        ]);
-        $user = User::factory()->create([
-            'blueteam' => $team->id
-        ]);
-        $expectedBalance = $team->balance;
-        $response = $this->actingAs($user)->post('/blueteam/buy', [
-            'results' => [$asset->name],
-        ]);
-        $response->assertViewIs('blueteam.store');
+        $expectedBalance = $team->balance - $asset->purchase_cost;
+        $response = $this->actingAs($user)->get('/blueteam/endturn');
+        $response->assertViewIs('blueteam.home');
         $response->assertSee('Revenue: ' . $expectedBalance);
     }
 }
