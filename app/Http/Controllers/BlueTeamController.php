@@ -5,15 +5,13 @@ use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Models\Asset;
 use App\Models\Inventory;
-use App\Models\User;
 use App\Models\Blueteam;
 use App\Models\Setting;
-use View;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use App\Exceptions\InventoryNotFoundException;
-
+use Exception;
 
 class BlueTeamController extends Controller {
 
@@ -65,23 +63,7 @@ class BlueTeamController extends Controller {
             return $this->settings($request)->with(compact('error'));
         }
         $user = Auth::user();
-        $teamID = $user->blueteam;
-        $user->blueteam = null;
-        $user->update();
-        $team = Team::find($teamID);
-        if($team == null){
-            throw new TeamNotFoundException();
-        }
-        if($user->leader == 1){
-            $members = User::all()->where('blueteam','=',$teamID)->where('leader','=',0);
-            if($members->isEmpty()){
-                Team::destroy($teamID);
-            }else{
-                $newLeader = $members->first();
-                $newLeader->leader = 1;
-                $newLeader->update();
-            }
-        }
+        $user->leaveBlueTeam();
         return $this->home();
     }
 
@@ -90,12 +72,9 @@ class BlueTeamController extends Controller {
             $error = "name-taken";
             return $this->settings($request)->with(compact('error'));
         }
-        $teamID = Auth::user()->blueteam;
-        $team = Team::find($teamID);
-        $team->name = $request->name;
-        $team->update();
-        $newTeam = Team::find($teamID);
-        if($newTeam->name == $request->name){
+        $team = Auth::user()->getBlueTeam();
+        $success = $team->setName($request->name);
+        if($success){
             return $this->settings($request);
         }else{
             throw new Exception("Name unchanged");
@@ -111,13 +90,9 @@ class BlueTeamController extends Controller {
         if($request->leaveTeamBtn == 1){
             $leaveTeam = true;
         }
-        $teamID = Auth::user()->blueteam;
-        $blueteam = Team::find($teamID);
-        if($blueteam == null){
-            throw new TeamNotFoundException();
-        }
-        $leader = User::all()->where('blueteam','=',$teamID)->where('leader','=',1)->first();
-        $members = User::all()->where('blueteam','=',$teamID)->where('leader','=',0);
+        $blueteam = Auth::user()->getBlueTeam();
+        $leader = $blueteam->leader();
+        $members = $blueteam->members();
         return view('blueteam/settings')->with(compact('blueteam','leader','members','changeName','leaveTeam'));
     }
 
@@ -209,11 +184,14 @@ class BlueTeamController extends Controller {
     }
 
     public function home(){
-        $blueid = Auth::user()->blueteam;
-        $blueteam = Team::find($blueid);
-        if($blueid == ""){ return view('blueteam.home')->with(compact('blueteam'));}
-        $leader = User::all()->where('blueteam','=',$blueid)->where('leader','=',1)->first();
-        $members = User::all()->where('blueteam','=',$blueid)->where('leader','=',0);
+        try {
+            $blueteam = Auth::user()->getBlueTeam();
+        }
+        catch (TeamNotFoundException $e) {
+            return view('blueteam.home');
+        }
+        $leader = $blueteam->leader();
+        $members = $blueteam->members();
         $turn = 0;
         return  view('blueteam.home')->with(compact('blueteam','leader','members', 'turn'));
     }
@@ -221,41 +199,35 @@ class BlueTeamController extends Controller {
     public function sell(request $request){
         //change this to proportion sell rate
         $sellRate = 1;
-        $blueteam = Team::find(Auth::user()->blueteam);
+        $blueteam = Auth::user()->getBlueTeam();
         $assetNames = $request->input('results');
         $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
-        $assetNames = $request->input('results');
         if($assetNames == null){
             $error = "no-asset-selected";
             return view('blueteam.store')->with(compact('assets','error', 'blueteam'));
         }
-        $blueteam = Team::find(Auth::user()->blueteam);
-        if($blueteam == null){
-            throw new TeamNotFoundException();
-        }
         $cart = session('cart');
         $alreadySold = [];
-            if($cart != null){
-                $nextIsSell = 0;
-                foreach($cart as $item){
-                    if($nextIsSell == 1){
-                        $alreadySold[] = $item;
-                    }
-                    if($item == -1){
-                        $nextIsSell = 1;
-                    }else{
-                        $nextIsSell = 0;
-                    }
-                    $newCart[] = $item;
+        if($cart != null){
+            $nextIsSell = 0;
+            foreach($cart as $item){
+                if($nextIsSell == 1){
+                    $alreadySold[] = $item;
                 }
+                if($item == -1){
+                    $nextIsSell = 1;
+                }else{
+                    $nextIsSell = 0;
+                }
+                $newCart[] = $item;
             }
+        }
         foreach($assetNames as $asset){
-            $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
-            $actAsset = Asset::find($assetId);
+            $actAsset = Asset::all()->where('name','=',$asset)->first();
             if($actAsset == null){
                 throw new AssetNotFoundException();
             }
-            $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $assetId)->first();
+            $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $actAsset->id)->first();
             if($currAsset == null){
                 throw new InventoryNotFoundException();
             }
@@ -284,36 +256,22 @@ class BlueTeamController extends Controller {
 
     public function buy(request $request){
         $assetNames = $request->input('results');
-        $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
-        $blueteam = Team::find(Auth::user()->blueteam);
-        if($blueteam == null){
-            throw new TeamNotFoundException();
-        }
+        $blueteam = Auth::user()->getBlueTeam();
         if($assetNames == null){
+            $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
             $error = "no-asset-selected";
             return view('blueteam.store')->with(compact('assets','error', 'blueteam'));
         }
-        $blueteam = Team::find(Auth::user()->blueteam);
-        if($blueteam == null){
-            throw new TeamNotFoundException();
-        }
         $blueteam->balance = 1000; $blueteam->update(); //DELETE THIS IS FOR TESTING PURPOSES
         $cart = session('cart');
-            if($cart != null){
-                foreach($cart as $item){
-                    $newCart[] = $item;
-                }
-            }
         foreach($assetNames as $asset){
             $actAsset = Asset::all()->where('name','=',$asset)->first();
-            if($actAsset == null){
-                throw new AssetNotFoundException();
-            }
-            $newCart[] = $asset;
-            session(['cart' => $newCart]);
+            if($actAsset == null){ throw new AssetNotFoundException();}
+            $cart[] = $asset;
         }
-        return view('blueteam.store')->with(compact('blueteam', 'assets'));
-    }//end buy
+        session(['cart' => $cart]);
+        return $this->store();
+    }
 
     public function store(){
         $blueteam = Team::find(Auth::user()->blueteam);
@@ -326,11 +284,7 @@ class BlueTeamController extends Controller {
             $blueteams = Team::all()->where('blue', '=', 1);
             return view('blueteam.join')->with('blueteams', $blueteams);
         }
-        $user = Auth::user();
-        $blueteam = Team::all()->where('name', '=', $request->result);
-        if($blueteam->isEmpty()) throw new TeamNotFoundException();
-        $user->blueteam = substr($blueteam->pluck('id'), 1, 1);
-        $user->update();
+        Auth::user()->joinBlueTeam($request->result);
         return $this->home();
     }
 
@@ -339,30 +293,19 @@ class BlueTeamController extends Controller {
         $this->validate($request, [
             'name' => ['required', 'unique:teams', 'string', 'max:255'],
         ]);
-        $team = new Team();
-        $team->name = $request->name;
-        $team->balance = 0;
-        $team->blue = 1;
-        $team->reputation = 0;
-        $team->save();
-        $blueteam = new Blueteam();
-        $teamID = substr(Team::all()->where('name', '=', $request->name)->pluck('id'), 1, 1);
-        $blueteam->team_id = $teamID;
-        $blueteam->save();
-        $user = Auth::user();
-        $user->blueteam = $teamID;
-        $user->leader = 1;
-        $user->update();
+        $team = Team::factory()->create([
+            'name' => $request->name,
+            'balance' => 0,
+            'reputation' => 0
+        ]);
+        Auth::user()->createBlueTeam($team);
         return $this->home();
     }
 
     public function delete(request $request){
-        $team = Team::all()->where('name', '=', $request->name);
-        if($team->isEmpty()) {
-            throw new TeamNotFoundException();
-        }
-        $id = substr($team->pluck('id'), 1, 1);
-        Team::destroy($id);
+        $team = Team::all()->where('name', '=', $request->name)->first();
+        if($team == null) { throw new TeamNotFoundException();}
+        Auth::user()->deleteTeam($team);
         return view('home');
     }
 

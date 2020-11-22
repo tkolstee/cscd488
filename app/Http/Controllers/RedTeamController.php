@@ -7,12 +7,12 @@ use App\Models\Asset;
 use App\Models\Inventory;
 use App\Models\Attack;
 use Auth;
-use View;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use App\Exceptions\InventoryNotFoundException;
 use App\Models\AttackLog;
 use Error;
+use Exception;
 
 class RedTeamController extends Controller {
 
@@ -51,15 +51,7 @@ class RedTeamController extends Controller {
             $error = "invalid-choice";
             return $this->settings($request)->with(compact('error'));
         }
-        $user = Auth::user();
-        $teamID = $user->redteam;
-        $user->redteam = null;
-        $user->update();
-        $team = Team::find($teamID);
-        if($team == null){
-            throw new TeamNotFoundException();
-        }
-        Team::destroy($teamID);
+        Auth::user()->leaveRedTeam();
         return $this->home();
     }
 
@@ -68,12 +60,9 @@ class RedTeamController extends Controller {
             $error = "name-taken";
             return $this->settings($request)->with(compact('error'));
         }
-        $teamID = Auth::user()->redteam;
-        $team = Team::find($teamID);
-        $team->name = $request->name;
-        $team->update();
-        $newTeam = Team::find($teamID);
-        if($newTeam->name == $request->name){
+        $team = Auth::user()->getRedTeam();
+        $success = $team->setName($request->name);
+        if($success){
             return $this->settings($request);
         }else{
             throw new Exception("Name unchanged");
@@ -89,11 +78,7 @@ class RedTeamController extends Controller {
         if($request->leaveTeamBtn == 1){
             $leaveTeam = true;
         }
-        $teamID = Auth::user()->redteam;
-        $redteam = Team::find($teamID);
-        if($redteam == null){
-            throw new TeamNotFoundException();
-        }
+        $redteam = Auth::user()->getRedTeam();
         return view('redteam/settings')->with(compact('redteam','changeName','leaveTeam'));
     }
 
@@ -283,7 +268,7 @@ class RedTeamController extends Controller {
     }
 
     public function store(){
-        $redteam = Team::find(Auth::user()->redteam);
+        $redteam = Auth::user()->getRedTeam();
         $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
         return view('redteam.store')->with(compact('redteam', 'assets'));
     }
@@ -293,25 +278,19 @@ class RedTeamController extends Controller {
         $request->validate([
             'name' => ['required', 'unique:teams', 'string', 'max:255'],
         ]);
-        $redteam = new Team();
-        $redteam->name = $request->name;
-        $redteam->balance = 0;
-        $redteam->blue = 0;
-        $redteam->reputation = 0;
-        $redteam->save();
-        $user = Auth::user();
-        $user->redteam = substr(Team::all()->where('name', '=', $request->name)->pluck('id'), 1, 1);
-        $user->update();
+        $redteam = Team::factory()->red()->create([
+            'name' => $request->name,
+            'balance' => 0,
+            'reputation' => 0,
+        ]);
+        Auth::user()->createRedTeam($redteam);
         return view('redteam.home')->with('redteam',$redteam);
     }
 
     public function delete(request $request){
-        $team = Team::all()->where('name', '=', $request->name);
-        if($team->isEmpty()) {
-            throw new TeamNotFoundException();
-        }
-        $id = substr($team->pluck('id'), 1, 1);
-        Team::destroy($id);
+        $team = Team::all()->where('name', '=', $request->name)->first();
+        if($team == null) { throw new TeamNotFoundException();}
+        Auth::user()->deleteTeam($team);
         return view('home');
     }
 }

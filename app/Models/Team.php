@@ -46,4 +46,25 @@ class Team extends Model implements AttackHandler
         }
         return $attackLog;
     }
+
+    public function leader() {
+        return User::all()->where('blueteam','=',$this->id)->where('leader','=',1)->first();
+    }
+
+    public function members() {
+        return User::all()->where('blueteam','=',$this->id)->where('leader','=',0);
+    }
+
+    public function assets() {
+        return $this->hasManyThrough('App\Models\Asset', 'App\Models\Inventory');
+    }
+
+    public function inventories() {
+        return $this->hasMany('App\Models\Inventory');
+    }
+
+    public function setName($newName) {
+        $this->name = $newName;
+        return $this->update();
+    }
 }
