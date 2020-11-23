@@ -237,8 +237,8 @@ class RedTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => [$asset->name]
         ]);
-        $this->expectException(InventoryNotFoundException::class);
-        $controller->sell($request);
+        $response = $controller->sell($request);
+        $this->assertEquals("not-enough-owned-".$asset->name, $response->error);
     }
 
     public function testSellNoItem(){

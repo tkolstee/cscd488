@@ -54,6 +54,7 @@ class RedTeamFeatureTest extends TestCase
             'redteam' => $team->id,
         ]);
         $response = $this->actingAs($user)->get('redteam/store');
+        $this->assertEquals(1, $response->content);
         $response->assertViewIs('redteam.store');
         $response->assertSee($asset->name);
     }

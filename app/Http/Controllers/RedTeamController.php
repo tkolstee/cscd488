@@ -98,7 +98,7 @@ class RedTeamController extends Controller {
 
     public function attacks(){
         $possibleAttacks = Attack::all();
-        $redteam = Team::find(Auth::user()->redteam);
+        $redteam = Auth::user()->getRedTeam();
         return view('redteam.attacks')->with(compact('redteam','possibleAttacks')); 
     }
 
@@ -186,8 +186,12 @@ class RedTeamController extends Controller {
     }
 
     public function startAttack(){
-        $targets = Team::all()->where('blue','=','1');
-        $redteam = Team::find(Auth::user()->redteam);
+        try{
+            $targets = Team::getBlueTeams();
+        }catch(TeamNotFoundException $e){
+            $targets = [];
+        }
+        $redteam = Auth::user()->getRedTeam();
         return view('redteam.startAttack')->with(compact('targets','redteam'));
     }
 
@@ -195,18 +199,18 @@ class RedTeamController extends Controller {
         //change this to proportion sell rate
         $sellRate = 1;
         $assetNames = $request->input('results');
-        $redteam = Auth::user()->getRedTeam();
         if($assetNames == null){
             $error = "no-asset-selected";
             return $this->store()->with(compact('error'));
         }
+        $redteam = Auth::user()->getRedTeam();
         foreach($assetNames as $assetName){
-            $asset = Asset::all()->where('name','=',$assetName)->first();
-            if ($asset == null){
-                throw new AssetNotFoundException();
-            }
+            $asset = Asset::get($assetName);
             $success = $redteam->sellAsset($asset);
-            if (!$success){ throw new InventoryNotFoundException();}
+            if (!$success) {
+                $error = "not-enough-owned-".$assetName;
+                return $this->store()->with(compact('error'));
+            }
         }
         return $this->store();
     }//end sell
@@ -219,26 +223,25 @@ class RedTeamController extends Controller {
 
     public function buy(request $request){
         $assetNames = $request->input('results');
-        $redteam = Auth::user()->getRedTeam();
         if($assetNames == null){
             $error = "no-asset-selected";
             return $this->store()->with(compact('error'));
         }
+        $redteam = Auth::user()->getRedTeam();
         $totalCost = 0;
+        //check total price
         foreach($assetNames as $assetName){
-            $asset = Asset::all()->where('name','=',$assetName)->first();
-            if($asset == null){
-                throw new AssetNotFoundException();
-            }
+            $asset = Asset::get($assetName);
             $totalCost += $asset->purchase_cost;
         }
         if($redteam->balance < $totalCost){
             $error = "not-enough-money";
             return $this->store()->with(compact('error'));
         }
+        //buy if you have enough
         foreach($assetNames as $assetName){
             $redteam = Auth::user()->getRedTeam();
-            $asset = Asset::all()->where('name','=',$assetName)->first();
+            $asset = Asset::get($assetName);
             $redteam->buyAsset($asset);
         }
         return $this->store();
@@ -246,7 +249,11 @@ class RedTeamController extends Controller {
 
     public function store(){
         $redteam = Auth::user()->getRedTeam();
-        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
+        try{
+            $assets = Asset::getBuyableBlue();
+        }catch(AssetNotFoundException $e){
+            $assets = null;
+        }
         return view('redteam.store')->with(compact('redteam', 'assets'));
     }
 
@@ -260,8 +267,7 @@ class RedTeamController extends Controller {
     }
 
     public function delete(request $request){
-        $team = Team::all()->where('name', '=', $request->name)->first();
-        if($team == null) { throw new TeamNotFoundException();}
+        $team = Team::get($request->name);
         Auth::user()->deleteTeam($team);
         return view('home');
     }

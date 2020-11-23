@@ -165,12 +165,12 @@ class BlueTeamController extends Controller {
     }
 
     public function sell(request $request){
-        $blueteam = Auth::user()->getBlueTeam();
         $assetNames = $request->input('results');
         if($assetNames == null){
             $error = "no-asset-selected";
             return $this->store()->with(compact('error'));
         }
+        $blueteam = Auth::user()->getBlueTeam();
         $sellCart = session('sellCart');
         foreach($assetNames as $asset){
             $actAsset = Asset::get($asset);
