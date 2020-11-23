@@ -250,7 +250,7 @@ class RedTeamController extends Controller {
     public function store(){
         $redteam = Auth::user()->getRedTeam();
         try{
-            $assets = Asset::getBuyableBlue();
+            $assets = Asset::getBuyableRed();
         }catch(AssetNotFoundException $e){
             $assets = null;
         }
