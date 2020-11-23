@@ -17,29 +17,37 @@ use Exception;
 class RedTeamController extends Controller {
 
     public function page($page, Request $request) {
-        $redteam = Team::find(Auth::user()->redteam);
-        if($redteam == null && $page != 'create'){
-            return $this->home(); 
+        try{
+            $redteam = Auth::user()->getRedTeam();
+        }catch(TeamNotFoundException $e){
+            $redteam = null;
         }
-        switch ($page) {
-            case 'home': return $this->home(); break;
-            case 'attacks': return $this->attacks(); break;
-            case 'learn': return view('redteam.learn')->with('redteam',$redteam); break;
-            case 'store': return $this->store();break;
-            case 'status': return view('redteam.status')->with('redteam',$redteam); break;
-            case 'create': return $this->create($request); break;
-            case 'buy': return $this->buy($request); break;
-            case 'storeinventory': return $this->storeInventory(); break;
-            case 'sell': return $this->sell($request); break;
-            case 'startattack': return $this->startAttack(); break;
-            case 'chooseattack': return $this->chooseAttack($request); break;
-            case 'performattack': return $this->performAttack($request); break;
-            case 'attackhandler': return $this->attackHandler($request); break;
-            case 'settings': return $this->settings($request); break;
-            case 'changename': return $this->changeName($request); break;
-            case 'leaveteam': return $this->leaveTeam($request); break;
-            case 'minigamecomplete': return $this->minigameComplete($request); break;
-            default: return $this->home(); break;
+        if($redteam == null){
+            switch ($page) {
+                case 'home': return $this->home(); break;
+                case 'create': return $this->create($request); break;
+                default: return $this->home(); break;
+            }
+        }else{
+            switch ($page) {
+                case 'home': return $this->home(); break;
+                case 'attacks': return $this->attacks(); break;
+                case 'learn': return view('redteam.learn')->with('redteam',$redteam); break;
+                case 'store': return $this->store();break;
+                case 'status': return view('redteam.status')->with('redteam',$redteam); break;
+                case 'buy': return $this->buy($request); break;
+                case 'storeinventory': return $this->storeInventory(); break;
+                case 'sell': return $this->sell($request); break;
+                case 'startattack': return $this->startAttack(); break;
+                case 'chooseattack': return $this->chooseAttack($request); break;
+                case 'performattack': return $this->performAttack($request); break;
+                case 'attackhandler': return $this->attackHandler($request); break;
+                case 'settings': return $this->settings($request); break;
+                case 'changename': return $this->changeName($request); break;
+                case 'leaveteam': return $this->leaveTeam($request); break;
+                case 'minigamecomplete': return $this->minigameComplete($request); break;
+                default: return $this->home(); break;
+            }
         }
     }
 
@@ -56,17 +64,14 @@ class RedTeamController extends Controller {
     }
 
     public function changeName(request $request){
-        if(!Team::all()->where('name','=',$request->name)->isEmpty()){
-            $error = "name-taken";
-            return $this->settings($request)->with(compact('error'));
+        try{
+            Team::get($request->name);
+        }catch(TeamNotFoundException $e){
+            $team = Auth::user()->getRedTeam();
+            $team->setName($request->name);
         }
-        $team = Auth::user()->getRedTeam();
-        $success = $team->setName($request->name);
-        if($success){
-            return $this->settings($request);
-        }else{
-            throw new Exception("Name unchanged");
-        }
+        $error = "name-taken";
+        return $this->settings($request)->with(compact('error'));
     }
 
     public function settings($request){
@@ -83,8 +88,12 @@ class RedTeamController extends Controller {
     }
 
     public function home(){
-        $redteam = Team::find(Auth::user()->redteam);
-        return view('redteam.home')->with('redteam',$redteam);
+        try{
+            $redteam = Auth::user()->getRedTeam();
+        }catch(TeamNotFoundException $e){
+            $redteam = null;
+        }
+        return view('redteam.home')->with(compact('redteam'));
     }
 
     public function attacks(){

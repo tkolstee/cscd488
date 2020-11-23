@@ -58,6 +58,17 @@ class User extends Authenticatable
         return $redteam;
     }
 
+    public function setTurnTaken($turn_taken){
+        $team = getBlueTeam();
+        $team->setTurnTaken($turn_taken);
+    }
+
+    public function getTurnTaken(){
+        $team = getBlueTeam();
+        $turn_taken = $team->getTurnTaken();
+        return $turn_taken;
+    }
+
     public function leaveBlueTeam() {
         $blueteam = $this->getBlueTeam();
 
@@ -83,36 +94,27 @@ class User extends Authenticatable
     }
 
     public function joinBlueTeam($teamName) {
-        $blueteam = Team::all()->where('name', '=', $teamName)->first();
-        if($blueteam == null) throw new TeamNotFoundException();
+        $blueteam = Team::get($teamName);
         $this->blueteam = $blueteam->id;
         return $this->update();
     }
 
     public function createBlueTeam($teamName) {
-        $team = Team::factory()->create([
-            'name' => $teamName,
-            'balance' => 0,
-            'reputation' => 0
-        ]);
+        $team = Team::createBlueTeam($teamName);
         $this->blueteam = $team->id;
         $this->leader = 1;
         return $this->update();
     }
 
     public function createRedTeam($teamName) {
-        $team = Team::factory()->red()->create([
-            'name' => $teamName,
-            'balance' => 0,
-            'reputation' => 0
-        ]);
+        $team = Team::createRedTeam($teamName);
         $this->redteam = $team->id;
         return $this->update();
     }
 
     public function deleteTeam($team) {
         if ($team->blue == 1 && $this->leader == 1){
-            $this->leader == 0;
+            $this->leader = 0;
             $this->update();
         }
         return Team::destroy($team->id);

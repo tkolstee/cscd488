@@ -105,7 +105,7 @@ class BlueTeamTest extends TestCase
             'result' => 'invalid name',
         ]);
         $this->expectException(TeamNotFoundException::class);
-        $controller->join($request);
+        $response = $controller->join($request);
     }
 
     public function testBlueBuyValidAsset(){

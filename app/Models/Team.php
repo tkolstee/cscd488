@@ -7,6 +7,7 @@ use Error;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
+use App\Exceptions\TeamNotFoundException;
 
 class Team extends Model implements AttackHandler
 {
@@ -22,6 +23,48 @@ class Team extends Model implements AttackHandler
         'reputation',
         'blue',
     ];
+
+    public static function get($name){
+        $team = Team::all()->where('name','=',$name)->first();
+        if($team == null){
+            throw new TeamNotFoundException();
+        }
+        return $team;
+    }
+
+    public static function getBlueTeams(){
+        $teams = Team::all()->where('blue','=',1);
+        if($teams->isEmpty()){
+            throw new TeamNotFoundException();
+        }
+        return $teams;
+    }
+
+    public static function getRedTeams(){
+        $teams = Team::all()->where('blue','=',0);
+        if($teams->isEmpty()){
+            throw new TeamNotFoundException();
+        }
+        return $teams;
+    }
+
+    public static function createBlueTeam($teamName){
+        $team = Team::factory()->create([
+            'name' => $teamName,
+            'balance' => 0,
+            'reputation' => 0
+        ]);
+        return $team;
+    }
+
+    public static function createRedTeam($teamName){
+        $team = Team::factory()->red()->create([
+            'name' => $teamName,
+            'balance' => 0,
+            'reputation' => 0
+        ]);
+        return $team;
+    }
 
     public function onPreAttack($attackLog) {
         if ($this->blue == 1){
@@ -102,8 +145,29 @@ class Team extends Model implements AttackHandler
         return $this->update();
     }
 
+    public function setTurnTaken($turn_taken){
+        if($this->blue == 0){
+            throw new TeamNotFoundException();
+        }
+        $blueteam = Blueteam::get($this->id);
+        $blueteam->setTurnTaken($turn_taken);
+    }
+
+    public function getTurnTaken(){
+        if($this->blue == 0){
+            throw new TeamNotFoundException();
+        }
+        $blueteam = Blueteam::get($this->id);
+        return $blueteam->turn_taken;
+    }
+
     public function setName($newName) {
-        $this->name = $newName;
-        return $this->update();
+        try{
+            Team::get($newName);
+        }catch(TeamNotFoundException $e){
+            $this->name = $newName;
+            return $this->update();
+        }
+        throw new TeamNotFoundException();
     }
 }
