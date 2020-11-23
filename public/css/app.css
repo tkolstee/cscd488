@@ -143,7 +143,7 @@
     background-color: white;
 }
 .footer {
-       height: 75px;
+       height: 100%;
         background-color: black;
         text-align: center;
 }
@@ -261,4 +261,7 @@
 }
 .offset-md-4Register{
     margin-left:45%;
+}
+.img-fluid{
+    height: 100%;
 }

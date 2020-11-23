@@ -61,11 +61,12 @@
                     <img class="img-fluid" alt="Responsive image" src="images/side_secondPage1.jpg" >
                 </div><!--end lContainer -->
                 <div class="rContainer">@yield('content') </div><!--end rContainer -->
-            </div><!--end container -->
-            
-            <div class="footer">
+                <div class="footer">
                 <p>©copyright 2020 - Terrance Cunningham | Robin Deskins | Tony Kolste | Steven Zuelke  - Web Designers</p>
             </div><!--End footer class-->
+            </div><!--end container -->
+            
+            
     </div><!--End Wrapper class-->
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
