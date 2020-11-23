@@ -186,54 +186,34 @@ class RedTeamController extends Controller {
         //change this to proportion sell rate
         $sellRate = 1;
         $assetNames = $request->input('results');
-        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
-        $redteam = Team::find(Auth::user()->redteam);
-        if($redteam == null){
-            throw new TeamNotFoundException();
-        }
+        $redteam = Auth::user()->getRedTeam();
         if($assetNames == null){
             $error = "no-asset-selected";
-            return view('redteam.store')->with(compact('assets','error', 'redteam'));
+            return $this->store()->with(compact('error'));
         }
         foreach($assetNames as $assetName){
-            //remove asset from inventory and pay team
             $asset = Asset::all()->where('name','=',$assetName)->first();
             if ($asset == null){
                 throw new AssetNotFoundException();
             }
-            $currInventory = Inventory::all()->where('team_id','=',$redteam->id)->where('asset_id','=', $asset->id)->first();
-            if($currInventory == null){
-                throw new InventoryNotFoundException();
-            }
-            $currInventory->quantity -= 1;
-            if($currInventory->quantity == 0){
-                Inventory::destroy(substr($currInventory->pluck('id'),1,1));
-            }else{
-                $currInventory->update();
-            }
-            $redteam->balance += ($asset->purchase_cost)*$sellRate;
-            $redteam->update();
+            $success = $redteam->sellAsset($asset);
+            if (!$success){ throw new InventoryNotFoundException();}
         }
-        return view('redteam.store')->with(compact('redteam', 'assets'));
+        return $this->store();
     }//end sell
 
     public function storeInventory(){
         $redteam = Auth::user()->getRedTeam();
         $inventory = $redteam->inventories();
-        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
-        return view('redteam.store')->with(compact('redteam', 'assets', 'inventory'));
+        return $this->store()->with(compact('inventory'));
     }
 
     public function buy(request $request){
         $assetNames = $request->input('results');
-        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
-        $redteam = Team::find(Auth::user()->redteam);
-        if($redteam == null){
-            throw new TeamNotFoundException();
-        }
+        $redteam = Auth::user()->getRedTeam();
         if($assetNames == null){
             $error = "no-asset-selected";
-            return view('redteam.store')->with(compact('assets','error','redteam'));
+            return $this->store()->with(compact('error'));
         }
         $totalCost = 0;
         foreach($assetNames as $assetName){
@@ -245,26 +225,14 @@ class RedTeamController extends Controller {
         }
         if($redteam->balance < $totalCost){
             $error = "not-enough-money";
-            return view('redteam.store')->with(compact('assets','error','redteam'));
+            return $this->store()->with(compact('error'));
         }
-        foreach($assetNames as $asset){
-            //add asset to inventory and charge team
-            $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
-            $currAsset = Inventory::all()->where('team_id','=',Auth::user()->redteam)->where('asset_id','=', $assetId)->first();
-            if($currAsset == null){
-                Inventory::factory()->create([
-                    'team_id' => $redteam,
-                    'asset_id' => $assetId,
-                    'quantity' => 1,
-                ]);
-            }else{
-                $currAsset->quantity += 1;
-                $currAsset->update();
-            }
+        foreach($assetNames as $assetName){
+            $redteam = Auth::user()->getRedTeam();
+            $asset = Asset::all()->where('name','=',$assetName)->first();
+            $redteam->buyAsset($asset);
         }
-        $redteam->balance -= $totalCost;
-        $redteam->update();
-        return view('redteam.store')->with(compact('redteam', 'assets'));
+        return $this->store();
     }
 
     public function store(){

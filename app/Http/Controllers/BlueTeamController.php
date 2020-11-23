@@ -110,10 +110,9 @@ class BlueTeamController extends Controller {
                 if($asset == null) { throw new AssetNotFoundException();}
                 $success = $blueteam->sellAsset($asset);
                 if (!$success) {
-                    $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
                     $error = "not-enough-owned-".$asset;
                     session(['sellCart' => null]);
-                    return view('blueteam.store')->with(compact('blueteam','assets','error'));
+                    return $this->store()->with(compact('error'));
                 }
             }
         }
@@ -126,10 +125,9 @@ class BlueTeamController extends Controller {
                 if($asset == null) { throw new AssetNotFoundException();}
                 $success = $blueteam->buyAsset($asset);
                 if (!$success){
-                    $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
                     $error = "not-enough-money";
                     session(['buyCart' => null]);
-                    return view('blueteam.store')->with(compact('assets','error','blueteam'));
+                    return $this->store()->with(compact('error'));
                 }
             }
         }
@@ -159,10 +157,9 @@ class BlueTeamController extends Controller {
     public function sell(request $request){
         $blueteam = Auth::user()->getBlueTeam();
         $assetNames = $request->input('results');
-        $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
         if($assetNames == null){
             $error = "no-asset-selected";
-            return view('blueteam.store')->with(compact('assets','error', 'blueteam'));
+            return $this->store()->with(compact('error'));
         }
         $sellCart = session('sellCart');
         foreach($assetNames as $asset){
@@ -185,9 +182,8 @@ class BlueTeamController extends Controller {
         $assetNames = $request->input('results');
         $blueteam = Auth::user()->getBlueTeam();
         if($assetNames == null){
-            $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
             $error = "no-asset-selected";
-            return view('blueteam.store')->with(compact('assets','error', 'blueteam'));
+            return $this->store()->with(compact('error'));
         }
         $blueteam->balance = 1000; $blueteam->update(); //DELETE THIS IS FOR TESTING PURPOSES
         $buyCart = session('buyCart');
