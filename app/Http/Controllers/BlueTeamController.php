@@ -56,10 +56,6 @@ class BlueTeamController extends Controller {
         if($request->result == "stay"){
             return $this->settings($request);
         }
-        else if($request->result != "leave"){
-            $error = "invalid-choice";
-            return $this->settings($request)->with(compact('error'));
-        }
         $user = Auth::user();
         $user->leaveBlueTeam();
         return $this->home();
@@ -116,7 +112,7 @@ class BlueTeamController extends Controller {
                 if (!$success) {
                     $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
                     $error = "not-enough-owned-".$asset;
-                    //session(['sellCart' => null]);
+                    session(['sellCart' => null]);
                     return view('blueteam.store')->with(compact('blueteam','assets','error'));
                 }
             }
@@ -132,7 +128,7 @@ class BlueTeamController extends Controller {
                 if (!$success){
                     $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
                     $error = "not-enough-money";
-                    //session(['buyCart' => null]);
+                    session(['buyCart' => null]);
                     return view('blueteam.store')->with(compact('assets','error','blueteam'));
                 }
             }
