@@ -220,12 +220,7 @@ class BlueTeamController extends Controller {
         $this->validate($request, [
             'name' => ['required', 'unique:teams', 'string', 'max:255'],
         ]);
-        $team = Team::factory()->create([
-            'name' => $request->name,
-            'balance' => 0,
-            'reputation' => 0
-        ]);
-        Auth::user()->createBlueTeam($team);
+        Auth::user()->createBlueTeam($request->name);
         return $this->home();
     }
 

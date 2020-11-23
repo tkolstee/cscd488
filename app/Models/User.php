@@ -89,13 +89,23 @@ class User extends Authenticatable
         return $this->update();
     }
 
-    public function createBlueTeam($team) {
+    public function createBlueTeam($teamName) {
+        $team = Team::factory()->create([
+            'name' => $teamName,
+            'balance' => 0,
+            'reputation' => 0
+        ]);
         $this->blueteam = $team->id;
         $this->leader = 1;
         return $this->update();
     }
 
-    public function createRedTeam($team) {
+    public function createRedTeam($teamName) {
+        $team = Team::factory()->red()->create([
+            'name' => $teamName,
+            'balance' => 0,
+            'reputation' => 0
+        ]);
         $this->redteam = $team->id;
         return $this->update();
     }

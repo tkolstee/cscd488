@@ -278,13 +278,8 @@ class RedTeamController extends Controller {
         $request->validate([
             'name' => ['required', 'unique:teams', 'string', 'max:255'],
         ]);
-        $redteam = Team::factory()->red()->create([
-            'name' => $request->name,
-            'balance' => 0,
-            'reputation' => 0,
-        ]);
-        Auth::user()->createRedTeam($redteam);
-        return view('redteam.home')->with('redteam',$redteam);
+        Auth::user()->createRedTeam($request->name);
+        return $this->home();
     }
 
     public function delete(request $request){
