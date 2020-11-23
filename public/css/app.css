@@ -61,8 +61,8 @@
 }
 .headerContainer p{
     text-align: center;
-    height: 95px;
-    color:white;
+  
+    color:blue;
 }
 .logo{
     width: 50%;
@@ -91,12 +91,6 @@
     height: 45px;
     margin-top: 26px;
     padding-right: 10px;
-}
-.register img{
-    float:left;
-    width:90px;
-    height: 45px;
-    margin-top: 26px;
 }
 .navbar {
     height: 90px;
@@ -235,20 +229,20 @@
     padding:0;
 }
 .container{
-    height:577px;
+    height:100%;
     background: white;   
 }
 .lContainer{
     width:51%;
-    height: 677px;
+    height: 100%;
     float:left;
 }
 .rContainer{
     width:49%;
-    height: 677px;
+    height: 100%;
    
     float:right;
-    background-color:white;
+    background-color:#CCCCCC;
 }
 .form-group {
     padding-top:15px;
