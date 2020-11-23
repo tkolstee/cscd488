@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Models\Asset;
-use App\Models\Inventory;
 use App\Models\Blueteam;
 use App\Models\Setting;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
-use App\Exceptions\InventoryNotFoundException;
 use Exception;
 
 class BlueTeamController extends Controller {
@@ -107,75 +105,41 @@ class BlueTeamController extends Controller {
 
     public function endTurn(){
         //Buy and sell items in Session
-        $cart = session('cart');
-        $teamID = Auth::user()->blueteam;
-        $team = Team::find($teamID);
-        if($team == null){
-            throw new TeamNotFoundException();
-        }
+        $blueteam = Auth::user()->getBlueTeam();
         $totalBalance = 0;
-        if(!empty($cart)){
-            $length = count($cart);
-            for($i = 0; $i < $length; $i++){
-                if($cart[$i] == -1){ //Selling next item
-                    $sellRate = 1;
-                    $i++;
-                    $asset = Asset::all()->where('name','=',$cart[$i])->first();
-                    if($asset == null){
-                        throw new AssetNotFoundException();
-                    }
-                    $totalBalance += ($asset->purchase_cost * $sellRate);
-                }else{
-                    $asset = Asset::all()->where('name','=',$cart[$i])->first();
-                    if($asset == null){
-                        throw new AssetNotFoundException();
-                    }
-                    $totalBalance -= ($asset->purchase_cost);
+        $sellCart = session('sellCart');
+        if (!empty($sellCart)){
+            foreach($sellCart as $assetName){
+                $asset = Asset::all()->where('name', '=', $assetName)->first();
+                if($asset == null) { throw new AssetNotFoundException();}
+                $success = $blueteam->sellAsset($asset);
+                if (!$success) {
+                    $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
+                    $error = "not-enough-owned-".$asset;
+                    //session(['sellCart' => null]);
+                    return view('blueteam.store')->with(compact('blueteam','assets','error'));
                 }
-                $currentBalance = $team->balance;
-                if($currentBalance + $totalBalance < 0){
+            }
+        }
+        session(['sellCart' => null]);
+
+        $buyCart = session('buyCart');
+        if (!empty($buyCart)){
+            foreach($buyCart as $assetName){
+                $asset = Asset::all()->where('name', '=', $assetName)->first();
+                if($asset == null) { throw new AssetNotFoundException();}
+                $success = $blueteam->buyAsset($asset);
+                if (!$success){
                     $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
                     $error = "not-enough-money";
-                    $blueteam = $team;
+                    //session(['buyCart' => null]);
                     return view('blueteam.store')->with(compact('assets','error','blueteam'));
                 }
             }
-            for($i = 0; $i < $length; $i++){
-                if($cart[$i] == -1){ //Sell
-                    $i++;
-                    $assetId = substr(Asset::all()->where('name','=',$cart[$i])->pluck('id'), 1, 1);
-                    $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $assetId)->first();
-                    if($currAsset == null){
-                        throw new InventoryNotFoundException();
-                    }
-                    $currAsset->quantity -= 1;
-                    if($currAsset->quantity == 0){
-                        Inventory::destroy(substr($currAsset->pluck('id'),1,1));
-                    }else{
-                        $currAsset->update();
-                    }
-                }else{ //Buy
-                    $assetId = substr(Asset::all()->where('name','=',$cart[$i])->pluck('id'), 1, 1);
-                    $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $assetId)->first();
-                    if($currAsset == null){
-                        $currAsset = new Inventory();
-                        $currAsset->team_id = Auth::user()->blueteam;
-                        $currAsset->asset_id = $assetId;
-                        $currAsset->quantity = 1;
-                        $currAsset->save();
-                    }else{
-                        $currAsset->quantity += 1;
-                        $currAsset->update();
-                    }
-                }
-            }
         }
-        //finish cart stuff
-        $team->balance += $totalBalance;
-        $team->update();
-        session(['cart' => null]);
+        session(['buyCart' => null]);
         //update turn stuff
-        $blueteam = Blueteam::all()->where('team_id','=',$teamID)->first();
+        $blueteam = Blueteam::all()->where('team_id','=',$blueteam->id)->first();
         $blueteam->turn_taken = 1;
         $blueteam->update();
         $turn = 1;
@@ -197,8 +161,6 @@ class BlueTeamController extends Controller {
     }
 
     public function sell(request $request){
-        //change this to proportion sell rate
-        $sellRate = 1;
         $blueteam = Auth::user()->getBlueTeam();
         $assetNames = $request->input('results');
         $assets = Asset::all()->where('blue', '=', 1)->where('buyable', '=', 1);
@@ -206,45 +168,14 @@ class BlueTeamController extends Controller {
             $error = "no-asset-selected";
             return view('blueteam.store')->with(compact('assets','error', 'blueteam'));
         }
-        $cart = session('cart');
-        $alreadySold = [];
-        if($cart != null){
-            $nextIsSell = 0;
-            foreach($cart as $item){
-                if($nextIsSell == 1){
-                    $alreadySold[] = $item;
-                }
-                if($item == -1){
-                    $nextIsSell = 1;
-                }else{
-                    $nextIsSell = 0;
-                }
-                $newCart[] = $item;
-            }
-        }
+        $sellCart = session('sellCart');
         foreach($assetNames as $asset){
             $actAsset = Asset::all()->where('name','=',$asset)->first();
-            if($actAsset == null){
-                throw new AssetNotFoundException();
-            }
-            $currAsset = Inventory::all()->where('team_id','=',Auth::user()->blueteam)->where('asset_id','=', $actAsset->id)->first();
-            if($currAsset == null){
-                throw new InventoryNotFoundException();
-            }
-            foreach($alreadySold as $itemSold){
-                if($itemSold == $asset){
-                    $currAsset->quantity--;
-                    if($currAsset->quantity == 0){
-                        $error = "not-enough-owned-".$asset;
-                        return view('blueteam.store')->with(compact('blueteam','assets','error'));
-                    }
-                }
-            }
-            $newCart[] = -1;
-            $newCart[] = $asset;
-            session(['cart' => $newCart]);
+            if($actAsset == null){ throw new AssetNotFoundException();}
+            $sellCart[] = $asset;
         }
-        return view('blueteam.store')->with(compact('blueteam', 'assets'));
+        session(['sellCart' => $sellCart]);
+        return $this->store();
     }//end sell
 
     public function storeInventory(){
@@ -263,13 +194,13 @@ class BlueTeamController extends Controller {
             return view('blueteam.store')->with(compact('assets','error', 'blueteam'));
         }
         $blueteam->balance = 1000; $blueteam->update(); //DELETE THIS IS FOR TESTING PURPOSES
-        $cart = session('cart');
+        $buyCart = session('buyCart');
         foreach($assetNames as $asset){
             $actAsset = Asset::all()->where('name','=',$asset)->first();
             if($actAsset == null){ throw new AssetNotFoundException();}
-            $cart[] = $asset;
+            $buyCart[] = $asset;
         }
-        session(['cart' => $cart]);
+        session(['buyCart' => $buyCart]);
         return $this->store();
     }
 

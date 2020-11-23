@@ -64,6 +64,44 @@ class Team extends Model implements AttackHandler
         //return $this->hasMany('App\Models\Inventory');
     }
 
+    public function inventory($asset) {
+        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_id', '=', $asset->id)->first();
+    }
+
+    public function sellAsset($asset) {
+        $inv = $this->inventory($asset);
+        if ($inv == null) { return false;}
+        elseif ($inv->quantity == 1){
+            Inventory::destroy($inv->id);
+        }
+        else{
+            $inv->quantity--;
+            $inv->update();
+        }
+        $this->balance += $asset->purchase_cost;
+        return $this->update();
+    }
+
+    public function buyAsset($asset) {
+        if ($asset->purchase_cost > $this->balance) { return false;}
+
+        $inv = $this->inventory($asset);
+        if ($inv == null) {
+            Inventory::create([
+                'asset_id' => $asset->id,
+                'team_id' => $this->id,
+                'quantity' => 1,
+            ]);
+        }
+        else {
+            $inv->quantity++;
+            $inv->update();
+        }
+
+        $this->balance -= $asset->purchase_cost;
+        return $this->update();
+    }
+
     public function setName($newName) {
         $this->name = $newName;
         return $this->update();

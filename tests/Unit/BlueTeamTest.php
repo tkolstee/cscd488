@@ -117,9 +117,9 @@ class BlueTeamTest extends TestCase
             'results' => [$assetName]
         ]);
         $result = $controller->buy($request);
-        $cart = session('cart');
-        $this->assertEquals(1, count($cart));
-        $this->assertEquals($assetName, $cart[0]);
+        $buyCart = session('buyCart');
+        $this->assertEquals(1, count($buyCart));
+        $this->assertEquals($assetName, $buyCart[0]);
     }
 
     public function testBuyInvalidAssetName(){
@@ -165,21 +165,9 @@ class BlueTeamTest extends TestCase
             'results' => [$asset->name]
         ]);
         $response = $controller->sell($request);
-        $cart = session('cart');
-        $this->assertEquals(2, count($cart));
-        $this->assertEquals(-1, $cart[0]);
-        $this->assertEquals($asset->name, $cart[1]);
-    }
-
-    public function testSellItemNotOwned(){
-        $asset = Asset::factory()->create();
-        $this->assignTeam();
-        $controller = new BlueTeamController();
-        $request = Request::create('/sell','POST',[
-            'results' => [$asset->name]
-        ]);
-        $this->expectException(InventoryNotFoundException::class);
-        $controller->sell($request);
+        $sellCart = session('sellCart');
+        $this->assertEquals(1, count($sellCart));
+        $this->assertEquals($asset->name, $sellCart[0]);
     }
 
     public function testSellNoItem(){
