@@ -135,6 +135,12 @@
     
     width: 100%;
     background-color: rgba(212, 212, 212, 0.301);
+    
+   }
+   .container_login_reg {
+    
+    width: 100%;
+    background-color: rgba(212, 212, 212, 0.301);
     height: 677px;
    }
 .informationSection{
@@ -143,7 +149,7 @@
     background-color: white;
 }
 .footer {
-       
+       height: 75px;
         background-color: black;
         text-align: center;
 }

@@ -56,7 +56,7 @@
                 </div><!--End navbarSelection class-->
             </div><!--End navbar class-->
             
-            <div class="container_frontpages">
+            <div class="container_login_reg">
                 <div class="lContainer">
                     <img class="img-fluid" alt="Responsive image" src="images/side_secondPage1.jpg" >
                 </div><!--end lContainer -->
