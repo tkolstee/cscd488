@@ -59,7 +59,7 @@ class User extends Authenticatable
     }
 
     public function setTurnTaken($turn_taken){
-        $team = getBlueTeam();
+        $team = $this->getBlueTeam();
         $team->setTurnTaken($turn_taken);
     }
 

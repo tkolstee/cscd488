@@ -143,9 +143,7 @@ class BlueTeamController extends Controller {
         }
         session(['buyCart' => null]);
         //update turn stuff
-        $blueteam = Blueteam::all()->where('team_id','=',$blueteam->id)->first();
-        $blueteam->turn_taken = 1;
-        $blueteam->update();
+        Auth::user()->setTurnTaken(1);
         $turn = 1;
         $endTime = Setting::get('turn_end_time');
         return $this->home()->with(compact('turn', 'endTime'));
