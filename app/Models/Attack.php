@@ -39,12 +39,12 @@ class Attack extends Model
     function onAttackComplete() { }
 
     public static function getAll(){
-        $attackList = glob('Attacks/*');
-        $attacks = [];
-        foreach ($attackList as $attackName){
-            $class = "\\App\\Models\\Attacks\\" . $attackName;
-            $attacks[] = new $class;
+        $dir = opendir("Attacks/");
+        while(($attack = readdir($dir)) != false){
+            $class = "\\App\\Models\\Attacks\\" . $attack;
+            $attacks[] = new $class();
         }
+        return $attacks;
     }
 
     function onPreAttack() {

@@ -176,7 +176,6 @@ class RedTeamController extends Controller {
         $user = Auth::user();
         $redteam = Auth::user()->getRedTeam();
         $blueteam = Team::get($request->result);
-        $blueteam = $blueteam->first();
         $possibleAttacks = Attack::getAll();
         return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks'));
     }
