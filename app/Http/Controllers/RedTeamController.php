@@ -12,6 +12,8 @@ use App\Exceptions\TeamNotFoundException;
 use App\Models\AttackLog;
 use Error;
 
+use App\Models\Attacks\SQLInjectionAttack;
+
 class RedTeamController extends Controller {
 
     public function page($page, Request $request) {
@@ -176,7 +178,7 @@ class RedTeamController extends Controller {
         $user = Auth::user();
         $redteam = Auth::user()->getRedTeam();
         $blueteam = Team::get($request->result);
-        $possibleAttacks = Attack::getAll();
+        $possibleAttacks = SQLInjectionAttack::directory();//Attack::getAll();
         return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks'));
     }
 

@@ -7,9 +7,12 @@ use App\Models\Attack;
 
 class SQLInjectionAttack extends Attack implements AttackHandler
 {
-    public function onPreAttack($attackLog)
+    public function onPreAttack()
     {
-        //Not sure yet! do nothing
-        return $attackLog;
+        parent::onPreAttack();
+    }
+
+    public static function directory(){
+        return dirname(__FILE__);
     }
 }

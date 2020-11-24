@@ -47,7 +47,7 @@ class Attack extends Model
         return $attacks;
     }
 
-    function onPreAttack() {
+    public function onPreAttack() {
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
 
