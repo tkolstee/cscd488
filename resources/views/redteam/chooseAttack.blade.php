@@ -3,9 +3,8 @@
 @section('title', 'Red Team Home')
 
 @section('pagecontent')
-@if (!$possibleAttacks ?? []->isEmpty())
+@if ($possibleAttacks ?? [] !== [])
 <h3>Select a method of attack against {{ $blueteam->name }}:</h3>
-{{ $possibleAttacks }}
 <form method="POST" action="/redteam/performattack">
     @csrf
     @foreach ($possibleAttacks ?? [] as $attack)

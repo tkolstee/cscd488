@@ -1,11 +1,14 @@
 <?php
 
+namespace App\Models\Attacks;
+
+use App\Models\Attack;
 use App\Models\Team;
-use DB;
+
 
 class SynFloodAttack extends Attack {
 
-    public $_name                   = "SYN Flood";
+    public $_name                   = "SynFlood";
     public $_tags                   = ['ExternalNetworkProtocol', 'DenialOfService'];
     public $_prereqs                = [];
     public $_initial_difficulty     = 2;
@@ -23,13 +26,14 @@ class SynFloodAttack extends Attack {
 
         if ( $this->success ) {
             $blueteam->balance -= 50;
+            $redteam->balance += 100;
         }
         if ( $this->detected ) {
             $redteam->reputation -= 100;
         }
         $redteam->energy -= $this->energy_cost;
-        $blueteam->save();
-        $redteam->save();
+        $blueteam->update();
+        $redteam->update();
 
     }
 

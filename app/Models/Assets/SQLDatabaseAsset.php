@@ -8,13 +8,8 @@ use App\Models\Attack;
 
 class SQLDatabaseAsset extends Asset implements AttackHandler
 {
-    public function onPreAttack($attackLog)
+    public function onPreAttack($attack)
     {
-        $attack = Attack::find($attackLog->attack_id);
-        //Test for now! attack will succeed if blue team has a sqldatabase
-        if ($attack->name == "SQLInjection") {
-            $attackLog->possible = true;
-        }
-        return $attackLog;
+        
     }
 }

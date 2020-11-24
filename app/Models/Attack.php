@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Exception;
 
 class Attack extends Model
 {
@@ -13,7 +14,7 @@ class Attack extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'name', ];
+    protected $fillable = [ 'name', 'energy_cost', ];
     protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', ]; // casts "json" database column to array and back
 
     public $_name    = "Abstract class - do not use";
@@ -39,12 +40,80 @@ class Attack extends Model
     function onAttackComplete() { }
 
     public static function getAll(){
-        $dir = opendir("Attacks/");
-        while(($attack = readdir($dir)) != false){
-            $class = "\\App\\Models\\Attacks\\" . $attack;
-            $attacks[] = new $class();
+        $dir = opendir(dirname(__FILE__)."/Attacks");
+        while(($attack = readdir($dir)) !== false){
+            if($attack != "." && $attack != ".."){
+                $length = strlen($attack);
+                $attack = substr($attack, 0, $length - 4);
+                $class = "\\App\\Models\\Attacks\\" . $attack;
+                $attacks[] = new $class();
+            }
+            
         }
         return $attacks;
+    }
+    
+    public static function get($name, $red, $blue){
+        $attack = Attack::all()->where('name','=',$name)->where('redteam','=',$red)->where('blueteam','=',$blue)->first();
+        $class = "\\App\\Models\\Attacks\\" . $attack->name . "Attack";
+        $att = new $class();
+        $att->name = $attack->name;
+        $att->energy_cost = 100;
+        $att->tags = $attack->tags;
+        $att->prereqs = $attack->prereqs;
+        $att->difficulty = $attack->difficulty;
+        $att->detection_risk = $attack->detection_risk;
+        $att->success = $attack->success;
+        $att->detected = $attack->detected;
+        $att->possible = $attack->possible;
+        $att->blueteam = $attack->blueteam;
+        $att->redteam = $attack->redteam;
+        $att->errormsg = $attack->errormsg;
+        return $att;
+    }
+
+    public static function create($attackName, $redID, $blueID){
+        $class = "\\App\\Models\\Attacks\\" . $attackName . "Attack";
+        $attack = new $class();
+        $attack->blueteam = $blueID;
+        $attack->redteam = $redID;
+        Attack::store($attack);
+        return $attack;
+    }
+
+    public static function store($attack){
+        $att = new Attack();
+        $att->name = $attack->name;
+        $att->tags = $attack->tags;
+        $att->prereqs = $attack->prereqs;
+        $att->difficulty = $attack->difficulty;
+        $att->detection_risk = $attack->detection_risk;
+        $att->success = $attack->success;
+        $att->detected = $attack->detected;
+        $att->energy_cost = 100;
+        $att->possible = $attack->possible;
+        $att->blueteam = $attack->blueteam;
+        $att->redteam = $attack->redteam;
+        $att->errormsg = $attack->errormsg;
+        $att->save();
+    }
+
+    public static function updateAttack($attack){
+        $att = new Attack();
+        $att->name = $attack->name;
+        $att->tags = $attack->tags;
+        $att->prereqs = $attack->prereqs;
+        $att->difficulty = $attack->difficulty;
+        $att->detection_risk = $attack->detection_risk;
+        $att->success = $attack->success;
+        $att->detected = $attack->detected;
+        $att->energy_cost = $attack->energy_cost;
+        $att->possible = $attack->possible;
+        $att->blueteam = $attack->blueteam;
+        $att->redteam = $attack->redteam;
+        $att->errormsg = $attack->errormsg;
+        $att->update();
+        return $att;
     }
 
     public function onPreAttack() {
@@ -52,8 +121,10 @@ class Attack extends Model
         $redteam  = Team::find($this->redteam);
 
         // Get all assets in both attacker's and target's inventories
-        $item_ids = DB::table('inventory')->where('team_id', '=', $blueteam->id)->orWhere('team_id', '=', $redteam->id);
-        $assets = Asset::all()->whereIn('id', $item_ids)->distinct();
+        $item_ids = Inventory::all()->where(function($query){
+            $query->where('team_id', '=', $blueteam->id)->orWhere('team_id', '=', $redteam->id);
+        });
+        $assets = Asset::all()->whereIn('asset_id', $item_ids);
 
         // Collect all tags and names of these assets to match against prerequisites for this attack
         $have = [];
@@ -65,7 +136,7 @@ class Attack extends Model
             $have[] = $asset->name;
             foreach ( $asset->tags as $tag ) { $have[] = $tag; }
         }
-        $unmet_prereqs = set_diff($this->prereqs, $have);
+        $unmet_prereqs = array_diff($this->prereqs, $have);
         if ( count($unmet_prereqs) > 0 ) {
             $this->possible = false;
             $this->errormsg = "Unsatisfied prereqs for this attack";
@@ -74,6 +145,7 @@ class Attack extends Model
             $this->possible = false;
             $this->errormsg = "Not enough energy available.";
         }
+        Attack::updateAttack($this);
     }
 
 }

@@ -22,6 +22,7 @@ class Team extends Model implements AttackHandler
         'balance',
         'reputation',
         'blue',
+        'energy',
     ];
 
     public static function get($name){

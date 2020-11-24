@@ -11,6 +11,7 @@ use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use App\Models\AttackLog;
 use Error;
+use Exception;
 
 use App\Models\Attacks\SQLInjectionAttack;
 
@@ -103,42 +104,33 @@ class RedTeamController extends Controller {
     }
 
     public function minigameComplete(request $request){
-        $attackLog = AttackLog::find($request->attackLogID);
+        
+        $attack = Attack::get($request->attackName, $request->red, $request->blue);
+        if($attack == null){
+            throw new Exception("Attack null");
+        }
         $attMsg = "Success: ";
         if($request->result == 1){
-            $attackLog->success = true;
+            $attack->success = true;
             $attMsg .= "true";
         }else{
-            $attackLog->success = false;
+            $attack->success = false;
             $attMsg .= "false";
         }
-        $attackLog->update();
-        try {
-            $attack = Attack::find($attackLog->attack_id);
-            $attack->onAttackComplete($attackLog);
-        }
-        catch (TeamNotFoundException $e){
-            $attMsg = "Error while executing attack. Attack was not completed.";
-        }
+        Attack::updateAttack($attack);
+        $attack->onAttackComplete();
         return $this->home()->with(compact('attMsg'));
     }
 
-    public function minigameStart($attackLog){
-        if(!$attackLog->possible){
-            $attMsg = "Success: impossible";
+    public function minigameStart($attack){
+        if(!$attack->possible){
+            $attMsg = $attack->errormsg;
             return $this->home()->with(compact('attMsg'));
         }
         //possibly find the minigame for that attack, then return different view or minigame
-        $redteam = Team::find($attackLog->redteam_id);
-        $blueteam = Team::find($attackLog->blueteam_id);
-        $attack = Attack::find($attackLog->attack_id);
-        if($redteam == null || $blueteam == null){
-            throw new TeamNotFoundException();
-        }
-        if($attack == null){
-            throw new AssetNotFoundException();
-        }
-        return view('redteam.minigame')->with(compact('attackLog','redteam','blueteam','attack'));
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        return view('redteam.minigame')->with(compact('attack','redteam','blueteam'));
     }
 
     public function performAttack(request $request){
@@ -146,28 +138,11 @@ class RedTeamController extends Controller {
             $error = "No-Attack-Selected";
             return $this->chooseAttack($request)->with(compact('error'));
         }
-        $redteam = Team::find(Auth::user()->redteam);
-        $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
-        $attack = Attack::all()->where('name', '=', $request->result)->first();
-        if($attack == null){ throw new AssetNotFoundException();}
-        elseif($blueteam == null || $redteam == null){ throw new TeamNotFoundException();}
-        $attackLog = AttackLog::factory()->make([
-            'attack_id' => $attack->id,
-            'difficulty' => $attack->difficulty,
-            'detection_chance' => $attack->detection_chance,
-        ]);
-        $class = "\\App\\Models\\Attacks\\" . $attack->name . "Attack";
-        try{
-            $attackHandler = new $class();
-            $attackLog = $attackHandler->onPreAttack($attackLog);
-        }catch(Error $e){
-            throw new AssetNotFoundException();
-        }
-        $attackLog = $redteam->onPreAttack($attackLog);
-        $attackLog = $blueteam->onPreAttack($attackLog);
-        //call onPreAttack for the attack itself?
-        $attackLog->save();
-        return $this->minigameStart($attackLog);
+        $redteam = Auth::user()->getRedTeam();
+        $blueteam = Team::get($request->blueteam);
+        $attack = Attack::create($request->result, $redteam->id, $blueteam->id);
+        $attack->onPreAttack();
+        return $this->minigameStart($attack);
     }
 
     public function chooseAttack(request $request){
@@ -178,7 +153,7 @@ class RedTeamController extends Controller {
         $user = Auth::user();
         $redteam = Auth::user()->getRedTeam();
         $blueteam = Team::get($request->result);
-        $possibleAttacks = SQLInjectionAttack::directory();//Attack::getAll();
+        $possibleAttacks = Attack::getAll();
         return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks'));
     }
 
