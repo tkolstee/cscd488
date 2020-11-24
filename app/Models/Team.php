@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 
-class Team extends Model implements AttackHandler
+class Team extends Model
 {
     use HasFactory;
     /**
