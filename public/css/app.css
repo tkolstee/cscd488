@@ -20,10 +20,9 @@
     font-size: 18px;
     margin: 23px 8px;
     cursor: pointer;
-    width:40%;
+    width:41%;
+    min-width: 41%;
 }
-
-
 
 .btn.btn-primary {
     background-color: #00CC99;
@@ -37,6 +36,7 @@
     margin: 23px 8px;
     cursor: pointer;
     width:41%;
+    min-width: 41%;
 }
 
 .btn.btn-primary:hover {
@@ -51,7 +51,7 @@
     position: relative;
     z-index: 1;
     width: 100%;
-    height: 135px;
+    height: 100%;
     background-color: black;
 
 }
@@ -63,12 +63,12 @@
 }
 .headerContainer p{
     text-align: center;
-    height: 95px;
-    color:white;
+  
+    color:blue;
 }
 .logo{
     width: 50%;
-    height: 125px;
+    height: 100%;
     float:left;
     
 }
@@ -93,12 +93,6 @@
     height: 45px;
     margin-top: 26px;
     padding-right: 10px;
-}
-.register img{
-    float:left;
-    width:90px;
-    height: 45px;
-    margin-top: 26px;
 }
 .navbar {
     height: 90px;
@@ -137,6 +131,13 @@
     
     width: 100%;
     background-color: rgba(212, 212, 212, 0.301);
+    
+   }
+   .container_login_reg {
+    
+    width: 100%;
+    background-color: rgba(212, 212, 212, 0.301);
+    height: 677px;
    }
 .informationSection{
     width: 20%;
@@ -144,7 +145,7 @@
     background-color: white;
 }
 .footer {
-        height:75px;
+       height: 100%;
         background-color: black;
         text-align: center;
 }
@@ -157,11 +158,133 @@
 }
 
 
-/*****************************************************LOGIN.php BELOW*******************************/
-.card-header{
-    
+/*****************************************************LOGIN/REGISTER/APP BELOW*******************************/
+
+
+.tests{
+    width:50%;
 }
 
+.testss{
+    display:flex;
+}
 
+.py-4 a{
+    color:blue;
+}
+.py-4 a:hover{
+    color:black;
+}
 
-
+.login-title{
+    padding-bottom:6%;
+    font-size:18pt;
+    font-weight: bold;
+    padding-left:22%;
+}
+.card{ 
+    width:110%;
+    margin-top:15%;
+}
+  
+  form {
+    margin:auto;/* nice thing of auto margin if display:flex; it center both horizontal and vertical :) */
+    width:100%;
+    color:black;
+  }
+.form-check-label {
+    padding-left:17%;
+    width:60%;
+}
+.btn.btn-primary2 {
+    background-color: #00CC99;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 23px 204px;
+    cursor: pointer;
+    width:41%;
+    margin-right:5%;
+    min-width: 41%;
+    max-height: 56%;
+}
+.btn.btn-primary2:hover {
+    background-color: #00FFCC;
+    
+}
+.btn.btn-primary3 {
+    background-color: #00CC99;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 23px 8px;
+    cursor: pointer;
+    width:65%;
+    min-width: 65%;
+    max-height: 56%;
+}
+.btn.btn-primary3:hover {
+    background-color: #00FFCC;
+    
+}
+#remember{
+   
+   width:15%;
+   padding-left:30%;
+}
+.container_left{
+    width:50%;
+}
+.container_right{
+    float:right;
+    width:50%;
+}
+.card-body{
+    float:right;
+    padding:0;
+}
+.container{
+    height:100%;
+    background: white;   
+}
+.lContainer{
+    width:51%;
+    height: 100%;
+    float:left;
+}
+.rContainer{
+    width:49%;
+    height: 100%;
+   
+    float:right;
+    background-color:#CCCCCC;
+}
+.form-group {
+    padding-top:15px;
+    width:116%;
+}
+.offset-md-4{
+    margin-left:10%;
+}
+.btn-link{
+    padding-left:31%;
+}
+.card-header{
+   
+    font-weight: bold;
+    font-size: 16pt;
+}
+.offset-md-4Register{
+    margin-left:39%;
+}
+.img-fluid{
+    height: 100%;
+}
