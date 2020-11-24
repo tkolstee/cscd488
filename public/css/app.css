@@ -215,6 +215,24 @@
     background-color: #00FFCC;
     
 }
+.btn.btn-primary3 {
+    background-color: #00CC99;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 23px 8px;
+    cursor: pointer;
+    width:65%;
+    min-width: 65%;
+}
+.btn.btn-primary3:hover {
+    background-color: #00FFCC;
+    
+}
 #remember{
    
    width:15%;
@@ -263,7 +281,7 @@
     font-size: 16pt;
 }
 .offset-md-4Register{
-    margin-left:45%;
+    margin-left:39%;
 }
 .img-fluid{
     height: 100%;
