@@ -19,15 +19,18 @@
 
         <div style="background-color: #77F; padding: 80px; align: center; vertical-align: center;">
             @yield('pagecontent')
-            @if (!empty(session('cart')))
+            @if (!empty(session('buyCart')))
                 <p>Shopping Cart: </p>
-                <?php $cart = session('cart'); ?>
+                <?php $cart = session('buyCart'); ?>
                 @foreach ($cart as $item)
-                    @if($item == -1)
-                        Selling: 
-                    @else
-                        {{ $item }} <br>
-                    @endif
+                    {{ $item }} <br>
+                @endforeach
+            @endif
+            @if (!empty(session('sellCart')))
+                <p>Sell Cart</p>
+                <?php $cart = session('sellCart'); ?>
+                @foreach ($cart as $item)
+                    {{ $item }} <br>
                 @endforeach
             @endif
         </div>

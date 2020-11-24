@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePrereqsTable extends Migration
+class CreateAttackLogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,15 @@ class CreatePrereqsTable extends Migration
      */
     public function up()
     {
-        Schema::create('prereqs', function (Blueprint $table) {
+        Schema::create('attack_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('attack_id')->constrained('attacks')->onDelete('cascade');
-            $table->foreignId('asset_id')->constrained('assets')->onDelete('cascade');
+            $table->foreignId('blueteam_id')->constrained('teams')->onDelete('cascade');
+            $table->foreignId('redteam_id')->constrained('teams')->onDelete('cascade');
+            $table->integer('difficulty');
+            $table->float('detection_chance');
+            $table->boolean('success');
+            $table->boolean('possible');
             $table->timestamps();
         });
     }
@@ -28,6 +33,6 @@ class CreatePrereqsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('prereqs');
+        Schema::dropIfExists('attack_logs');
     }
 }

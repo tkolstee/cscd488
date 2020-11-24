@@ -16,6 +16,9 @@ class CreateAttacksTable extends Migration
         Schema::create('attacks', function (Blueprint $table) {
             $table->id();
             $table->text('name');
+            $table->integer('possible')->default(1);
+            $table->integer('difficulty');
+            $table->float('detection_chance');
             $table->timestamps();
         });
     }

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Prereq extends Model
+class AttackLog extends Model
 {
     use HasFactory;
     /**
@@ -15,6 +15,11 @@ class Prereq extends Model
      */
     protected $fillable = [
         'attack_id',
-        'asset_id',
+        'blueteam_id',
+        'redteam_id',
+        'difficulty',
+        'possible',
+        'detection_chance',
+        'success'
     ];
 }

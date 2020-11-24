@@ -5,39 +5,47 @@ use Illuminate\Http\Request;
 use App\Models\Team;
 use App\Models\Asset;
 use App\Models\Inventory;
-use App\Models\Prereq;
 use App\Models\Attack;
 use Auth;
-use View;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
-use App\Exceptions\InventoryNotFoundException;
+use App\Models\AttackLog;
+use Error;
 
 class RedTeamController extends Controller {
 
     public function page($page, Request $request) {
-        $redteam = Team::find(Auth::user()->redteam);
-        if($redteam == null && $page != 'create'){
-            return $this->home(); 
+        try{
+            $redteam = Auth::user()->getRedTeam();
+        }catch(TeamNotFoundException $e){
+            $redteam = null;
         }
-        switch ($page) {
-            case 'home': return $this->home(); break;
-            case 'attacks': return $this->attacks(); break;
-            case 'learn': return view('redteam.learn')->with('redteam',$redteam); break;
-            case 'store': return $this->store();break;
-            case 'status': return view('redteam.status')->with('redteam',$redteam); break;
-            case 'create': return $this->create($request); break;
-            case 'buy': return $this->buy($request); break;
-            case 'storeinventory': return $this->storeInventory(); break;
-            case 'sell': return $this->sell($request); break;
-            case 'startattack': return $this->startAttack(); break;
-            case 'chooseattack': return $this->chooseAttack($request); break;
-            case 'performattack': return $this->performAttack($request); break;
-            case 'attackhandler': return $this->attackHandler($request); break;
-            case 'settings': return $this->settings($request); break;
-            case 'changename': return $this->changeName($request); break;
-            case 'leaveteam': return $this->leaveTeam($request); break;
-            default: return $this->home(); break;
+        if($redteam == null){
+            switch ($page) {
+                case 'home': return $this->home(); break;
+                case 'create': return $this->create($request); break;
+                default: return $this->home(); break;
+            }
+        }else{
+            switch ($page) {
+                case 'home': return $this->home(); break;
+                case 'attacks': return $this->attacks(); break;
+                case 'learn': return view('redteam.learn')->with('redteam',$redteam); break;
+                case 'store': return $this->store();break;
+                case 'status': return view('redteam.status')->with('redteam',$redteam); break;
+                case 'buy': return $this->buy($request); break;
+                case 'storeinventory': return $this->storeInventory(); break;
+                case 'sell': return $this->sell($request); break;
+                case 'startattack': return $this->startAttack(); break;
+                case 'chooseattack': return $this->chooseAttack($request); break;
+                case 'performattack': return $this->performAttack($request); break;
+                case 'attackhandler': return $this->attackHandler($request); break;
+                case 'settings': return $this->settings($request); break;
+                case 'changename': return $this->changeName($request); break;
+                case 'leaveteam': return $this->leaveTeam($request); break;
+                case 'minigamecomplete': return $this->minigameComplete($request); break;
+                default: return $this->home(); break;
+            }
         }
     }
 
@@ -49,33 +57,19 @@ class RedTeamController extends Controller {
             $error = "invalid-choice";
             return $this->settings($request)->with(compact('error'));
         }
-        $user = Auth::user();
-        $teamID = $user->redteam;
-        $user->redteam = null;
-        $user->update();
-        $team = Team::find($teamID);
-        if($team == null){
-            throw new TeamNotFoundException();
-        }
-        Team::destroy($teamID);
+        Auth::user()->leaveRedTeam();
         return $this->home();
     }
 
     public function changeName(request $request){
-        if(!Team::all()->where('name','=',$request->name)->isEmpty()){
-            $error = "name-taken";
-            return $this->settings($request)->with(compact('error'));
+        try{
+            Team::get($request->name);
+        }catch(TeamNotFoundException $e){
+            $team = Auth::user()->getRedTeam();
+            $team->setName($request->name);
         }
-        $teamID = Auth::user()->redteam;
-        $team = Team::find($teamID);
-        $team->name = $request->name;
-        $team->update();
-        $newTeam = Team::find($teamID);
-        if($newTeam->name == $request->name){
-            return $this->settings($request);
-        }else{
-            throw new Exception("Name unchanged");
-        }
+        $error = "name-taken";
+        return $this->settings($request)->with(compact('error'));
     }
 
     public function settings($request){
@@ -87,48 +81,62 @@ class RedTeamController extends Controller {
         if($request->leaveTeamBtn == 1){
             $leaveTeam = true;
         }
-        $teamID = Auth::user()->redteam;
-        $redteam = Team::find($teamID);
-        if($redteam == null){
-            throw new TeamNotFoundException();
-        }
+        $redteam = Auth::user()->getRedTeam();
         return view('redteam/settings')->with(compact('redteam','changeName','leaveTeam'));
     }
 
     public function home(){
-        $redteam = Team::find(Auth::user()->redteam);
-        return view('redteam.home')->with('redteam',$redteam);
+        try{
+            $redteam = Auth::user()->getRedTeam();
+        }catch(TeamNotFoundException $e){
+            $redteam = null;
+        }
+        return view('redteam.home')->with(compact('redteam'));
     }
 
-    public function attackHandler(request $request){
-        if($request->result == ""){
-            $error = "No-Attack-Selected";
-            return $this->chooseAttack($request)->with(compact('error'));
-        }
-        $redteam = Team::find(Auth::user()->redteam);
-        $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
-        //TEST HANDLER UNTIL WE KNOW MORE ABOUT ATTACKS
-        if($request->result == "success"){
-            $redteam->balance += 1000;
-            $redteam->update();
-            $attMsg = "Success in Attacking";
+    public function attacks(){
+        $possibleAttacks = Attack::all();
+        $redteam = Auth::user()->getRedTeam();
+        return view('redteam.attacks')->with(compact('redteam','possibleAttacks')); 
+    }
+
+    public function minigameComplete(request $request){
+        $attackLog = AttackLog::find($request->attackLogID);
+        $attMsg = "Success: ";
+        if($request->result == 1){
+            $attackLog->success = true;
+            $attMsg .= "true";
         }else{
-            $attMsg = "Failure in Attacking";
+            $attackLog->success = false;
+            $attMsg .= "false";
+        }
+        $attackLog->update();
+        try {
+            $attack = Attack::find($attackLog->attack_id);
+            $attack->onAttackComplete($attackLog);
+        }
+        catch (TeamNotFoundException $e){
+            $attMsg = "Error while executing attack. Attack was not completed.";
         }
         return $this->home()->with(compact('attMsg'));
     }
 
-    public function attacks(){
-        $possibleAttacks = $this->possibleAttacks();
-        $redteam = Team::find(Auth::user()->redteam);
-        return view('redteam.attacks')->with(compact('redteam','possibleAttacks')); 
-    }
-
-    private function possibleAttacks(){
-        $assets = Inventory::all()->where('team_id','=', Auth::user()->redteam);
-        $notPossibleAttackIDs = Prereq::all()->whereNotIn('asset_id',$assets->pluck('id')); //attackIDs you have prereqs for
-        $possibleAttacks = Attack::all()->whereNotIn('id',$notPossibleAttackIDs->pluck('attack_id')); //attacks you have prereqs for
-        return $possibleAttacks;
+    public function minigameStart($attackLog){
+        if(!$attackLog->possible){
+            $attMsg = "Success: impossible";
+            return $this->home()->with(compact('attMsg'));
+        }
+        //possibly find the minigame for that attack, then return different view or minigame
+        $redteam = Team::find($attackLog->redteam_id);
+        $blueteam = Team::find($attackLog->blueteam_id);
+        $attack = Attack::find($attackLog->attack_id);
+        if($redteam == null || $blueteam == null){
+            throw new TeamNotFoundException();
+        }
+        if($attack == null){
+            throw new AssetNotFoundException();
+        }
+        return view('redteam.minigame')->with(compact('attackLog','redteam','blueteam','attack'));
     }
 
     public function performAttack(request $request){
@@ -136,13 +144,28 @@ class RedTeamController extends Controller {
             $error = "No-Attack-Selected";
             return $this->chooseAttack($request)->with(compact('error'));
         }
-        $user = Auth::user();
         $redteam = Team::find(Auth::user()->redteam);
         $blueteam = Team::all()->where('name','=',$request->blueteam)->first();
-        $attack = Attack::all()->where('name', '=', $request->result);
-        if($attack->isEmpty()){ throw new AssetNotFoundException();}
-        $attack = $attack->first();
-        return view('redteam.performAttack')->with(compact('redteam','blueteam','attack'));
+        $attack = Attack::all()->where('name', '=', $request->result)->first();
+        if($attack == null){ throw new AssetNotFoundException();}
+        elseif($blueteam == null || $redteam == null){ throw new TeamNotFoundException();}
+        $attackLog = AttackLog::factory()->make([
+            'attack_id' => $attack->id,
+            'difficulty' => $attack->difficulty,
+            'detection_chance' => $attack->detection_chance,
+        ]);
+        $class = "\\App\\Models\\Attacks\\" . $attack->name . "Attack";
+        try{
+            $attackHandler = new $class();
+            $attackLog = $attackHandler->onPreAttack($attackLog);
+        }catch(Error $e){
+            throw new AssetNotFoundException();
+        }
+        $attackLog = $redteam->onPreAttack($attackLog);
+        $attackLog = $blueteam->onPreAttack($attackLog);
+        //call onPreAttack for the attack itself?
+        $attackLog->save();
+        return $this->minigameStart($attackLog);
     }
 
     public function chooseAttack(request $request){
@@ -156,16 +179,17 @@ class RedTeamController extends Controller {
         if($blueteam->isEmpty()){ throw new TeamNotFoundException();}
         $blueteam = $blueteam->first();
         $targetAssets = Inventory::all()->where('team_id','=', $blueteam);
-        $notPossibleBlueAttackIDs = Prereq::all()->whereIn('asset_id',$targetAssets->pluck('id')); //attackIDs you can do against blue
-        $possibleAttacks = $this->possibleAttacks(); //attacks you have prereqs for
-        $uselessPossibleAttacks = $possibleAttacks->whereIn('id', $notPossibleBlueAttackIDs->pluck('id'));
-        $possibleAttacks = $possibleAttacks->whereNotIn('id',$notPossibleBlueAttackIDs->pluck('id')); //only attacks you can do against blue
-        return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks','uselessPossibleAttacks'));
+        $possibleAttacks = Attack::all();
+        return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks'));
     }
 
     public function startAttack(){
-        $targets = Team::all()->where('blue','=','1');
-        $redteam = Team::find(Auth::user()->redteam);
+        try{
+            $targets = Team::getBlueTeams();
+        }catch(TeamNotFoundException $e){
+            $targets = [];
+        }
+        $redteam = Auth::user()->getRedTeam();
         return view('redteam.startAttack')->with(compact('targets','redteam'));
     }
 
@@ -173,91 +197,61 @@ class RedTeamController extends Controller {
         //change this to proportion sell rate
         $sellRate = 1;
         $assetNames = $request->input('results');
-        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
-        $redteam = Team::find(Auth::user()->redteam);
-        if($redteam == null){
-            throw new TeamNotFoundException();
-        }
         if($assetNames == null){
             $error = "no-asset-selected";
-            return view('redteam.store')->with(compact('assets','error', 'redteam'));
+            return $this->store()->with(compact('error'));
         }
+        $redteam = Auth::user()->getRedTeam();
         foreach($assetNames as $assetName){
-            //remove asset from inventory and pay team
-            $asset = Asset::all()->where('name','=',$assetName)->first();
-            if ($asset == null){
-                throw new AssetNotFoundException();
+            $asset = Asset::get($assetName);
+            $success = $redteam->sellAsset($asset);
+            if (!$success) {
+                $error = "not-enough-owned-".$assetName;
+                return $this->store()->with(compact('error'));
             }
-            $currInventory = Inventory::all()->where('team_id','=',$redteam->id)->where('asset_id','=', $asset->id)->first();
-            if($currInventory == null){
-                throw new InventoryNotFoundException();
-            }
-            $currInventory->quantity -= 1;
-            if($currInventory->quantity == 0){
-                Inventory::destroy(substr($currInventory->pluck('id'),1,1));
-            }else{
-                $currInventory->update();
-            }
-            $redteam->balance += ($asset->purchase_cost)*$sellRate;
-            $redteam->update();
         }
-        return view('redteam.store')->with(compact('redteam', 'assets'));
+        return $this->store();
     }//end sell
 
     public function storeInventory(){
-        $redteam = Team::find(Auth::user()->redteam);
-        $inventory = Inventory::all()->where('team_id','=', Auth::user()->redteam);
-        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
-        return view('redteam.store')->with(compact('redteam', 'assets', 'inventory'));
+        $redteam = Auth::user()->getRedTeam();
+        $inventory = $redteam->inventories();
+        return $this->store()->with(compact('inventory'));
     }
 
     public function buy(request $request){
         $assetNames = $request->input('results');
-        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
-        $redteam = Team::find(Auth::user()->redteam);
-        if($redteam == null){
-            throw new TeamNotFoundException();
-        }
         if($assetNames == null){
             $error = "no-asset-selected";
-            return view('redteam.store')->with(compact('assets','error','redteam'));
+            return $this->store()->with(compact('error'));
         }
+        $redteam = Auth::user()->getRedTeam();
         $totalCost = 0;
+        //check total price
         foreach($assetNames as $assetName){
-            $asset = Asset::all()->where('name','=',$assetName)->first();
-            if($asset == null){
-                throw new AssetNotFoundException();
-            }
+            $asset = Asset::get($assetName);
             $totalCost += $asset->purchase_cost;
         }
         if($redteam->balance < $totalCost){
             $error = "not-enough-money";
-            return view('redteam.store')->with(compact('assets','error','redteam'));
+            return $this->store()->with(compact('error'));
         }
-        foreach($assetNames as $asset){
-            //add asset to inventory and charge team
-            $assetId = substr(Asset::all()->where('name','=',$asset)->pluck('id'), 1, 1);
-            $currAsset = Inventory::all()->where('team_id','=',Auth::user()->redteam)->where('asset_id','=', $assetId)->first();
-            if($currAsset == null){
-                Inventory::factory()->create([
-                    'team_id' => $redteam,
-                    'asset_id' => $assetId,
-                    'quantity' => 1,
-                ]);
-            }else{
-                $currAsset->quantity += 1;
-                $currAsset->update();
-            }
+        //buy if you have enough
+        foreach($assetNames as $assetName){
+            $redteam = Auth::user()->getRedTeam();
+            $asset = Asset::get($assetName);
+            $redteam->buyAsset($asset);
         }
-        $redteam->balance -= $totalCost;
-        $redteam->update();
-        return view('redteam.store')->with(compact('redteam', 'assets'));
+        return $this->store();
     }
 
     public function store(){
-        $redteam = Team::find(Auth::user()->redteam);
-        $assets = Asset::all()->where('blue', '=', 0)->where('buyable', '=', 1);
-        //$prereqs = Prereq::all()->whereIn('asset_id',$assets->pluck('id'));
+        $redteam = Auth::user()->getRedTeam();
+        try{
+            $assets = Asset::getBuyableRed();
+        }catch(AssetNotFoundException $e){
+            $assets = null;
+        }
         return view('redteam.store')->with(compact('redteam', 'assets'));
     }
 
@@ -266,25 +260,13 @@ class RedTeamController extends Controller {
         $request->validate([
             'name' => ['required', 'unique:teams', 'string', 'max:255'],
         ]);
-        $redteam = new Team();
-        $redteam->name = $request->name;
-        $redteam->balance = 0;
-        $redteam->blue = 0;
-        $redteam->reputation = 0;
-        $redteam->save();
-        $user = Auth::user();
-        $user->redteam = substr(Team::all()->where('name', '=', $request->name)->pluck('id'), 1, 1);
-        $user->update();
-        return view('redteam.home')->with('redteam',$redteam);
+        Auth::user()->createRedTeam($request->name);
+        return $this->home();
     }
 
     public function delete(request $request){
-        $team = Team::all()->where('name', '=', $request->name);
-        if($team->isEmpty()) {
-            throw new TeamNotFoundException();
-        }
-        $id = substr($team->pluck('id'), 1, 1);
-        Team::destroy($id);
+        $team = Team::get($request->name);
+        Auth::user()->deleteTeam($team);
         return view('home');
     }
 }
