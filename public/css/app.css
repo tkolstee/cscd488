@@ -210,6 +210,7 @@
     width:41%;
     margin-right:5%;
     min-width: 41%;
+    max-height: 56%;
 }
 .btn.btn-primary2:hover {
     background-color: #00FFCC;
@@ -228,6 +229,7 @@
     cursor: pointer;
     width:65%;
     min-width: 65%;
+    max-height: 56%;
 }
 .btn.btn-primary3:hover {
     background-color: #00FFCC;
