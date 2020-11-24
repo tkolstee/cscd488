@@ -170,7 +170,6 @@ class BlueTeamController extends Controller {
             $error = "no-asset-selected";
             return $this->store()->with(compact('error'));
         }
-        $blueteam = Auth::user()->getBlueTeam();
         $sellCart = session('sellCart');
         foreach($assetNames as $asset){
             $actAsset = Asset::get($asset);
@@ -239,5 +238,4 @@ class BlueTeamController extends Controller {
         Auth::user()->deleteTeam($team);
         return view('home');
     }
-
 }

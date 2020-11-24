@@ -9,10 +9,8 @@ use App\Models\Attack;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
-use App\Exceptions\InventoryNotFoundException;
 use App\Models\AttackLog;
 use Error;
-use Exception;
 
 class RedTeamController extends Controller {
 
