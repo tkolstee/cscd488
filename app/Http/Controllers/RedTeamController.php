@@ -174,12 +174,10 @@ class RedTeamController extends Controller {
             return $this->startAttack()->with(compact('error'));
         }
         $user = Auth::user();
-        $redteam = Team::find(Auth::user()->redteam);
-        $blueteam = Team::all()->where('name', '=', $request->result);
-        if($blueteam->isEmpty()){ throw new TeamNotFoundException();}
+        $redteam = Auth::user()->getRedTeam();
+        $blueteam = Team::get($request->result);
         $blueteam = $blueteam->first();
-        $targetAssets = Inventory::all()->where('team_id','=', $blueteam);
-        $possibleAttacks = Attack::all();
+        $possibleAttacks = Attack::getAll();
         return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks'));
     }
 

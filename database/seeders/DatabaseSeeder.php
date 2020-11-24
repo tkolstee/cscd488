@@ -29,13 +29,6 @@ class DatabaseSeeder extends Seeder
             'buyable' => 1,
         ]);
 
-        $attack = new \App\Models\Attack();
-        $attack->name = "SQLInjection";
-        $attack->possible = 0;
-        $attack->difficulty = 2;
-        $attack->detection_chance = 1;
-        $attack->save();
-
         $game = new \App\Models\Game();
         $game->save();
 

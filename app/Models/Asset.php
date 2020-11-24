@@ -22,6 +22,7 @@ class Asset extends Model
         'purchase_cost',
         'ownership_cost',
     ];
+    public function onPreAttack() {}
 
     public static function get($name){
         $asset = Asset::all()->where('name','=',$name)->first();
