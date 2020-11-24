@@ -20,7 +20,8 @@
     font-size: 18px;
     margin: 23px 8px;
     cursor: pointer;
-    width:40%;
+    width:41%;
+    min-width: 41%;
 }
 
 .btn.btn-primary {
@@ -35,6 +36,7 @@
     margin: 23px 8px;
     cursor: pointer;
     width:41%;
+    min-width: 41%;
 }
 
 .btn.btn-primary:hover {
@@ -49,7 +51,7 @@
     position: relative;
     z-index: 1;
     width: 100%;
-    height: 135px;
+    height: 100%;
     background-color: black;
 
 }
@@ -66,7 +68,7 @@
 }
 .logo{
     width: 50%;
-    height: 125px;
+    height: 100%;
     float:left;
     
 }
@@ -207,6 +209,7 @@
     cursor: pointer;
     width:41%;
     margin-right:5%;
+    min-width: 41%;
 }
 .btn.btn-primary2:hover {
     background-color: #00FFCC;
