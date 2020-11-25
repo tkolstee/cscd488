@@ -61,23 +61,16 @@ class RedTeamTest extends TestCase
     }
 
     public function testDeleteValidRedTeam(){
-        $team = Team::factory()->red()->make();
-        $team->save();
+        $team = $this->assignTeam();
         $controller = new RedTeamController();
-        $request = Request::create('/delete', 'POST', [
-            'name' => $team->name,
-        ]);
-        $controller->delete($request);
+        $controller->delete();
         $this->assertTrue(Team::all()->where('name', '=', $team->name)->isEmpty());
     }
 
     public function testDeleteInvalidRedTeam(){
-        $request = Request::create('/delete', 'POST', [
-            'name' => 'test',
-        ]);
         $controller = new RedTeamController();
         $this->expectException(TeamNotFoundException::class);
-        $controller->delete($request);
+        $controller->delete();
     }
 
     public function testRedBuyValidAsset(){

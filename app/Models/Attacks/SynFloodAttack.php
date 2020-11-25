@@ -5,7 +5,6 @@ namespace App\Models\Attacks;
 use App\Models\Attack;
 use App\Models\Team;
 
-
 class SynFloodAttack extends Attack {
 
     public $_name                   = "SynFlood";

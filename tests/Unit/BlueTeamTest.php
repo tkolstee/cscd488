@@ -43,6 +43,53 @@ class BlueTeamTest extends TestCase
         $inventory->save();
     }
 
+    //Home tests
+    //Should Return home with no team 
+    //or with Team and leader ( + members )
+    //with Turn number
+
+    public function testHomeNoTeam(){
+        $controller = new BlueteamController();
+        $response = $controller->home();
+        $this->assertTrue(empty($response->turn));
+        $this->assertTrue(empty($response->blueteam));
+        $this->assertTrue(empty($response->leader));
+        $this->assertTrue(empty($response->members));
+    }
+
+    public function testHomeWithTeamNoMembers(){
+       $this->assignTeam();
+       $controller = new BlueteamController();
+       $response = $controller->home();
+       $teamID = Auth::user()->blueteam;
+       $teamName = Team::find($teamID);
+       $this->assertEquals($teamName, $response->blueteam);
+       $this->assertEquals(Auth::user()->id, $response->leader->id);
+       $this->assertTrue($response->members->isEmpty());
+       $this->assertEquals(0 , $response->turn);
+    }
+
+    public function testHomeWithTeamAndMembers(){
+        $this->assignTeam();
+        $teamID = Auth::user()->blueteam;
+        $user1 = User::factory()->create(['blueteam' => $teamID, ]);
+        $user2 = User::factory()->create(['blueteam' => $teamID, ]);
+        $controller = new BlueteamController();
+        $response = $controller->home();
+        $teamName = Team::find($teamID);
+        $this->assertEquals($teamName, $response->blueteam);
+        $this->assertEquals(Auth::user()->id, $response->leader->id);
+        $this->assertEquals(2, count($response->members));
+        $this->assertNotNull($response->members->find($user1->id));
+        $this->assertNotNull($response->members->find($user2->id));      
+        $this->assertEquals(0, $response->turn);
+    }
+
+    //Create Tests
+    //Should Return create view if name empty
+    //Validate the name is unique
+    //Return home
+
     public function testCreateValidBlueTeam(){
         $request = Request::create('/create', 'POST', [
             'name' => 'test',
@@ -67,35 +114,43 @@ class BlueTeamTest extends TestCase
         $controller->create($request);
     }
 
-    public function testDeleteValidBlueTeam(){
-        $team = Team::factory()->make();
-        $team->save();
+    //Delete Tests
+    //Should call User::deleteTeam and return home
+
+    public function testDeleteBlueTeamAsLeader(){
+        $team = $this->assignTeam();
         $controller = new BlueTeamController();
-        $request = Request::create('/delete', 'POST', [
-            'name' => $team->name,
-        ]);
-        $controller->delete($request);
+        $controller->delete();
         $this->assertTrue(Team::all()->where('name', '=', $team->name)->isEmpty());
     }
 
+    public function testDeleteBlueTeamNotLeader(){
+        $team = $this->assignTeam();
+        Auth::user()->leader = 0;
+        Auth::user()->update();
+        $controller = new BlueTeamController();
+        $controller->delete();
+        $this->assertFalse(Team::all()->where('name', '=', $team->name)->isEmpty());
+    }
+
     public function testDeleteInvalidBlueTeam(){
-        $request = Request::create('/delete', 'POST', [
-            'name' => 'test',
-        ]);
         $controller = new BlueTeamController();
         $this->expectException(TeamNotFoundException::class);
-        $controller->delete($request);
+        $controller->delete();
     }
+
+    //Join Tests
+    //Should return join view with all blueteams if result empty
+    //Call User::joinBlueTeam with teamName and return home
 
     public function testJoinValidBlueTeam(){
         $controller = new BlueTeamController();
-        $team = Team::factory()->make();
-        $team->save();
+        $team = Team::factory()->create();
         $request = Request::create('/join', 'POST', [
             'result' => $team->name,
         ]);
         $controller->join($request);
-        $this->assertNotEquals(Auth::user()->blueteam, "");
+        $this->assertEquals($team->id ,Auth::user()->blueteam);
         $this->assertEquals(0, Auth::user()->leader);
     }
 
@@ -107,6 +162,11 @@ class BlueTeamTest extends TestCase
         $this->expectException(TeamNotFoundException::class);
         $response = $controller->join($request);
     }
+
+    //Buy Tests
+    //Should return error if results empty
+    //Throw if asset invalid
+    //Adds assets to session('buyCart') returns store
 
     public function testBlueBuyValidAsset(){
         $asset = Asset::factory()->create();
@@ -152,7 +212,12 @@ class BlueTeamTest extends TestCase
         $this->assertEquals('no-asset-selected', $response->error);
     }
 
-    public function testSellItemOwnedOneValid(){
+    //Sell Tests
+    //Should return error if no results
+    //Throw if invalid asset
+    //Add Assets to session('sellCart')
+
+    public function testSellItemValid(){
         $asset = Asset::factory()->create();
         $blueteam = $this->assignTeam();
         $inventory = Inventory::factory()->create([
@@ -200,40 +265,178 @@ class BlueTeamTest extends TestCase
         $controller->sell($request);
     }
 
-    public function testDisplayTeamMembersNoTeam(){
+    //EndTurn Tests
+    //Should return error if don't own or don't have enough money, and remove from cart after processed
+    //throw if no team, invalid asset, 
+    //Buy all in buycart, sell in sellcart, set sessions null, set turntaken to 1, return home with endtime
+
+    public function testEndTurnNoTeamThrows(){
         $controller = new BlueTeamController();
-        $response = $controller->home();
-        $this->assertTrue(empty($response->blueteam));
-        $this->assertTrue(empty($response->leader));
-        $this->assertTrue(empty($response->members));
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->endTurn();
     }
 
-    public function testDisplayTeamLeaderValid(){
-        $blueteam = $this->assignTeam();
+    public function testEndTurnInvalidAssetInSellCart(){
         $controller = new BlueTeamController();
-        $response = $controller->home();
-        $username = Auth::user()->name;
-        $leader = $response->leader;
-        $this->assertEquals($blueteam->name, $response->blueteam->name);
-        $leadername = $leader->name;
-        $this->assertEquals($username, $leadername);
-        $this->assertTrue($response->members->isEmpty());
+        $this->assignTeam();
+        $sellCart[] = 'invalid';
+        session(['sellCart' => $sellCart]);
+        $this->expectException(AssetNotFoundException::class);
+        $response = $controller->endTurn();
     }
 
-    public function testDisplayTeamMembersValid(){
-        $blueteam = $this->assignTeam();
-        $member1 = User::factory()->create([
-            'blueteam' => $blueteam->id,
-        ]);
-        $member2 = User::factory()->create([
-            'blueteam' => $blueteam->id,
-        ]);
+    public function testEndTurnInvalidAssetInBuyCart(){
         $controller = new BlueTeamController();
-        $response = $controller->home();
-        $this->assertEquals($blueteam->name, $response->blueteam->name);
-        $this->assertEquals(Auth::user()->name, $response->leader->name);
-        $this->assertEquals(2,count($response->members));
+        $this->assignTeam();
+        $buyCart[] = 'invalid';
+        session(['buyCart' => $buyCart]);
+        $this->expectException(AssetNotFoundException::class);
+        $response = $controller->endTurn();
     }
+
+    public function testEndTurnNoItemOwnedError(){
+        $controller = new BlueTeamController();
+        $this->assignTeam();
+        $asset = Asset::factory()->create();
+        $sellCart[] = $asset->name;
+        session(['sellCart' => $sellCart]);
+        $response = $controller->endTurn();
+        $this->assertEquals('not-enough-owned-'.$asset->name, $response->error);
+        $newSellCart = session('sellCart');
+        $this->assertEquals(0, count($newSellCart));
+    }
+
+    public function testEndTurnNotEnoughMoneyError(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team->balance = 0;
+        $team->update();
+        $asset = Asset::factory()->create();
+        $buyCart[] = $asset->name;
+        session(['buyCart' => $buyCart]);
+        $response = $controller->endTurn();
+        $this->assertEquals('not-enough-money', $response->error);
+        $newBuyCart = session('buyCart');
+        $this->assertEquals(0, count($newBuyCart));
+    }
+
+    public function testEndTurnBuyOne(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team->update();
+        $balBefore = $team->balance;
+        $asset = Asset::factory()->create();
+        $inventoryBefore = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        if($inventoryBefore == null) $quantity = 0;
+        else $quantity = $inventoryBefore->quantity;
+        $buyCart[] = $asset->name;
+        session(['buyCart' => $buyCart]);
+        $response = $controller->endTurn();
+        $newBuyCart = session('buyCart');
+        $this->assertNull($newBuyCart);
+        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        $this->assertEquals($quantity + 1, $inventoryAfter->quantity);
+        $balAfter = Auth::user()->getBlueTeam()->balance;
+        $this->assertEquals($balBefore - $asset->purchase_cost, $balAfter);
+        $this->assertEquals(1, $response->turn);
+        //$this->assertFalse(empty($response->endTime));
+    }
+
+    public function testEndTurnBuyMany(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team->update();
+        $balBefore = $team->balance;
+        $asset = Asset::factory()->create();
+        $inventoryBefore = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        if($inventoryBefore == null) $quantity = 0;
+        else $quantity = $inventoryBefore->quantity;
+        $buyCart[] = $asset->name;
+        $buyCart[] = $asset->name;
+        session(['buyCart' => $buyCart]);
+        $response = $controller->endTurn();
+        $newBuyCart = session('buyCart');
+        $this->assertNull($newBuyCart);
+        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        $this->assertEquals($quantity + 2, $inventoryAfter->quantity);
+        $balAfter = Auth::user()->getBlueTeam()->balance;
+        $this->assertEquals($balBefore - ($asset->purchase_cost * 2), $balAfter);
+        $this->assertEquals(1, $response->turn);
+        //$this->assertFalse(empty($response->endTime));
+    }
+
+    public function testEndTurnSellOne(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team->update();
+        $balBefore = $team->balance;
+        $asset = Asset::factory()->create();
+        $inventory = Inventory::factory()->create(['asset_id' => $asset->id, 'team_id' => $team->id, 'quantity' => 1]);
+        $sellCart[] = $asset->name;
+        session(['sellCart' => $sellCart]);
+        $response = $controller->endTurn();
+        $newSellCart = session('sellCart');
+        $this->assertNull($newSellCart);
+        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        $this->assertNull($inventoryAfter);
+        $balAfter = Auth::user()->getBlueTeam()->balance;
+        $this->assertEquals($balBefore + $asset->purchase_cost, $balAfter);
+        $this->assertEquals(1, $response->turn);
+        //$this->assertFalse(empty($response->endTime));
+    }
+
+    public function testEndTurnSellMany(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team->update();
+        $balBefore = $team->balance;
+        $asset = Asset::factory()->create();
+        $inventory = Inventory::factory()->create(['asset_id' => $asset->id, 'team_id' => $team->id, 'quantity' => 2]);
+        $sellCart[] = $asset->name;
+        $sellCart[] = $asset->name;
+        session(['sellCart' => $sellCart]);
+        $response = $controller->endTurn();
+        $newSellCart = session('sellCart');
+        $this->assertNull($newSellCart);
+        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        $this->assertNull($inventoryAfter);
+        $balAfter = Auth::user()->getBlueTeam()->balance;
+        $this->assertEquals($balBefore + 2 * $asset->purchase_cost, $balAfter);
+        $this->assertEquals(1, $response->turn);
+        //$this->assertFalse(empty($response->endTime));
+    }
+
+    public function testEndTurnBuyAndSellMany(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team->update();
+        $balBefore = $team->balance;
+        $sellAsset = Asset::factory()->create();
+        $buyAsset = Asset::factory()->create(['purchase_cost' => 10]);
+        $inventory = Inventory::factory()->create(['asset_id' => $sellAsset->id, 'team_id' => $team->id, 'quantity' => 2]);
+        $sellCart[] = $sellAsset->name;
+        $sellCart[] = $sellAsset->name;
+        $buyCart[] = $buyAsset->name;
+        $buyCart[] = $buyAsset->name;
+        session(['sellCart' => $sellCart]);
+        session(['buyCart' => $buyCart]);
+        $response = $controller->endTurn();
+        $newSellCart = session('sellCart');
+        $newBuyCart = session('buyCart');
+        $this->assertNull($newBuyCart);
+        $this->assertNull($newSellCart);
+        $inventoryAfterBuy = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$buyAsset->id)->first();
+        $inventoryAfterSell = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$sellAsset->id)->first();
+        $this->assertNull($inventoryAfterSell);
+        $this->assertEquals(2, $inventoryAfterBuy->quantity);
+        $balAfter = Auth::user()->getBlueTeam()->balance;
+        $this->assertEquals($balBefore + 2 * $sellAsset->purchase_cost - 2 * $buyAsset->purchase_cost, $balAfter);
+        $this->assertEquals(1, $response->turn);
+        //$this->assertFalse(empty($response->endTime));
+    }
+
+    //Settings Tests
+    //Should return view with blueteam,leader,members,changeName,and leaveTeam
 
     public function testSettingsNoParamValid(){
         $controller = new BlueTeamController();
@@ -299,4 +502,72 @@ class BlueTeamTest extends TestCase
         $this->assertFalse($response->changeName);
         $this->assertFalse($response->leaveTeam);
     }
+
+    //ChangeName tests
+    //Should throw if no team
+    //Error if name taken
+    //Change name if available return
+
+    public function testChangeNameNoTeam(){
+        $controller = new BlueTeamController();
+        $request = Request::create('/changename','POST',['name' => 'newName']);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->changeName($request);
+    }
+
+    public function testChangeNameNameTaken(){
+        $this->assignTeam();
+        $team2 = Team::factory()->create();
+        $controller = new BlueTeamController();
+        $request = Request::create('/changename','POST',['name' => $team2->name]);
+        $response = $controller->changeName($request);
+        $this->assertEquals("name-taken", $response->error);
+    }
+
+    public function testChangeNameValid(){
+        $this->assignTeam();
+        $controller = new BlueTeamController();
+        $request = Request::create('/changename','POST',['name' =>"new name"]);
+        $response = $controller->changeName($request);
+        $this->assertEquals("new name", Auth::user()->getBlueTeam()->name);
+    }
+
+    //LeaveTeam tests
+    //Should return to settings if stay
+    //Error if not leave
+    //Leaves team 
+
+    public function testLeaveTeamNoTeam(){
+        $controller = new BlueTeamController();
+        $request = Request::create('/leaveteam', 'POST', ['result' => "stay"]);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->leaveTeam($request);
+    }
+
+    public function testLeaveTeamBadOption(){
+        $team = $this->assignTeam();
+        $controller = new BlueTeamController();
+        $request = Request::create('/leaveteam', 'POST', ['result' => "invalid"]);
+        $response = $controller->leaveTeam($request);
+        $this->assertEquals("invalid-option", $response->error);
+    }
+
+    public function testLeaveTeamStay(){
+        $team = $this->assignTeam();
+        $controller = new BlueTeamController();
+        $request = Request::create('/leaveteam', 'POST', ['result' => "stay"]);
+        $response = $controller->leaveTeam($request);
+        $this->assertEquals($team->id, Auth::user()->getBlueTeam()->id);
+    }
+
+    public function testLeaveTeamLeaderNoMembers(){
+        $team = $this->assignTeam();
+        $controller = new BlueTeamController();
+        $request = Request::create('/leaveteam', 'POST', ['result' => "leave"]);
+        $response = $controller->leaveTeam($request);
+        $this->assertNull(Auth::user()->blueteam);
+        $this->assertNull(Team::find($team->id));
+    }
 }
+
+

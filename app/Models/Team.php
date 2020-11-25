@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Interfaces\AttackHandler;
 use Error;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
+use App\Models\Blueteam;
 
 class Team extends Model
 {
@@ -55,6 +55,7 @@ class Team extends Model
             'balance' => 0,
             'reputation' => 0
         ]);
+        Blueteam::create($team->id);
         return $team;
     }
 
@@ -159,7 +160,9 @@ class Team extends Model
             throw new TeamNotFoundException();
         }
         $blueteam = Blueteam::get($this->id);
-        return $blueteam->turn_taken;
+        $turn = $blueteam->turn_taken;
+        if($turn == null) $turn = 0;
+        return $turn;
     }
 
     public function setName($newName) {

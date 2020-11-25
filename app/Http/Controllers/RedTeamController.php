@@ -238,8 +238,8 @@ class RedTeamController extends Controller {
         return $this->home();
     }
 
-    public function delete(request $request){
-        $team = Team::get($request->name);
+    public function delete(){
+        $team = Auth::user()->getRedTeam();
         Auth::user()->deleteTeam($team);
         return view('home');
     }
