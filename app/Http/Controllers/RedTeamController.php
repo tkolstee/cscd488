@@ -21,34 +21,30 @@ class RedTeamController extends Controller {
         try{
             $redteam = Auth::user()->getRedTeam();
         }catch(TeamNotFoundException $e){
-            $redteam = null;
-        }
-        if($redteam == null){
             switch ($page) {
                 case 'home': return $this->home(); break;
                 case 'create': return $this->create($request); break;
                 default: return $this->home(); break;
             }
-        }else{
-            switch ($page) {
-                case 'home': return $this->home(); break;
-                case 'attacks': return $this->attacks(); break;
-                case 'learn': return view('redteam.learn')->with('redteam',$redteam); break;
-                case 'store': return $this->store();break;
-                case 'status': return view('redteam.status')->with('redteam',$redteam); break;
-                case 'buy': return $this->buy($request); break;
-                case 'storeinventory': return $this->storeInventory(); break;
-                case 'sell': return $this->sell($request); break;
-                case 'startattack': return $this->startAttack(); break;
-                case 'chooseattack': return $this->chooseAttack($request); break;
-                case 'performattack': return $this->performAttack($request); break;
-                case 'attackhandler': return $this->attackHandler($request); break;
-                case 'settings': return $this->settings($request); break;
-                case 'changename': return $this->changeName($request); break;
-                case 'leaveteam': return $this->leaveTeam($request); break;
-                case 'minigamecomplete': return $this->minigameComplete($request); break;
-                default: return $this->home(); break;
-            }
+        }
+        switch ($page) {
+            case 'home': return $this->home(); break;
+            case 'attacks': return $this->attacks(); break;
+            case 'learn': return view('redteam.learn')->with('redteam',$redteam); break;
+            case 'store': return $this->store();break;
+            case 'status': return view('redteam.status')->with('redteam',$redteam); break;
+            case 'buy': return $this->buy($request); break;
+            case 'storeinventory': return $this->storeInventory(); break;
+            case 'sell': return $this->sell($request); break;
+            case 'startattack': return $this->startAttack(); break;
+            case 'chooseattack': return $this->chooseAttack($request); break;
+            case 'performattack': return $this->performAttack($request); break;
+            case 'attackhandler': return $this->attackHandler($request); break;
+            case 'settings': return $this->settings($request); break;
+            case 'changename': return $this->changeName($request); break;
+            case 'leaveteam': return $this->leaveTeam($request); break;
+            case 'minigamecomplete': return $this->minigameComplete($request); break;
+            default: return $this->home(); break;
         }
     }
 
