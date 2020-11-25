@@ -37,12 +37,18 @@ class RedTeamTest extends TestCase
         return $team;
     }
     
+    //Create Tests
+    //Should Return create view if name empty
+    //Validate the name is unique
+    //Return home
+
     public function testCreateValidRedTeam(){
         $request = Request::create('/create', 'POST', [
             'name' => 'test',
         ]);
         $controller = new RedTeamController();
         $response = $controller->create($request);
+        $this->assertEquals($response->redteam->id, Auth::user()->redteam);
         $this->assertEquals('test', $response->redteam->name);
         $this->assertDatabaseHas('teams',[
             'name' => 'test'
@@ -60,6 +66,9 @@ class RedTeamTest extends TestCase
         $controller->create($request);
     }
 
+    //Delete Tests
+    //Should call user::delete and return home
+
     public function testDeleteValidRedTeam(){
         $team = $this->assignTeam();
         $controller = new RedTeamController();
@@ -72,6 +81,10 @@ class RedTeamTest extends TestCase
         $this->expectException(TeamNotFoundException::class);
         $controller->delete();
     }
+
+    //Buy Tests
+    //Should error on no results, not enough money
+    //Buy all items if you have enough
 
     public function testRedBuyValidAsset(){
         $asset = Asset::factory()->create();
@@ -118,7 +131,7 @@ class RedTeamTest extends TestCase
         $controller->buy($request);
     }
 
-    public function testInvalidRedTeamCannotBuy(){
+    public function testBuyNoTeam(){
         $asset = Asset::factory()->create();
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
@@ -128,7 +141,7 @@ class RedTeamTest extends TestCase
         $controller->buy($request);
     }
 
-    public function testRedTeamBuyNotEnoughMoney(){
+    public function testBuyBuyNotEnoughMoney(){
         $asset = Asset::factory()->create();
         $redteam = $this->assignTeam();
         $controller = new RedTeamController();
@@ -150,6 +163,10 @@ class RedTeamTest extends TestCase
         $response = $controller->buy($request);
         $this->assertEquals('no-asset-selected', $response->error);
     }
+
+    //Sell Tests
+    //Should error if no results, or don't own asset
+    //Sell all items
 
     public function testSellItemOwnedOneValid(){
         $asset = Asset::factory()->create();
@@ -264,6 +281,10 @@ class RedTeamTest extends TestCase
         $controller->sell($request);
     }
 
+    //ChooseAttack Tests
+    //Should error if no result
+    //return choose attack with redteam,blueteam and possibleattacks
+
     public function testChooseAttackValidTeam(){
         $redteam = $this->assignTeam();
         $blueteam = Team::factory()->create();
@@ -274,8 +295,98 @@ class RedTeamTest extends TestCase
         $response = $controller->chooseAttack($request);
         $this->assertEquals($redteam->name, $response->redteam->name);
         $this->assertEquals($blueteam->name, $response->blueteam->name);
-        $this->assertNotNull($response->possibleAttacks);
+        $this->assertFalse(empty($response->possibleAttacks));
     }
+
+    public function testChooseAttackNoTeam(){
+        $blueteam = Team::factory()->create();
+        $controller = new RedTeamController();
+        $request = Request::create('/chooseattack','POST',[
+            'result' => $blueteam->name
+        ]);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->chooseAttack($request);
+    }
+
+    public function testChooseAttackNoResults(){
+        $redteam = $this->assignTeam();
+        $blueteam = Team::factory()->create();
+        $controller = new RedTeamController();
+        $request = Request::create('/chooseattack','POST',[
+            'result' => ""
+        ]);
+        $response = $controller->chooseAttack($request);
+        $this->assertEquals("No-Team-Selected", $response->error);
+    }
+
+    //PerformAttackTests
+    //Should error if no result
+    //Create the attack and call onPreAttack
+    //return home if attack isn'tpossible
+    //return minigame view with attack, redteam, blueteam
+
+    public function testPerformAttackNoTeam(){
+        $controller = new RedTeamController();
+        $target = Team::factory()->create();
+        $request = Request::create('/performattack','POST', ['blueteam' => $target->name, 'result' => "SynFlood"]);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->performAttack($request);
+    }
+
+    public function testPerformAttackNoResult(){
+        $this->assignTeam();
+        $controller = new RedTeamController();
+        $target = Team::factory()->create();
+        $request = Request::create('/performattack','POST', []);
+        $response = $controller->performAttack($request);
+        $this->assertEquals("No-Attack-Selected", $response->error);
+    }
+
+    public function testPerformAttackPossible(){
+        $team = $this->assignTeam();
+        $controller = new RedTeamController();
+        $target = Team::factory()->create();
+        $request = Request::create('/performattack','POST', ['blueteam' => $target->name, 'result' => "SynFlood"]);
+        $response = $controller->performAttack($request);
+        $this->assertEquals($team->id, $response->redteam->id);
+        $this->assertEquals($target->id, $response->blueteam->id);
+        $this->assertEquals($team->id, $response->attack->redteam);
+        $this->assertEquals($target->id, $response->attack->blueteam);
+        $this->assertFalse(empty($response->attack->difficulty));
+        $this->assertFalse(empty($response->attack->detection_risk));
+        $this->assertTrue($response->attack->possible);
+        $this->assertEquals("SynFlood", $response->attack->name);
+    }
+
+    public function testPerformAttackNoPrereqs(){
+        $team = $this->assignTeam();
+        $controller = new RedTeamController();
+        $target = Team::factory()->create();
+        $request = Request::create('/performattack','POST', ['blueteam' => $target->name, 'result' => "SQLInjection"]);
+        $response = $controller->performAttack($request);
+        $this->assertEquals("Unsatisfied prereqs for this attack", $response->attMsg);
+    }
+
+    public function testPerformAttackNoEnergy(){
+        $team = $this->assignTeam();
+        $controller = new RedTeamController();
+        $target = Team::factory()->create();
+        $team->energy = 0;
+        $team->update();
+        $request = Request::create('/performattack','POST', ['blueteam' => $target->name, 'result' => "SynFlood"]);
+        $response = $controller->performAttack($request);
+        $this->assertEquals("Not enough energy available.", $response->attMsg);
+    }
+
+    //MinigameComplete Tests
+    //Should
+
+    public function testMinigameComplete(){
+        
+    }
+
+    //Settings Tests
+    //Should return view with redteam,changeName,and leaveTeam
 
     public function testSettingsNoParamValid(){
         $controller = new RedTeamController();
@@ -316,6 +427,72 @@ class RedTeamTest extends TestCase
         $this->assertEquals($redteam->id, $response->redteam->id);
         $this->assertFalse($response->changeName);
         $this->assertTrue($response->leaveTeam);
+    }
+
+    //ChangeName tests
+    //Should throw if no team
+    //Error if name taken
+    //Change name if available return
+
+    public function testChangeNameNoTeam(){
+        $controller = new RedTeamController();
+        $request = Request::create('/changename','POST',['name' => 'newName']);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->changeName($request);
+    }
+
+    public function testChangeNameNameTaken(){
+        $this->assignTeam();
+        $team2 = Team::factory()->create();
+        $controller = new RedTeamController();
+        $request = Request::create('/changename','POST',['name' => $team2->name]);
+        $response = $controller->changeName($request);
+        $this->assertEquals("name-taken", $response->error);
+    }
+
+    public function testChangeNameValid(){
+        $this->assignTeam();
+        $controller = new RedTeamController();
+        $request = Request::create('/changename','POST',['name' =>"new name"]);
+        $response = $controller->changeName($request);
+        $this->assertEquals("new name", Auth::user()->getRedTeam()->name);
+    }
+
+    //LeaveTeam tests
+    //Should return to settings if stay
+    //Error if not leave
+    //Leaves team 
+
+    public function testLeaveTeamNoTeam(){
+        $controller = new RedTeamController();
+        $request = Request::create('/leaveteam', 'POST', ['result' => "stay"]);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->leaveTeam($request);
+    }
+
+    public function testLeaveTeamBadOption(){
+        $team = $this->assignTeam();
+        $controller = new RedTeamController();
+        $request = Request::create('/leaveteam', 'POST', ['result' => "invalid"]);
+        $response = $controller->leaveTeam($request);
+        $this->assertEquals("invalid-option", $response->error);
+    }
+
+    public function testLeaveTeamStay(){
+        $team = $this->assignTeam();
+        $controller = new RedTeamController();
+        $request = Request::create('/leaveteam', 'POST', ['result' => "stay"]);
+        $response = $controller->leaveTeam($request);
+        $this->assertEquals($team->id, Auth::user()->getRedTeam()->id);
+    }
+
+    public function testLeaveTeamValid(){
+        $team = $this->assignTeam();
+        $controller = new RedTeamController();
+        $request = Request::create('/leaveteam', 'POST', ['result' => "leave"]);
+        $response = $controller->leaveTeam($request);
+        $this->assertNull(Auth::user()->redteam);
+        $this->assertNull(Team::find($team->id));
     }
 
 }

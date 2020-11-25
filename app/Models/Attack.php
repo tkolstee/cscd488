@@ -34,7 +34,7 @@ class Attack extends Model
         $this->prereqs        = $this->_prereqs;
         $this->success        = null;
         $this->detected       = null;
-        $this->energy_cost    = $this->initial_energy_cost;
+        $this->energy_cost    = $this->_initial_energy_cost;
     }
 
     function onAttackComplete() { }
@@ -58,7 +58,7 @@ class Attack extends Model
         $class = "\\App\\Models\\Attacks\\" . $attack->name . "Attack";
         $att = new $class();
         $att->name = $attack->name;
-        $att->energy_cost = 100;
+        $att->energy_cost = $attack->energy_cost;
         $att->tags = $attack->tags;
         $att->prereqs = $attack->prereqs;
         $att->difficulty = $attack->difficulty;
@@ -90,7 +90,7 @@ class Attack extends Model
         $att->detection_risk = $attack->detection_risk;
         $att->success = $attack->success;
         $att->detected = $attack->detected;
-        $att->energy_cost = 100;
+        $att->energy_cost = $attack->energy_cost;
         $att->possible = $attack->possible;
         $att->blueteam = $attack->blueteam;
         $att->redteam = $attack->redteam;
@@ -141,7 +141,7 @@ class Attack extends Model
             $this->possible = false;
             $this->errormsg = "Unsatisfied prereqs for this attack";
         }
-        if ( $blueteam->energy < $this->energy_cost ) {
+        if ( $redteam->energy < $this->energy_cost ) {
             $this->possible = false;
             $this->errormsg = "Not enough energy available.";
         }

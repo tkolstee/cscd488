@@ -568,6 +568,16 @@ class BlueTeamTest extends TestCase
         $this->assertNull(Auth::user()->blueteam);
         $this->assertNull(Team::find($team->id));
     }
+
+    public function testLeaveTeamLeaderWithMembers(){
+        $team = $this->assignTeam();
+        $user1 = User::factory()->create(['blueteam' => $team->id]);
+        $controller = new BlueTeamController();
+        $request = Request::create('/leaveteam', 'POST', ['result' => "leave"]);
+        $response = $controller->leaveTeam($request);
+        $this->assertNull(Auth::user()->blueteam);
+        $this->assertNotNull(Team::find($team->id));
+    }
 }
 
 

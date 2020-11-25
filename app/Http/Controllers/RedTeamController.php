@@ -57,7 +57,7 @@ class RedTeamController extends Controller {
             return $this->settings($request);
         }
         else if($request->result != "leave"){
-            $error = "invalid-choice";
+            $error = "invalid-option";
             return $this->settings($request)->with(compact('error'));
         }
         Auth::user()->leaveRedTeam();
@@ -97,6 +97,7 @@ class RedTeamController extends Controller {
         return view('redteam.home')->with(compact('redteam'));
     }
 
+    //Needs work
     public function attacks(){
         $possibleAttacks = Attack::all();
         $redteam = Auth::user()->getRedTeam();
