@@ -169,34 +169,31 @@ class BlueTeamTest extends TestCase
     //Adds assets to session('buyCart') returns store
 
     public function testBlueBuyValidAsset(){
-        $asset = Asset::factory()->create();
-        $assetName = $asset->name;
         $this->assignTeam();
         $controller = new BlueTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => [$assetName]
+            'results' => ["Firewall"]
         ]);
         $result = $controller->buy($request);
         $buyCart = session('buyCart');
         $this->assertEquals(1, count($buyCart));
-        $this->assertEquals($assetName, $buyCart[0]);
+        $this->assertEquals("Firewall", $buyCart[0]);
     }
 
     public function testBuyInvalidAssetName(){
         $this->assignTeam();
         $controller = new BlueTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => ['InvalidName']
+            'results' => ["Invalid"]
         ]);
         $this->expectException(AssetNotFoundException::class);
         $controller->buy($request);
     }
 
     public function testInvalidBlueTeamCannotBuy(){
-        $asset = Asset::factory()->create();
         $controller = new BlueTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => [$asset->name]
+            'results' => ["Firewall"]
         ]);
         $this->expectException(TeamNotFoundException::class);
         $controller->buy($request);
@@ -218,21 +215,20 @@ class BlueTeamTest extends TestCase
     //Add Assets to session('sellCart')
 
     public function testSellItemValid(){
-        $asset = Asset::factory()->create();
         $blueteam = $this->assignTeam();
         $inventory = Inventory::factory()->create([
-            'asset_id' => $asset->id,
+            'asset_name' => "Firewall",
             'team_id' => $blueteam->id,
             'quantity' => 1,
         ]);
         $controller = new BlueTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset->name]
+            'results' => ["Firewall"]
         ]);
         $response = $controller->sell($request);
         $sellCart = session('sellCart');
         $this->assertEquals(1, count($sellCart));
-        $this->assertEquals($asset->name, $sellCart[0]);
+        $this->assertEquals("Firewall", $sellCart[0]);
     }
 
     public function testSellNoItem(){
@@ -249,17 +245,22 @@ class BlueTeamTest extends TestCase
         $this->assignTeam();
         $controller = new BlueTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => ['invalidName']
+            'results' => ["Invalid"]
         ]);
         $this->expectException(AssetNotFoundException::class);
         $controller->sell($request);
     }
 
     public function testSellInvalidTeam(){
-        $asset = Asset::factory()->create();
+        $blueteam = Team::factory()->create();
+        $inventory = Inventory::factory()->create([
+            'asset_name' => "Firewall",
+            'team_id' => 1,
+            'quantity' => 1,
+        ]);
         $controller = new BlueTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset->name]
+            'results' => ["Firewall"]
         ]);
         $this->expectException(TeamNotFoundException::class);
         $controller->sell($request);
@@ -297,11 +298,10 @@ class BlueTeamTest extends TestCase
     public function testEndTurnNoItemOwnedError(){
         $controller = new BlueTeamController();
         $this->assignTeam();
-        $asset = Asset::factory()->create();
-        $sellCart[] = $asset->name;
+        $sellCart[] = "Firewall";
         session(['sellCart' => $sellCart]);
         $response = $controller->endTurn();
-        $this->assertEquals('not-enough-owned-'.$asset->name, $response->error);
+        $this->assertEquals('not-enough-owned-Firewall', $response->error);
         $newSellCart = session('sellCart');
         $this->assertEquals(0, count($newSellCart));
     }
@@ -311,8 +311,7 @@ class BlueTeamTest extends TestCase
         $team = $this->assignTeam();
         $team->balance = 0;
         $team->update();
-        $asset = Asset::factory()->create();
-        $buyCart[] = $asset->name;
+        $buyCart[] = "Firewall";
         session(['buyCart' => $buyCart]);
         $response = $controller->endTurn();
         $this->assertEquals('not-enough-money', $response->error);
@@ -323,21 +322,19 @@ class BlueTeamTest extends TestCase
     public function testEndTurnBuyOne(){
         $controller = new BlueTeamController();
         $team = $this->assignTeam();
-        $team->update();
         $balBefore = $team->balance;
-        $asset = Asset::factory()->create();
-        $inventoryBefore = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        $inventoryBefore = Inventory::all()->where('team_id','=',$team->id)->where('asset_name','=',"Firewall")->first();
         if($inventoryBefore == null) $quantity = 0;
         else $quantity = $inventoryBefore->quantity;
-        $buyCart[] = $asset->name;
+        $buyCart[] = "Firewall";
         session(['buyCart' => $buyCart]);
         $response = $controller->endTurn();
         $newBuyCart = session('buyCart');
         $this->assertNull($newBuyCart);
-        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_name','=',"Firewall")->first();
         $this->assertEquals($quantity + 1, $inventoryAfter->quantity);
         $balAfter = Auth::user()->getBlueTeam()->balance;
-        $this->assertEquals($balBefore - $asset->purchase_cost, $balAfter);
+        $this->assertEquals($balBefore - Asset::get("Firewall")->purchase_cost, $balAfter);
         $this->assertEquals(1, $response->turn);
         //$this->assertFalse(empty($response->endTime));
     }
@@ -347,20 +344,20 @@ class BlueTeamTest extends TestCase
         $team = $this->assignTeam();
         $team->update();
         $balBefore = $team->balance;
-        $asset = Asset::factory()->create();
-        $inventoryBefore = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        
+        $inventoryBefore = Inventory::all()->where('team_id','=',$team->id)->where('asset_name','=',"Firewall")->first();
         if($inventoryBefore == null) $quantity = 0;
         else $quantity = $inventoryBefore->quantity;
-        $buyCart[] = $asset->name;
-        $buyCart[] = $asset->name;
+        $buyCart[] = "Firewall";
+        $buyCart[] = "Firewall";
         session(['buyCart' => $buyCart]);
         $response = $controller->endTurn();
         $newBuyCart = session('buyCart');
         $this->assertNull($newBuyCart);
-        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_name','=',"Firewall")->first();
         $this->assertEquals($quantity + 2, $inventoryAfter->quantity);
         $balAfter = Auth::user()->getBlueTeam()->balance;
-        $this->assertEquals($balBefore - ($asset->purchase_cost * 2), $balAfter);
+        $this->assertEquals($balBefore - (Asset::get("Firewall")->purchase_cost * 2), $balAfter);
         $this->assertEquals(1, $response->turn);
         //$this->assertFalse(empty($response->endTime));
     }
@@ -368,19 +365,17 @@ class BlueTeamTest extends TestCase
     public function testEndTurnSellOne(){
         $controller = new BlueTeamController();
         $team = $this->assignTeam();
-        $team->update();
         $balBefore = $team->balance;
-        $asset = Asset::factory()->create();
-        $inventory = Inventory::factory()->create(['asset_id' => $asset->id, 'team_id' => $team->id, 'quantity' => 1]);
-        $sellCart[] = $asset->name;
+        $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 1]);
+        $sellCart[] = "Firewall";
         session(['sellCart' => $sellCart]);
         $response = $controller->endTurn();
         $newSellCart = session('sellCart');
         $this->assertNull($newSellCart);
-        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_name','=',"Firewall")->first();
         $this->assertNull($inventoryAfter);
         $balAfter = Auth::user()->getBlueTeam()->balance;
-        $this->assertEquals($balBefore + $asset->purchase_cost, $balAfter);
+        $this->assertEquals($balBefore + Asset::get("Firewall")->purchase_cost, $balAfter);
         $this->assertEquals(1, $response->turn);
         //$this->assertFalse(empty($response->endTime));
     }
@@ -390,18 +385,17 @@ class BlueTeamTest extends TestCase
         $team = $this->assignTeam();
         $team->update();
         $balBefore = $team->balance;
-        $asset = Asset::factory()->create();
-        $inventory = Inventory::factory()->create(['asset_id' => $asset->id, 'team_id' => $team->id, 'quantity' => 2]);
-        $sellCart[] = $asset->name;
-        $sellCart[] = $asset->name;
+        $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2]);
+        $sellCart[] = "Firewall";
+        $sellCart[] = "Firewall";
         session(['sellCart' => $sellCart]);
         $response = $controller->endTurn();
         $newSellCart = session('sellCart');
         $this->assertNull($newSellCart);
-        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$asset->id)->first();
+        $inventoryAfter = Inventory::all()->where('team_id','=',$team->id)->where('asset_name','=',"Firewall")->first();
         $this->assertNull($inventoryAfter);
         $balAfter = Auth::user()->getBlueTeam()->balance;
-        $this->assertEquals($balBefore + 2 * $asset->purchase_cost, $balAfter);
+        $this->assertEquals($balBefore + 2 * Asset::get("Firewall")->purchase_cost, $balAfter);
         $this->assertEquals(1, $response->turn);
         //$this->assertFalse(empty($response->endTime));
     }
@@ -411,13 +405,11 @@ class BlueTeamTest extends TestCase
         $team = $this->assignTeam();
         $team->update();
         $balBefore = $team->balance;
-        $sellAsset = Asset::factory()->create();
-        $buyAsset = Asset::factory()->create(['purchase_cost' => 10]);
-        $inventory = Inventory::factory()->create(['asset_id' => $sellAsset->id, 'team_id' => $team->id, 'quantity' => 2]);
-        $sellCart[] = $sellAsset->name;
-        $sellCart[] = $sellAsset->name;
-        $buyCart[] = $buyAsset->name;
-        $buyCart[] = $buyAsset->name;
+        $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2]);
+        $sellCart[] = "Firewall";
+        $sellCart[] = "Firewall";
+        $buyCart[] = "SQL Database";
+        $buyCart[] = "SQL Database";
         session(['sellCart' => $sellCart]);
         session(['buyCart' => $buyCart]);
         $response = $controller->endTurn();
@@ -425,12 +417,12 @@ class BlueTeamTest extends TestCase
         $newBuyCart = session('buyCart');
         $this->assertNull($newBuyCart);
         $this->assertNull($newSellCart);
-        $inventoryAfterBuy = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$buyAsset->id)->first();
-        $inventoryAfterSell = Inventory::all()->where('team_id','=',$team->id)->where('asset_id','=',$sellAsset->id)->first();
+        $inventoryAfterBuy = Inventory::all()->where('team_id','=',$team->id)->where('asset_name','=',"SQLDatabase")->first();
+        $inventoryAfterSell = Inventory::all()->where('team_id','=',$team->id)->where('asset_name','=',"Firewall")->first();
         $this->assertNull($inventoryAfterSell);
         $this->assertEquals(2, $inventoryAfterBuy->quantity);
         $balAfter = Auth::user()->getBlueTeam()->balance;
-        $this->assertEquals($balBefore + 2 * $sellAsset->purchase_cost - 2 * $buyAsset->purchase_cost, $balAfter);
+        $this->assertEquals($balBefore + 2 * Asset::get("Firewall")->purchase_cost - 2 * Asset::get("SQLDatabase")->purchase_cost, $balAfter);
         $this->assertEquals(1, $response->turn);
         //$this->assertFalse(empty($response->endTime));
     }

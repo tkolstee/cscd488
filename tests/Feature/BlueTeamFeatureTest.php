@@ -71,20 +71,17 @@ class BlueTeamFeatureTest extends TestCase
 
     public function testBlueTeamCanViewAssetsInStore()
     {
-        $asset = Asset::factory()->create();
         $team = Team::factory()->create();
         $user = User::factory()->create([
             'blueteam' => $team->id
         ]);
         $response = $this->actingAs($user)->get('/blueteam/store');
         $response->assertViewIs('blueteam.store');
-        $response->assertSee($asset->name);
+        $response->assertSee("Firewall");
     }
 
     public function testBlueTeamCanAddToCart()
     {
-        $asset1 = Asset::factory()->create();
-        $asset2 = Asset::factory()->create();
         $team = Team::factory()->create([
             'balance' => 1000,
         ]);
@@ -92,15 +89,14 @@ class BlueTeamFeatureTest extends TestCase
             'blueteam' => $team->id
         ]);
         $response = $this->actingAs($user)->post('/blueteam/buy', [
-            'results' => [$asset1->name, $asset2->name],
+            'results' => ["Firewall"],
         ]);
         $response->assertViewIs('blueteam.store');
-        $response->assertSee([$asset1->name, $asset2->name]);
+        $response->assertSee("Firewall");
     }
 
     public function testBlueTeamCanBuyAssets()
     {
-        $asset = Asset::factory()->create();
         $team = Team::factory()->create([
             'balance' => 1000,
         ]);
@@ -109,9 +105,9 @@ class BlueTeamFeatureTest extends TestCase
             'leader' => 1,
         ]);
         $this->actingAs($user)->post('/blueteam/buy', [
-            'results' => [$asset->name],
+            'results' => ["Firewall"],
         ]);
-        $expectedBalance = $team->balance - $asset->purchase_cost;
+        $expectedBalance = $team->balance - Asset::get("Firewall")->purchase_cost;
         $response = $this->actingAs($user)->get('/blueteam/endturn');
         $response->assertViewIs('blueteam.home');
         $response->assertSee('Revenue: ' . $expectedBalance);

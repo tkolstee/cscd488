@@ -8,7 +8,8 @@ use App\Models\Team;
 
 class SQLInjectionAttack extends Attack {
 
-    public $_name                   = "SQLInjection";
+    public $_name                   = "SQL Injection";
+    public $_class_name             = "SQLInjection";
     public $_tags                   = [];
     public $_prereqs                = ['SQLDatabase'];
     public $_initial_difficulty     = 2;
@@ -26,6 +27,7 @@ class SQLInjectionAttack extends Attack {
 
         if ( $this->success ) {
             $blueteam->balance -= 50;
+            $redteam->balance += 100;
         }
         if ( $this->detected ) {
             $redteam->reputation -= 100;

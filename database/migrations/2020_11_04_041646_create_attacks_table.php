@@ -16,6 +16,7 @@ class CreateAttacksTable extends Migration
         Schema::create('attacks', function (Blueprint $table) {
             $table->id();
             $table->text('name');
+            $table->text('class_name');
             $table->json('tags');
             $table->json('prereqs');
             $table->foreignId('blueteam')->constrained('teams')->onDelete('cascade');

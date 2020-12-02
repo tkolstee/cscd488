@@ -114,7 +114,7 @@ class BlueTeamController extends Controller {
         $sellCart = session('sellCart');
         if (!empty($sellCart)){
             foreach($sellCart as $assetName){
-                $asset = Asset::get($assetName);
+                $asset = Asset::getByName($assetName);
                 $success = $blueteam->sellAsset($asset);
                 if (!$success) {
                     $error = "not-enough-owned-".$assetName;
@@ -132,7 +132,7 @@ class BlueTeamController extends Controller {
         $buyCart = session('buyCart');
         if (!empty($buyCart)){
             foreach($buyCart as $assetName){
-                $asset = Asset::get($assetName);
+                $asset = Asset::getByName($assetName);
                 $success = $blueteam->buyAsset($asset);
                 if (!$success){
                     $error = "not-enough-money";
@@ -175,7 +175,7 @@ class BlueTeamController extends Controller {
         $sellCart = session('sellCart');
         foreach($assetNames as $asset){
             $actAsset = Asset::get($asset);
-            $sellCart[] = $asset;
+            $sellCart[] = $actAsset->name;
         }
         session(['sellCart' => $sellCart]);
         return $this->store();
@@ -197,7 +197,7 @@ class BlueTeamController extends Controller {
         $buyCart = session('buyCart');
         foreach($assetNames as $asset){
             $actAsset = Asset::get($asset);
-            $buyCart[] = $asset;
+            $buyCart[] = $actAsset->name;
         }
         session(['buyCart' => $buyCart]);
         return $this->store();

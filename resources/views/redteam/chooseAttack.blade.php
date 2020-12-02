@@ -8,8 +8,8 @@
 <form method="POST" action="/redteam/performattack">
     @csrf
     @foreach ($possibleAttacks ?? [] as $attack)
-        <input type="radio" name="result" id="{{ $attack->name }}" value="{{ $attack->name }}">
-        <label for="{{ $attack->name }}">{{ $attack->name }}</label>
+        <input type="radio" name="result" id="{{ $attack->class_name }}" value="{{ $attack->class_name }}">
+        <label for="{{ $attack->class_name }}">{{ $attack->name }}</label>
         <br>
     @endforeach
     <input type="hidden" name="blueteam" value="{{ $blueteam->name }}">

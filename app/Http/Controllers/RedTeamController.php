@@ -209,7 +209,6 @@ class RedTeamController extends Controller {
         }
         //buy if you have enough
         foreach($assetNames as $assetName){
-            $redteam = Auth::user()->getRedTeam();
             $asset = Asset::get($assetName);
             $redteam->buyAsset($asset);
         }

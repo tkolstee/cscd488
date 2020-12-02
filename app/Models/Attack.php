@@ -14,10 +14,11 @@ class Attack extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'name', 'energy_cost', ];
+    protected $fillable = [ 'name', 'class_name', 'energy_cost', ];
     protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', ]; // casts "json" database column to array and back
 
     public $_name    = "Abstract class - do not use";
+    public $_class_name = "";
     public $_tags    = [];
     public $_prereqs = [];
     public $_initial_difficulty = 3;
@@ -28,6 +29,7 @@ class Attack extends Model
 
     function __construct() {
         $this->name           = $this->_name;
+        $this->class_name     = $this->_class_name;
         $this->difficulty     = $this->_initial_difficulty;
         $this->detection_risk = $this->_initial_detection_risk;
         $this->tags           = $this->_tags;
@@ -53,11 +55,29 @@ class Attack extends Model
         return $attacks;
     }
     
-    public static function get($name, $red, $blue){
-        $attack = Attack::all()->where('name','=',$name)->where('redteam','=',$red)->where('blueteam','=',$blue)->first();
-        $class = "\\App\\Models\\Attacks\\" . $attack->name . "Attack";
+    public static function convertToBase($attack){
+        $att = new Attack();
+        $att->name = $attack->name;
+        $att->class_name = $attack->class_name;
+        $att->tags = $attack->tags;
+        $att->prereqs = $attack->prereqs;
+        $att->difficulty = $attack->difficulty;
+        $att->detection_risk = $attack->detection_risk;
+        $att->success = $attack->success;
+        $att->detected = $attack->detected;
+        $att->energy_cost = $attack->energy_cost;
+        $att->possible = $attack->possible;
+        $att->blueteam = $attack->blueteam;
+        $att->redteam = $attack->redteam;
+        $att->errormsg = $attack->errormsg;
+        return $att;
+    }
+
+    public static function convertToDerived($attack){
+        $class = "\\App\\Models\\Attacks\\" . $attack->class_name . "Attack";
         $att = new $class();
         $att->name = $attack->name;
+        $att->class_name = $attack->class_name;
         $att->energy_cost = $attack->energy_cost;
         $att->tags = $attack->tags;
         $att->prereqs = $attack->prereqs;
@@ -70,6 +90,11 @@ class Attack extends Model
         $att->redteam = $attack->redteam;
         $att->errormsg = $attack->errormsg;
         return $att;
+    }
+
+    public static function get($name, $red, $blue){
+        $attack = Attack::all()->where('class_name','=',$name)->where('redteam','=',$red)->where('blueteam','=',$blue)->first();
+        return Attack::convertToDerived($attack);
     }
 
     public static function create($attackName, $redID, $blueID){
@@ -82,36 +107,12 @@ class Attack extends Model
     }
 
     public static function store($attack){
-        $att = new Attack();
-        $att->name = $attack->name;
-        $att->tags = $attack->tags;
-        $att->prereqs = $attack->prereqs;
-        $att->difficulty = $attack->difficulty;
-        $att->detection_risk = $attack->detection_risk;
-        $att->success = $attack->success;
-        $att->detected = $attack->detected;
-        $att->energy_cost = $attack->energy_cost;
-        $att->possible = $attack->possible;
-        $att->blueteam = $attack->blueteam;
-        $att->redteam = $attack->redteam;
-        $att->errormsg = $attack->errormsg;
+        $att = Attack::convertToBase($attack);
         $att->save();
     }
 
     public static function updateAttack($attack){
-        $att = new Attack();
-        $att->name = $attack->name;
-        $att->tags = $attack->tags;
-        $att->prereqs = $attack->prereqs;
-        $att->difficulty = $attack->difficulty;
-        $att->detection_risk = $attack->detection_risk;
-        $att->success = $attack->success;
-        $att->detected = $attack->detected;
-        $att->energy_cost = $attack->energy_cost;
-        $att->possible = $attack->possible;
-        $att->blueteam = $attack->blueteam;
-        $att->redteam = $attack->redteam;
-        $att->errormsg = $attack->errormsg;
+        $att = Attack::convertToBase($attack);
         $att->update();
         return $att;
     }
@@ -121,19 +122,24 @@ class Attack extends Model
         $redteam  = Team::find($this->redteam);
 
         // Get all assets in both attacker's and target's inventories
-        $item_ids = Inventory::all()->where(function($query){
-            $query->where('team_id', '=', $blueteam->id)->orWhere('team_id', '=', $redteam->id);
-        });
-        $assets = Asset::all()->whereIn('asset_id', $item_ids);
+        $blueInv = $blueteam->inventories();
+        $redInv = $redteam->inventories();
 
         // Collect all tags and names of these assets to match against prerequisites for this attack
         $have = [];
 
         // Each asset has an opportunity to modify the attack object
         //
-        foreach ($assets as $asset) {
+        foreach ($blueInv as $inv) {
+            $asset = Asset::get($inv->asset_name);
             $asset->onPreAttack($this);
-            $have[] = $asset->name;
+            $have[] = $asset->class_name;
+            foreach ( $asset->tags as $tag ) { $have[] = $tag; }
+        }
+        foreach ($redInv as $inv) {
+            $asset = Asset::get($inv->asset_name);
+            $asset->onPreAttack($this);
+            $have[] = $asset->class_name;
             foreach ( $asset->tags as $tag ) { $have[] = $tag; }
         }
         $unmet_prereqs = array_diff($this->prereqs, $have);

@@ -87,11 +87,11 @@ class RedTeamTest extends TestCase
     //Buy all items if you have enough
 
     public function testRedBuyValidAsset(){
-        $asset = Asset::factory()->create();
+        $asset = Asset::getBuyableRed()[0];
         $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => [$asset->name]
+            'results' => [$asset->class_name]
         ]);
         $redteam = Team::find(Auth::user()->redteam);
         $balanceBefore = $redteam->balance;
@@ -103,21 +103,21 @@ class RedTeamTest extends TestCase
 
     public function testBuyAlreadyOwned(){
         $redteam = $this->assignTeam();
-        $asset = Asset::factory()->create();
+        $asset = Asset::getBuyableRed()[0];
         $inventory = Inventory::factory()->create([
-            'asset_id' => $asset->id,
+            'asset_name' => $asset->class_name,
             'team_id' => $redteam->id,
             'quantity' => 1
         ]);
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => [$asset->name]
+            'results' => [$asset->class_name]
         ]);
-        $quantBefore = Inventory::all()->where('team_id','=',$redteam->id)->first()->quantity;
+        $quantBefore = Inventory::all()->where('team_id','=',$redteam->id)->where('asset_name','=',$asset->class_name)->first()->quantity;
         $balanceBefore = $redteam->balance;
         $response = $controller->buy($request);
         $inventory = Inventory::find($inventory->id);
-        $this->assertEquals($balanceBefore-$asset->purchase_cost, $response->redteam->balance);
+        $this->assertEquals($balanceBefore - $asset->purchase_cost, $response->redteam->balance);
         $this->assertEquals($quantBefore + 1, $inventory->quantity);
     }
 
@@ -125,28 +125,28 @@ class RedTeamTest extends TestCase
         $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => ['InvalidName']
+            'results' => ["InvalidName"]
         ]);
         $this->expectException(AssetNotFoundException::class);
         $controller->buy($request);
     }
 
     public function testBuyNoTeam(){
-        $asset = Asset::factory()->create();
+        $asset = Asset::getBuyableRed()[0];
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => [$asset->name]
+            'results' => [$asset->class_name]
         ]);
         $this->expectException(TeamNotFoundException::class);
         $controller->buy($request);
     }
 
     public function testBuyBuyNotEnoughMoney(){
-        $asset = Asset::factory()->create();
+        $asset = Asset::getBuyableRed()[0];
         $redteam = $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/buy','POST', [
-            'results' => [$asset->name]
+            'results' => [$asset->class_name]
         ]);
         $redteam->balance = 0;
         $redteam->update();
@@ -169,16 +169,16 @@ class RedTeamTest extends TestCase
     //Sell all items
 
     public function testSellItemOwnedOneValid(){
-        $asset = Asset::factory()->create();
+        $asset = Asset::getBuyableRed()[0];
         $redteam = $this->assignTeam();
         $inventory = Inventory::factory()->create([
-            'asset_id' => $asset->id,
+            'asset_name' => $asset->class_name,
             'team_id' => $redteam->id,
             'quantity' => 1,
         ]);
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset->name]
+            'results' => [$asset->class_name]
         ]);
         $balBefore = $redteam->balance;
         $response = $controller->sell($request);
@@ -188,16 +188,16 @@ class RedTeamTest extends TestCase
     }
 
     public function testSellItemOwnedManyValid(){
-        $asset = Asset::factory()->create();
+        $asset = Asset::getBuyableRed()[0];
         $redteam = $this->assignTeam();
         $inventory = Inventory::factory()->create([
-            'asset_id' => $asset->id,
+            'asset_name' => $asset->class_name,
             'team_id' => $redteam->id,
             'quantity' => 5,
         ]);
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset->name]
+            'results' => [$asset->class_name]
         ]);
         $balBefore = $redteam->balance;
         $quantBefore = $inventory->quantity;
@@ -209,46 +209,35 @@ class RedTeamTest extends TestCase
 
     public function testRedSellMultipleItems(){
         $redteam = $this->assignTeam();
-        $asset1 = Asset::factory()->create();
+        $asset1 = Asset::getBuyableRed()[0];
         $inventory1 = Inventory::factory()->create([
-            'asset_id' => $asset1->id,
+            'asset_name' => $asset1->class_name,
             'team_id' => $redteam->id,
             'quantity' => 3,
         ]);
-        $asset2 = Asset::factory()->create();
-        $inventory2 = Inventory::factory()->create([
-            'asset_id' => $asset2->id,
-            'team_id' => $redteam->id,
-            'quantity' => 5
-        ]);
-
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset1->name, $asset2->name]
+            'results' => [$asset1->class_name, $asset1->class_name]
         ]);
         $balanceBefore = $redteam->balance;
         $qtyBefore1 = $inventory1->quantity;
-        $qtyBefore2 = $inventory2->quantity;
-
         $controller->sell($request);
         $inventory1 = Inventory::find($inventory1->id);
-        $inventory2 = Inventory::find($inventory2->id);
         $redteam = Team::find($redteam->id);
-        $this->assertEquals($qtyBefore1-1, $inventory1->quantity);
-        $this->assertEquals($qtyBefore2-1, $inventory2->quantity);
-        $expectedBalance = $balanceBefore + $asset1->purchase_cost + $asset2->purchase_cost;
+        $this->assertEquals($qtyBefore1-2, $inventory1->quantity);
+        $expectedBalance = $balanceBefore + $asset1->purchase_cost + $asset1->purchase_cost;
         $this->assertEquals($expectedBalance, $redteam->balance);
     }
 
     public function testSellItemNotOwned(){
-        $asset = Asset::factory()->red()->create();
+        $asset = Asset::getBuyableRed()[0];
         $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset->name]
+            'results' => [$asset->class_name]
         ]);
         $response = $controller->sell($request);
-        $this->assertEquals("not-enough-owned-".$asset->name, $response->error);
+        $this->assertEquals("not-enough-owned-".$asset->class_name, $response->error);
     }
 
     public function testSellNoItem(){
@@ -265,17 +254,17 @@ class RedTeamTest extends TestCase
         $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => ['invalidName']
+            'results' => ["invalidName"]
         ]);
         $this->expectException(AssetNotFoundException::class);
         $controller->sell($request);
     }
 
     public function testSellInvalidTeam(){
-        $asset = Asset::factory()->red()->create();
+        $asset = Asset::getBuyableRed()[0];
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset->name]
+            'results' => [$asset->class_name]
         ]);
         $this->expectException(TeamNotFoundException::class);
         $controller->sell($request);
@@ -355,7 +344,7 @@ class RedTeamTest extends TestCase
         $this->assertFalse(empty($response->attack->difficulty));
         $this->assertFalse(empty($response->attack->detection_risk));
         $this->assertTrue($response->attack->possible);
-        $this->assertEquals("SynFlood", $response->attack->name);
+        $this->assertEquals("Syn Flood", $response->attack->name);
     }
 
     public function testPerformAttackNoPrereqs(){

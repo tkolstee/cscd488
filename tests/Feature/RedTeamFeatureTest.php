@@ -48,7 +48,7 @@ class RedTeamFeatureTest extends TestCase
 
     public function testRedTeamCanViewAssetsInStore()
     {
-        $asset = Asset::factory()->red()->create();
+        $asset = Asset::getBuyableRed()[0];
         $team = Team::factory()->red()->create();
         $user = User::factory()->create([
             'redteam' => $team->id,
@@ -61,7 +61,7 @@ class RedTeamFeatureTest extends TestCase
 
     public function testRedTeamCanBuyAssets()
     {
-        $asset = Asset::factory()->red()->create();
+        $asset = Asset::getBuyableRed()[0];
         $team = Team::factory()->red()->create([
             'balance' => 1000,
         ]);
@@ -70,7 +70,7 @@ class RedTeamFeatureTest extends TestCase
         ]);
         $expectedBalance = $team->balance - $asset->purchase_cost;
         $response = $this->actingAs($user)->post('/redteam/buy', [
-            'results' => [$asset->name],
+            'results' => [$asset->class_name],
         ]);
         $response->assertViewIs('redteam.store');
         $response->assertSee('Cash: ' . $expectedBalance);
@@ -78,7 +78,7 @@ class RedTeamFeatureTest extends TestCase
 
     public function testRedTeamCannotBuyWithNoMoney()
     {
-        $asset = Asset::factory()->red()->create();
+        $asset = Asset::getBuyableRed()[0];
         $team = Team::factory()->red()->create([
             'balance' => 0,
         ]);
@@ -87,7 +87,7 @@ class RedTeamFeatureTest extends TestCase
         ]);
         $expectedBalance = $team->balance;
         $response = $this->actingAs($user)->post('/redteam/buy', [
-            'results' => [$asset->name],
+            'results' => [$asset->class_name],
         ]);
         $response->assertViewIs('redteam.store');
         $response->assertSee('Cash: ' . $expectedBalance);

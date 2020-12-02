@@ -68,30 +68,6 @@ class Team extends Model
         return $team;
     }
 
-    public function onPreAttack($attackLog) {
-        if ($this->blue == 1){
-            $attackLog->blueteam_id = $this->id;
-        }
-        else if ($this->blue == 0){
-            $attackLog->redteam_id = $this->id;
-        }
-        //check all assets and call onPreAttack() if possible
-        $inventories = Inventory::all()->where('team_id','=', $this->id);
-        foreach($inventories as $inventory){
-            $asset = Asset::find($inventory->asset_id);
-            $class = "\\App\\Models\\Assets\\" . $asset->name . "Asset";
-            try {
-                $attackHandler = new $class();
-                $attackLog = $attackHandler->onPreAttack($attackLog);
-            }
-            catch (Error $e) {
-                //Caused by specific asset model class not existing. So onPreAttack() cannot be called
-                throw new AssetNotFoundException();
-            }
-        }
-        return $attackLog;
-    }
-
     public function leader() {
         return User::all()->where('blueteam','=',$this->id)->where('leader','=',1)->first();
     }
@@ -110,7 +86,7 @@ class Team extends Model
     }
 
     public function inventory($asset) {
-        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_id', '=', $asset->id)->first();
+        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->first();
     }
 
     public function sellAsset($asset) {
@@ -133,7 +109,7 @@ class Team extends Model
         $inv = $this->inventory($asset);
         if ($inv == null) {
             Inventory::create([
-                'asset_id' => $asset->id,
+                'asset_name' => $asset->class_name,
                 'team_id' => $this->id,
                 'quantity' => 1,
             ]);

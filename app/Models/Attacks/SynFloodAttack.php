@@ -7,7 +7,8 @@ use App\Models\Team;
 
 class SynFloodAttack extends Attack {
 
-    public $_name                   = "SynFlood";
+    public $_name                   = "Syn Flood";
+    public $_class_name             = "SynFlood";
     public $_tags                   = ['ExternalNetworkProtocol', 'DenialOfService'];
     public $_prereqs                = [];
     public $_initial_difficulty     = 2;

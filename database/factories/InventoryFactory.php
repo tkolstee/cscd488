@@ -24,7 +24,7 @@ class InventoryFactory extends Factory
        return [
            'quantity' => 1,
            'team_id' => 1,
-           'asset_id' => 1,
+           'asset_name' => "Firewall",
        ];
    }
    /**
