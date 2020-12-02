@@ -16,6 +16,7 @@ class CreateTeamsTable extends Migration
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
             $table->text('name')->unique();
+            $table->integer('energy')->default(1000);
             $table->integer('balance');
             $table->integer('reputation');
             $table->integer('blue');

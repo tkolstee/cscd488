@@ -16,6 +16,6 @@ class Inventory extends Model
     protected $fillable = [
         'quantity',
         'team_id',
-        'asset_id',
+        'asset_name',
     ];
 }

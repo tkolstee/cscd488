@@ -64,19 +64,19 @@ class User extends Authenticatable
     }
 
     public function getTurnTaken(){
-        $team = getBlueTeam();
+        $team = $this->getBlueTeam();
         $turn_taken = $team->getTurnTaken();
+        if($turn_taken == null) $turn_taken = 0;
         return $turn_taken;
     }
 
     public function leaveBlueTeam() {
         $blueteam = $this->getBlueTeam();
-
         $this->blueteam = null;
         if ($this->leader == 1){
             $members = $blueteam->members();
             if($members->isEmpty()){
-                Team::destroy($this->blueteam);
+                Team::destroy($blueteam->id);
             }else{
                 $newLeader = $members->first();
                 $newLeader->leader = 1;
@@ -115,8 +115,15 @@ class User extends Authenticatable
     public function deleteTeam($team) {
         if ($team->blue == 1 && $this->leader == 1){
             $this->leader = 0;
+            $this->blueteam = null;
             $this->update();
+            return Team::destroy($team->id);
         }
-        return Team::destroy($team->id);
+        if ($team->blue == 0){
+            $this->redteam = null;
+            $this->update();
+            return Team::destroy($team->id);
+        }
+        return false;
     }
 }

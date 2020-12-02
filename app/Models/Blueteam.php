@@ -21,12 +21,14 @@ class Blueteam extends Model
 
     public static function get($id){
         $blueteam = Blueteam::all()->where('team_id','=',$id)->first();
+        if($blueteam == null) $blueteam = Blueteam::create($id);
         return $blueteam;
     }
 
     public static function create($team_id){
         $blueteam = new Blueteam();
         $blueteam->team_id = $team_id;
+        $blueteam->turn_taken = 0;
         $blueteam->save();
         return $blueteam;
     }

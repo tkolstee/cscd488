@@ -6,6 +6,7 @@ use App\Models\Team;
 use App\Models\Asset;
 use App\Models\Blueteam;
 use App\Models\Setting;
+use App\Models\Game;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
@@ -25,11 +26,7 @@ class BlueTeamController extends Controller {
             if($page == 'startturn') return $this->startTurn(); //Testing Purposes
             if($page == 'settings') return $this->settings($request);
             $team_id = Auth::user()->blueteam;
-            $blueteam = Blueteam::get($team_id);
-            if($blueteam == null){
-                $blueteam = Blueteam::create($team_id);
-            }
-            $turn = $blueteam->turn_taken;
+            $turn = Auth::user()->getTurnTaken();
             if($turn == 1){
                 $endTime = Setting::get('turn_end_time');
                 return $this->home()->with(compact('turn', 'endTime'));
@@ -65,9 +62,15 @@ class BlueTeamController extends Controller {
         if($request->result == "stay"){
             return $this->settings($request);
         }
-        $user = Auth::user();
-        $user->leaveBlueTeam();
-        return $this->home();
+        else if($request->result == "leave"){
+            $user = Auth::user();
+            $user->leaveBlueTeam();
+            return $this->home();
+        }else{
+            $error = "invalid-option";
+            return $this->settings($request)->with(compact('error'));
+        }
+        
     }
 
     public function changeName(request $request){
@@ -77,6 +80,7 @@ class BlueTeamController extends Controller {
         catch(TeamNotFoundException $e){
             $team = Auth::user()->getBlueTeam();
             $team->setName($request->name);
+            return $this->settings($request);
         }
             $error = "name-taken";
             return $this->settings($request)->with(compact('error'));
@@ -110,10 +114,10 @@ class BlueTeamController extends Controller {
         $sellCart = session('sellCart');
         if (!empty($sellCart)){
             foreach($sellCart as $assetName){
-                $asset = Asset::get($assetName);
+                $asset = Asset::getByName($assetName);
                 $success = $blueteam->sellAsset($asset);
                 if (!$success) {
-                    $error = "not-enough-owned-".$asset;
+                    $error = "not-enough-owned-".$assetName;
                     $key = array_search($assetName, $sellCart);
                     unset($sellCart[$key]);
                     session(['sellCart' => $sellCart]);
@@ -128,7 +132,7 @@ class BlueTeamController extends Controller {
         $buyCart = session('buyCart');
         if (!empty($buyCart)){
             foreach($buyCart as $assetName){
-                $asset = Asset::get($assetName);
+                $asset = Asset::getByName($assetName);
                 $success = $blueteam->buyAsset($asset);
                 if (!$success){
                     $error = "not-enough-money";
@@ -158,7 +162,7 @@ class BlueTeamController extends Controller {
         }
         $leader = $blueteam->leader();
         $members = $blueteam->members();
-        $turn = 0;
+        $turn = Auth::user()->getTurnTaken();
         return  view('blueteam.home')->with(compact('blueteam','leader','members', 'turn'));
     }
 
@@ -171,7 +175,7 @@ class BlueTeamController extends Controller {
         $sellCart = session('sellCart');
         foreach($assetNames as $asset){
             $actAsset = Asset::get($asset);
-            $sellCart[] = $asset;
+            $sellCart[] = $actAsset->name;
         }
         session(['sellCart' => $sellCart]);
         return $this->store();
@@ -193,7 +197,7 @@ class BlueTeamController extends Controller {
         $buyCart = session('buyCart');
         foreach($assetNames as $asset){
             $actAsset = Asset::get($asset);
-            $buyCart[] = $asset;
+            $buyCart[] = $actAsset->name;
         }
         session(['buyCart' => $buyCart]);
         return $this->store();
@@ -231,8 +235,8 @@ class BlueTeamController extends Controller {
         return $this->home();
     }
 
-    public function delete(request $request){
-        $team = Team::get($request->name);
+    public function delete(){
+        $team = Auth::user()->getBlueTeam();
         Auth::user()->deleteTeam($team);
         return view('home');
     }

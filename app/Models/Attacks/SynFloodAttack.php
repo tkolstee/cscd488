@@ -5,13 +5,12 @@ namespace App\Models\Attacks;
 use App\Models\Attack;
 use App\Models\Team;
 
+class SynFloodAttack extends Attack {
 
-class SQLInjectionAttack extends Attack {
-
-    public $_name                   = "SQL Injection";
-    public $_class_name             = "SQLInjection";
-    public $_tags                   = [];
-    public $_prereqs                = ['SQLDatabase'];
+    public $_name                   = "Syn Flood";
+    public $_class_name             = "SynFlood";
+    public $_tags                   = ['ExternalNetworkProtocol', 'DenialOfService'];
+    public $_prereqs                = [];
     public $_initial_difficulty     = 2;
     public $_initial_detection_risk = 5;
     public $_initial_energy_cost    = 100;
