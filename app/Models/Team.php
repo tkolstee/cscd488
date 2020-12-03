@@ -77,8 +77,8 @@ class Team extends Model
     }
 
     public function inventories() {
-        //return Inventory::all()->where('team_id', '=', $this->id);
-        return $this->hasMany('App\Models\Inventory');
+        return Inventory::all()->where('team_id', '=', $this->id);
+        //return $this->hasMany('App\Models\Inventory');
     }
 
     public function inventory($asset) {

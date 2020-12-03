@@ -124,6 +124,5 @@ class User extends Authenticatable
             $this->update();
             return Team::destroy($team->id);
         }
-        return false;
     }
 }
