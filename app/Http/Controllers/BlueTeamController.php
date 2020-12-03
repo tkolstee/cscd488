@@ -205,11 +205,7 @@ class BlueTeamController extends Controller {
 
     public function store(){
         $blueteam = Auth::user()->getBlueTeam();
-        try{
-            $assets = Asset::getBuyableBlue();
-        }catch(AssetNotFoundException $e){
-            $assets = null;
-        }
+        $assets = Asset::getBuyableBlue();
         return view('blueteam.store')->with(compact('blueteam', 'assets'));
     }
 

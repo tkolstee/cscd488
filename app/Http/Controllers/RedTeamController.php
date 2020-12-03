@@ -217,11 +217,7 @@ class RedTeamController extends Controller {
 
     public function store(){
         $redteam = Auth::user()->getRedTeam();
-        try{
-            $assets = Asset::getBuyableRed();
-        }catch(AssetNotFoundException $e){
-            $assets = null;
-        }
+        $assets = Asset::getBuyableRed();
         return view('redteam.store')->with(compact('redteam', 'assets'));
     }
 
