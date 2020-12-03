@@ -111,18 +111,4 @@ class User extends Authenticatable
         $this->redteam = $team->id;
         return $this->update();
     }
-
-    public function deleteTeam($team) {
-        if ($team->blue == 1 && $this->leader == 1){
-            $this->leader = 0;
-            $this->blueteam = null;
-            $this->update();
-            return Team::destroy($team->id);
-        }
-        if ($team->blue == 0){
-            $this->redteam = null;
-            $this->update();
-            return Team::destroy($team->id);
-        }
-    }
 }

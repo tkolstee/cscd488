@@ -233,10 +233,4 @@ class RedTeamController extends Controller {
         Auth::user()->createRedTeam($request->name);
         return $this->home();
     }
-
-    public function delete(){
-        $team = Auth::user()->getRedTeam();
-        Auth::user()->deleteTeam($team);
-        return view('home');
-    }
 }

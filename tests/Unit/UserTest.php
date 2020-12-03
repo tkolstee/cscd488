@@ -77,14 +77,4 @@ class UserTest extends TestCase {
         $this->assertTrue($user->createRedTeam('name'));
         $this->assertNotNull($user->redteam);
     }
-
-    public function testDeleteTeam() {
-        $team = Team::factory()->create();
-        $leader = User::factory()->create(['blueteam' => $team->id, 'leader' => 1]);
-        $member = User::factory()->create(['blueteam' => $team->id, 'leader' => 0]);
-        $leader->deleteTeam($team);
-        $this->assertEquals($leader->name, $leader->name);
-        $this->assertNull($leader->blueteam);
-        $this->assertNull($member->blueteam);
-    }
 }

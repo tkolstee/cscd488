@@ -234,10 +234,4 @@ class BlueTeamController extends Controller {
         Auth::user()->createBlueTeam($request->name);
         return $this->home();
     }
-
-    public function delete(){
-        $team = Auth::user()->getBlueTeam();
-        Auth::user()->deleteTeam($team);
-        return view('home');
-    }
 }
