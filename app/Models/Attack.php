@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Exceptions\AttackNotFoundException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Exception;
+use Error;
+
+use function PHPUnit\Framework\isEmpty;
 
 class Attack extends Model
 {
@@ -74,21 +77,26 @@ class Attack extends Model
     }
 
     public static function convertToDerived($attack){
-        $class = "\\App\\Models\\Attacks\\" . $attack->class_name . "Attack";
-        $att = new $class();
-        $att->name = $attack->name;
-        $att->class_name = $attack->class_name;
-        $att->energy_cost = $attack->energy_cost;
-        $att->tags = $attack->tags;
-        $att->prereqs = $attack->prereqs;
-        $att->difficulty = $attack->difficulty;
-        $att->detection_risk = $attack->detection_risk;
-        $att->success = $attack->success;
-        $att->detected = $attack->detected;
-        $att->possible = $attack->possible;
-        $att->blueteam = $attack->blueteam;
-        $att->redteam = $attack->redteam;
-        $att->errormsg = $attack->errormsg;
+        try {
+            $class = "\\App\\Models\\Attacks\\" . $attack->class_name . "Attack";
+            $att = new $class();
+            $att->name = $attack->name;
+            $att->class_name = $attack->class_name;
+            $att->energy_cost = $attack->energy_cost;
+            $att->tags = $attack->tags;
+            $att->prereqs = $attack->prereqs;
+            $att->difficulty = $attack->difficulty;
+            $att->detection_risk = $attack->detection_risk;
+            $att->success = $attack->success;
+            $att->detected = $attack->detected;
+            $att->possible = $attack->possible;
+            $att->blueteam = $attack->blueteam;
+            $att->redteam = $attack->redteam;
+            $att->errormsg = $attack->errormsg;
+        }
+        catch (Error $e) {
+            throw new AttackNotFoundException();
+        }
         return $att;
     }
 
@@ -98,12 +106,17 @@ class Attack extends Model
     }
 
     public static function create($attackName, $redID, $blueID){
-        $class = "\\App\\Models\\Attacks\\" . $attackName . "Attack";
-        $attack = new $class();
-        $attack->blueteam = $blueID;
-        $attack->redteam = $redID;
-        Attack::store($attack);
-        return $attack;
+        try {
+            $class = "\\App\\Models\\Attacks\\" . $attackName . "Attack";
+            $attack = new $class();
+            $attack->blueteam = $blueID;
+            $attack->redteam = $redID;
+            Attack::store($attack);
+            return $attack;
+        }
+        catch(Error $e) {
+            throw new AttackNotFoundException();
+        }
     }
 
     public static function store($attack){
