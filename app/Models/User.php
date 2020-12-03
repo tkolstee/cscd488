@@ -58,6 +58,17 @@ class User extends Authenticatable
         return $redteam;
     }
 
+    public function setEnergy($energy){
+        $team = $this->getRedTeam();
+        $team->setEnergy($energy);
+    }
+
+    public function getEnergy(){
+        $team = $this->getRedTeam();
+        $energy = $team->getEnergy();
+        return $energy;
+    }
+
     public function setTurnTaken($turn_taken){
         $team = $this->getBlueTeam();
         $team->setTurnTaken($turn_taken);

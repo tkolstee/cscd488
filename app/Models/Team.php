@@ -65,6 +65,7 @@ class Team extends Model
             'balance' => 0,
             'reputation' => 0
         ]);
+        Redteam::create($team->id);
         return $team;
     }
 
@@ -87,6 +88,22 @@ class Team extends Model
 
     public function inventory($asset) {
         return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->first();
+    }
+
+    public function changeBalance($balChange){
+        $this->balance += $balChange;
+        if ($this->balance < 0){
+            $this->balance = 0;
+        }
+        $this->update();
+    }
+
+    public function changeReputation($repChange){
+        $this->balance += $repChange;
+        if ($this->reputation < 0){
+            $this->reputation = 0;
+        }
+        $this->update();
     }
 
     public function sellAsset($asset) {
@@ -139,6 +156,32 @@ class Team extends Model
         $turn = $blueteam->turn_taken;
         if($turn == null) $turn = 0;
         return $turn;
+    }
+
+    public function getEnergy(){
+        if($this->blue == 1){
+            throw new TeamNotFoundException();
+        }
+        $redteam = Redteam::get($this->id);
+        $energy = $redteam->energy;
+        if($energy == null) $energy = 0;
+        return $energy;
+    }
+
+    public function setEnergy($energy){
+        if($this->blue == 1){
+            throw new TeamNotFoundException();
+        }
+        $redteam = Redteam::get($this->id);
+        $redteam->setEnergy($energy);
+    }
+
+    public function useEnergy($energyCost){
+        if($this->blue == 1){
+            throw new TeamNotFoundException();
+        }
+        $redteam = Redteam::get($this->id);
+        $redteam->useEnergy($energyCost);
     }
 
     public function setName($newName) {

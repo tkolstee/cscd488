@@ -360,8 +360,7 @@ class RedTeamTest extends TestCase
         $team = $this->assignTeam();
         $controller = new RedTeamController();
         $target = Team::factory()->create();
-        $team->energy = 0;
-        $team->update();
+        $team->setEnergy(0);
         $request = Request::create('/performattack','POST', ['blueteam' => $target->name, 'result' => "SynFlood"]);
         $response = $controller->performAttack($request);
         $this->assertEquals("Not enough energy available.", $response->attMsg);

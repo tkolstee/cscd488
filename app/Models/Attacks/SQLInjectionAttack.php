@@ -26,16 +26,13 @@ class SQLInjectionAttack extends Attack {
         $redteam  = Team::find($this->redteam);
 
         if ( $this->success ) {
-            $blueteam->balance -= 50;
-            $redteam->balance += 100;
+            $blueteam->changeBalance(-50);
+            $redteam->changeBalance(100);
         }
         if ( $this->detected ) {
-            $redteam->reputation -= 100;
+            $redteam->changeReputation(-100);
         }
-        $redteam->energy -= $this->energy_cost;
-        $blueteam->update();
-        $redteam->update();
-
+        $redteam->useEnergy($this->energy_cost);
     }
 
     function onPreAttack() {
