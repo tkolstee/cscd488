@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Models\Attack;
 use App\Models\Team;
 use App\Exceptions\AttackNotFoundException;
+use App\Exceptions\TeamNotFoundException;
 use App\Models\Attacks\SQLInjectionAttack;
 use App\Models\Attacks\SynFloodAttack;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -86,5 +87,11 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         $this->expectException(AttackNotFoundException::class);
         $attack = Attack::create('NotAnAttack', $red->id, $blue->id);
+    }
+
+    
+    public function testCreateAttackInvalidTeams() {
+        $this->expectException(TeamNotFoundException::class);
+        $attack = Attack::create('SQLInjection', 0, 1);
     }
 }

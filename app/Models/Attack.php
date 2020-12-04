@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use App\Exceptions\AttackNotFoundException;
+use App\Exceptions\TeamNotFoundException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Error;
-
-use function PHPUnit\Framework\isEmpty;
 
 class Attack extends Model
 {
@@ -106,6 +105,9 @@ class Attack extends Model
     }
 
     public static function create($attackName, $redID, $blueID){
+        if (Team::find($redID) == null || Team::find($blueID) == null) {
+            throw new TeamNotFoundException();
+        }
         try {
             $class = "\\App\\Models\\Attacks\\" . $attackName . "Attack";
             $attack = new $class();
