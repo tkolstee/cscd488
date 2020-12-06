@@ -19,23 +19,23 @@ class BlueTeamFeatureTest extends TestCase
             $game = new Game();
             $game->save();
         }
+        $user = User::factory()->create();
+        $this->be($user);
     }
 
     public function testUserCanViewBlueTeamPages()
     {
-        $user = User::factory()->make();
-        $response = $this->actingAs($user)->get('/blueteam/home');
+        $response = $this->get('/blueteam/home');
         $response->assertStatus(200);
-        $response = $this->actingAs($user)->get('/blueteam/status');
+        $response = $this->get('/blueteam/status');
         $response->assertStatus(200);
-        $response = $this->actingAs($user)->get('/blueteam/store');
+        $response = $this->get('/blueteam/store');
         $response->assertStatus(200);
     }
 
     public function testUserCanCreateBlueTeam()
     {
-        $user = User::factory()->create();
-        $response = $this->actingAs($user)->post('/blueteam/create', [
+        $response = $this->post('/blueteam/create', [
             'name' => 'blueteamname',
         ]);
         $response->assertViewIs('blueteam.home');
