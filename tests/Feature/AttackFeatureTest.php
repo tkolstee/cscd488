@@ -42,11 +42,29 @@ class AttackFeatureTest extends TestCase
         $response->assertSee([$blueteam1->name, $blueteam2->name, $blueteam3->name]);
     }
 
+    public function testShouldErrorWhenNoTeamSelected() {
+        $response = $this->get('/redteam/chooseattack');
+        $response->assertViewIs('redteam.startAttack');
+        $response->assertSee("No-Team-Selected");
+    }
+
     public function testUserCanSelectTeamToAttack() {
         $blueteam = Team::factory()->create();
         $response = $this->post('/redteam/startattack', [
             'result' => $blueteam->name,
         ]);
         $response->assertViewIs('redteam.chooseAttack');
+    }
+
+    public function testUserCanViewPossibleAttacks() {
+        $this->assertTrue(false);
+    }
+
+    public function testShouldErrorWhenNoAttackSelect() {
+        $this->assertTrue(false);
+    }
+
+    public function testUserCanSelectAttack() {
+        $this->assertTrue(false);
     }
 }
