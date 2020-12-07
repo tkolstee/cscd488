@@ -34,7 +34,7 @@ class AssetTest extends TestCase {
         $this->assertEquals($expectedAssets, $assets);
     }
 
-    public function testGetAssetByName() {
+    public function testGetAsset() {
         $asset = Asset::get('Firewall');
         $expected = new FirewallAsset;
         $this->assertEquals($expected, $asset);
@@ -43,5 +43,16 @@ class AssetTest extends TestCase {
     public function testGetInvalidAsset() {
         $this->expectException(AssetNotFoundException::class);
         Asset::get('NotARealAsset');
+    }
+
+    public function testGetAssetByName(){
+        $asset = Asset::getByName('SQL Database');
+        $expected = new SQLDatabaseAsset;
+        $this->assertEquals($expected, $asset);
+    }
+
+    public function testGetAssetByNameInvalid(){
+        $this->expectException(AssetNotFoundException::class);
+        Asset::getByName('NotARealAsset');
     }
 }

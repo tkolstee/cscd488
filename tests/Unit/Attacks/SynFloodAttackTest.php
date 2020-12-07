@@ -17,7 +17,7 @@ class SynFloodAttackTest extends TestCase {
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
         $sqlAttack = new SynFloodAttack;
-        return Attack::create($sqlAttack->_class_name, $red->id, $blue->id);
+        return Attack::create($sqlAttack->class_name, $red->id, $blue->id);
     }
 
     public function testSynFloodNoAssets() {
@@ -31,7 +31,6 @@ class SynFloodAttackTest extends TestCase {
         $attack = $this->createAttackAndTeams();
         $firewall = new FirewallAsset;
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $firewall->class_name]);
-
         $expected = $attack;
         $expected->difficulty += 2;
         $attack->onPreAttack();

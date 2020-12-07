@@ -28,10 +28,7 @@ class TeamTest extends TestCase {
     public function testGetBlueTeams() {
         $team1 = Team::factory()->create();
         $teams = Team::getBlueTeams();
-        $this->assertIsIterable($teams);
-        foreach ($teams as $team){
-            $this->assertEquals($team1->name, $team->name);
-        }
+        $this->assertEquals($team1->name, $teams->first()->name);
     }
 
     public function testGetNoBlueTeams() {
@@ -42,10 +39,7 @@ class TeamTest extends TestCase {
     public function testGetRedTeams() {
         $team1 = Team::factory()->red()->create();
         $teams = Team::getRedTeams();
-        $this->assertIsIterable($teams);
-        foreach ($teams as $team){
-            $this->assertEquals($team1->name, $team->name);
-        }
+        $this->assertEquals($team1->name, $teams->first()->name);
     }
 
     public function testGetNoRedTeams() {
@@ -93,18 +87,22 @@ class TeamTest extends TestCase {
         }
     }
 
-    public function teamHasManyInventory() {
+    public function testInventories() {
         $team = Team::factory()->create();
         $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'SQLDatabase']);
-        $this->assertInstanceOf('Illuminate\Database\Eloquent\Collection', $team->inventories);
+        $inventories = $team->inventories()->first();
+        $this->assertEquals($inv->team_id, $inventories->team_id);
+        $this->assertEquals($inv->asset_name, $inventories->asset_name);
     }
     
-    public function testGetInventory() {
+    public function testInventory() {
         $team = Team::factory()->create();
         $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'SQLDatabase']);
         $asset = new SQLDatabaseAsset;
         $invReceived = $team->inventory($asset);
         $this->assertEquals($inv->quantity, $invReceived->quantity);
+        $this->assertEquals($inv->team_id, $invReceived->team_id);
+        $this->assertEquals($inv->asset_name, $invReceived->asset_name);
     }
 
     public function testSellAsset() {
@@ -114,6 +112,8 @@ class TeamTest extends TestCase {
         $oldBalance = $team->balance;
         $this->assertTrue($team->sellAsset($asset));
         $this->assertEquals($oldBalance + $asset->purchase_cost, $team->balance);
+        $inv = $team->inventory($asset);
+        $this->assertNull($inv);
     }
 
     public function testSellAssetNotOwned() {

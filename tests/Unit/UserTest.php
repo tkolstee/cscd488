@@ -37,6 +37,7 @@ class UserTest extends TestCase {
         $team = Team::factory()->create();
         $user = User::factory()->create(['blueteam' => $team->id, 'leader' => 1]);
         $user->leaveBlueTeam();
+        $this->assertNull(Team::find($team->id));
         $this->assertNull($user->blueteam);
     }
 
@@ -46,8 +47,8 @@ class UserTest extends TestCase {
         $member = User::factory()->create(['blueteam' => $team->id, 'leader' => 0]);
         $user->leaveBlueTeam();
         $this->assertNull($user->blueteam);
-        $this->assertEquals($team->id, $member->blueteam);
-        $this->assertNotNull($team->leader());
+        $this->assertEquals($team->id, $member->getBlueTeam()->id);
+        $this->assertEquals($member->name, $team->leader()->name);
     }
 
     public function testLeaveRedTeam() {
@@ -55,6 +56,7 @@ class UserTest extends TestCase {
         $user = User::factory()->create(['redteam' => $team->id]);
         $user->leaveRedTeam();
         $this->assertNull($user->redteam);
+        $this->assertNull(Team::find($team->id));
     }
 
     public function testJoinBlueTeam() {
@@ -68,6 +70,7 @@ class UserTest extends TestCase {
     public function testCreateBlueTeam() {
         $user = User::factory()->create();
         $this->assertTrue($user->createBlueTeam('name'));
+        $this->assertNotNull(Team::get('name'));
         $this->assertNotNull($user->blueteam);
         $this->assertEquals(1, $user->leader);
     }
@@ -75,6 +78,7 @@ class UserTest extends TestCase {
     public function testCreateRedTeam() {
         $user = User::factory()->create();
         $this->assertTrue($user->createRedTeam('name'));
+        $this->assertNotNull(Team::get('name'));
         $this->assertNotNull($user->redteam);
     }
 }
