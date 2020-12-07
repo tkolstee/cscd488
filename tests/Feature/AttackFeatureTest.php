@@ -49,13 +49,15 @@ class AttackFeatureTest extends TestCase
         $response->assertSee("No-Team-Selected");
     }
 
-    public function testUserCanSelectTeamToAttack() {
+    public function testSelectTeamChooseAttack() {
         $blueteam = Team::factory()->create();
         $response = $this->post('/redteam/chooseattack', [
             'result' => $blueteam->name,
         ]);
         $response->assertViewIs('redteam.chooseAttack' );
-        $response->assertSee("Select a method of attack against ");
+        $response->assertSee("Select a method of attack against ".$blueteam->name);
+        $response->assertSee("SQL Injection");
+        $response->assertSee("Syn Flood");
     }
 
     public function testUserCanViewPossibleAttacks() {
