@@ -147,7 +147,7 @@ class Attack extends Model
             $this->possible = false;
             $this->errormsg = "Unsatisfied prereqs for this attack";
         }
-        if ( $redteam->energy < $this->energy_cost ) {
+        if ( $redteam->getEnergy() < $this->energy_cost ) {
             $this->possible = false;
             $this->errormsg = "Not enough energy available.";
         }

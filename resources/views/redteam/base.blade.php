@@ -11,7 +11,7 @@
                 <td width="50%">
                 <strong>{{  $redteam->name ?? '' }} </strong>
                     <br>Cash: {{ $redteam->balance ?? '' }}    Reputation: {{ $redteam->reputation ?? '' }}
-                    <br>Turn: {{ App\Models\Setting::get('turn') }}
+                    <br>Energy: {{ App\Models\Redteam::getEnergy($redteam->id) }}
                 </td>
             @endif
         </tr></table>

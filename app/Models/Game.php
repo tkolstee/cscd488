@@ -32,8 +32,11 @@ class Game extends Model
         $game->save();
         $blueteams = Blueteam::all();
         foreach ($blueteams as $blueteam){
-            $blueteam->turn_taken = 0;
-            $blueteam->update();
+            $blueteam->setTurnTaken(0);
+        }
+        $redteams = Redteam::all();
+        foreach($redteams as $redteam){
+            $redteam->setEnergy(1000);
         }
     }
 }
