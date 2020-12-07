@@ -49,7 +49,7 @@ class AttackFeatureTest extends TestCase
         $response->assertSee("No-Team-Selected");
     }
 
-    public function testSelectTeamChooseAttack() {
+    public function testUserCanViewPossibleAttacks() {
         $blueteam = Team::factory()->create();
         $response = $this->post('/redteam/chooseattack', [
             'result' => $blueteam->name,
@@ -60,15 +60,21 @@ class AttackFeatureTest extends TestCase
         $response->assertSee("Syn Flood");
     }
 
-    public function testUserCanViewPossibleAttacks() {
-        $this->assertTrue(false);
-    }
-
     public function testShouldErrorWhenNoAttackSelect() {
-        $this->assertTrue(false);
+        $blueteam = Team::factory()->create();
+        $response = $this->post('/redteam/performattack', [
+            'blueteam' => $blueteam->name,
+        ]);
+        $response->assertViewIs('redteam.startAttack');
+        $response->assertSee("No-Attack-Selected");
     }
 
     public function testUserCanSelectAttack() {
-        $this->assertTrue(false);
+        $blueteam = Team::factory()->create();
+        $response = $this->post('/redteam/performattack', [
+            'blueteam' => $blueteam->name,
+            'result' => "Syn Flood",
+        ]);
+        $response->assertSee(["Press a correct button", $blueteam->name]);
     }
 }
