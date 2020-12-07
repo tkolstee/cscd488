@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use Auth;
 use App\Models\User;
 use App\Models\Team;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -41,6 +42,15 @@ class AttackFeatureTest extends TestCase
         $blueteam3 = Team::factory()->create();
         $response = $this->get('/redteam/startattack');
         $response->assertSee([$blueteam1->name, $blueteam2->name, $blueteam3->name]);
+    }
+
+    public function testUserCannotAttackOwnTeam(){
+        $blueteam = Team::factory()->create();
+        Auth::user()->blueteam = $blueteam->id;
+        Auth::user()->update();
+        $response = $this->get('/redteam/startattack');
+        $response->assertSee("Select a blue team to attack:");
+        $response->assertDontSee($blueteam->name);
     }
 
     public function testShouldErrorWhenNoTeamSelected() {

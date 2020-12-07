@@ -156,7 +156,7 @@ class RedTeamController extends Controller {
 
     public function startAttack(){
         try{
-            $targets = Team::getBlueTeams();
+            $targets = Team::getBlueTeams()->where('id','!=',Auth::user()->blueteam);
         }catch(TeamNotFoundException $e){
             $targets = [];
         }
