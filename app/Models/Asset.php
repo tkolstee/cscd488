@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
+use Exception;
 
 class Asset //extends Model
 {
@@ -16,7 +18,6 @@ class Asset //extends Model
     protected $fillable = [
         'name',
         'class_name',
-        'type',
         'blue',
         'buyable',
         'purchase_cost',
@@ -27,7 +28,6 @@ class Asset //extends Model
     public $_name    = "Abstract class - do not use";
     public $_class_name = "";
     public $_tags    = [];
-    public $_type = 1;
     public $_blue = 1;
     public $_buyable = 1;
     public $_purchase_cost = 100;
@@ -36,7 +36,6 @@ class Asset //extends Model
     function __construct() {
         $this->name           = $this->_name;
         $this->class_name = $this->_class_name;
-        $this->type     = $this->_type;
         $this->blue = $this->_blue;
         $this->tags           = $this->_tags;
         $this->buyable      = $this->_buyable;
@@ -90,7 +89,7 @@ class Asset //extends Model
             }
         }
         if(count($assets ?? []) == 0){
-            return null;
+            throw new AssetNotFoundException();
         }
         return $assets;
     }
@@ -103,7 +102,7 @@ class Asset //extends Model
             }
         }
         if(count($assets ?? []) == 0){
-            return null;
+            throw new AssetNotFoundException();
         }
         return $assets;
     }

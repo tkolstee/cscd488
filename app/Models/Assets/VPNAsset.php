@@ -5,7 +5,7 @@ namespace App\Models\Assets;
 use App\Models\Asset;
 use App\Models\Attack;
 
-class VPN extends Asset 
+class VPNAsset extends Asset 
 {
 
     public $_name    = "Virtual Private Network";

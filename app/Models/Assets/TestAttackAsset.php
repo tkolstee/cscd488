@@ -11,7 +11,6 @@ class TestAttackAsset extends Asset
     public $_name    = "Test Attack";
     public $_class_name = "TestAttack";
     public $_tags    = [];
-    public $_type = 1;
     public $_blue = 0;
     public $_buyable = 1;
     public $_purchase_cost = 100;

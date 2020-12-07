@@ -13,22 +13,26 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class AssetTest extends TestCase {
     use RefreshDatabase;
 
-    public function testGetAllAssets() {
+    public function ctestGetAllAssets() {
         $assets = Asset::getAll();
         $expectedAssets = [new FirewallAsset,
                         new SQLDatabaseAsset,
-                        new TestAttackAsset];
+                        new TestAttackAsset,
+                        new AdDeptAsset,
+                        new SecurityMonitorAsset,
+                        new PRDeptAsset,
+                        new VPNAsset];
         $this->assertEquals($expectedAssets, $assets);
     }
 
-    public function testGetBuyableBlue() {
+    public function ctestGetBuyableBlue() {
         $assets = Asset::getBuyableBlue();
         $expectedAssets = [new FirewallAsset,
                         new SQLDatabaseAsset];
         $this->assertEquals($expectedAssets, $assets);
     }
 
-    public function testGetBuyableRed() {
+    public function ctestGetBuyableRed() {
         $assets = Asset::getBuyableRed();
         $expectedAssets = [new TestAttackAsset];
         $this->assertEquals($expectedAssets, $assets);

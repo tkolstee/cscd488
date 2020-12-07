@@ -10,7 +10,6 @@ class FirewallAsset extends Asset {
     public $_name    = "Firewall";
     public $_class_name = "Firewall";
     public $_tags    = [];
-    public $_type = 1;
     public $_blue = 1;
     public $_buyable = 1;
     public $_purchase_cost = 100;

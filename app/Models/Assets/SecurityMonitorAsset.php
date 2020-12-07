@@ -5,7 +5,7 @@ namespace App\Models\Assets;
 use App\Models\Asset;
 use App\Models\Attack;
 
-class SecurityMonitor extends Asset 
+class SecurityMonitorAsset extends Asset 
 {
 
     public $_name    = "Security Monitor";
