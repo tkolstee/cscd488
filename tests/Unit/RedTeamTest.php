@@ -351,13 +351,6 @@ class RedTeamTest extends TestCase
         $this->assertEquals("Not enough energy available.", $response->attMsg);
     }
 
-    //MinigameComplete Tests
-    //Should
-
-    public function testMinigameComplete(){
-        
-    }
-
     //Settings Tests
     //Should return view with redteam,changeName,and leaveTeam
 
