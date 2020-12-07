@@ -66,22 +66,6 @@ class RedTeamTest extends TestCase
         $controller->create($request);
     }
 
-    //Delete Tests
-    //Should call user::delete and return home
-
-    public function testDeleteValidRedTeam(){
-        $team = $this->assignTeam();
-        $controller = new RedTeamController();
-        $controller->delete();
-        $this->assertTrue(Team::all()->where('name', '=', $team->name)->isEmpty());
-    }
-
-    public function testDeleteInvalidRedTeam(){
-        $controller = new RedTeamController();
-        $this->expectException(TeamNotFoundException::class);
-        $controller->delete();
-    }
-
     //Buy Tests
     //Should error on no results, not enough money
     //Buy all items if you have enough
@@ -364,13 +348,6 @@ class RedTeamTest extends TestCase
         $request = Request::create('/performattack','POST', ['blueteam' => $target->name, 'result' => "SynFlood"]);
         $response = $controller->performAttack($request);
         $this->assertEquals("Not enough energy available.", $response->attMsg);
-    }
-
-    //MinigameComplete Tests
-    //Should
-
-    public function testMinigameComplete(){
-        
     }
 
     //Settings Tests

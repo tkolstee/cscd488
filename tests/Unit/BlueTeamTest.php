@@ -114,31 +114,6 @@ class BlueTeamTest extends TestCase
         $controller->create($request);
     }
 
-    //Delete Tests
-    //Should call User::deleteTeam and return home
-
-    public function testDeleteBlueTeamAsLeader(){
-        $team = $this->assignTeam();
-        $controller = new BlueTeamController();
-        $controller->delete();
-        $this->assertTrue(Team::all()->where('name', '=', $team->name)->isEmpty());
-    }
-
-    public function testDeleteBlueTeamNotLeader(){
-        $team = $this->assignTeam();
-        Auth::user()->leader = 0;
-        Auth::user()->update();
-        $controller = new BlueTeamController();
-        $controller->delete();
-        $this->assertFalse(Team::all()->where('name', '=', $team->name)->isEmpty());
-    }
-
-    public function testDeleteInvalidBlueTeam(){
-        $controller = new BlueTeamController();
-        $this->expectException(TeamNotFoundException::class);
-        $controller->delete();
-    }
-
     //Join Tests
     //Should return join view with all blueteams if result empty
     //Call User::joinBlueTeam with teamName and return home

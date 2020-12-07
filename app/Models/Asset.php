@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
-use Exception;
 
 class Asset //extends Model
 {
@@ -92,7 +90,7 @@ class Asset //extends Model
             }
         }
         if(count($assets ?? []) == 0){
-            throw new AssetNotFoundException();
+            return null;
         }
         return $assets;
     }
@@ -105,7 +103,7 @@ class Asset //extends Model
             }
         }
         if(count($assets ?? []) == 0){
-            throw new AssetNotFoundException();
+            return null;
         }
         return $assets;
     }

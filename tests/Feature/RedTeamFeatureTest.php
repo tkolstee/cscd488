@@ -12,23 +12,27 @@ class RedTeamFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp(): void {
+        parent::setUp();
+        $user = User::factory()->create();
+        $this->be($user);
+    }
+
     public function testUserCanViewRedTeamPages()
     {
-        $user = User::factory()->make();
-        $response = $this->actingAs($user)->get('/redteam/home');
+        $response = $this->get('/redteam/home');
         $response->assertStatus(200);
-        $response = $this->actingAs($user)->get('/redteam/status');
+        $response = $this->get('/redteam/status');
         $response->assertStatus(200);
-        $response = $this->actingAs($user)->get('/redteam/store');
+        $response = $this->get('/redteam/store');
         $response->assertStatus(200);
-        $response = $this->actingAs($user)->get('/redteam/attacks');
+        $response = $this->get('/redteam/attacks');
         $response->assertStatus(200);
     }
 
     public function testUserCanCreateRedTeam()
     {
-        $user = User::factory()->create();
-        $response = $this->actingAs($user)->post('/redteam/create', [
+        $response = $this->post('/redteam/create', [
             'name' => 'redteamname',
         ]);
         $response->assertViewIs('redteam.home');

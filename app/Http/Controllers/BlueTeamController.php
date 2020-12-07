@@ -205,11 +205,7 @@ class BlueTeamController extends Controller {
 
     public function store(){
         $blueteam = Auth::user()->getBlueTeam();
-        try{
-            $assets = Asset::getBuyableBlue();
-        }catch(AssetNotFoundException $e){
-            $assets = null;
-        }
+        $assets = Asset::getBuyableBlue();
         return view('blueteam.store')->with(compact('blueteam', 'assets'));
     }
 
@@ -233,11 +229,5 @@ class BlueTeamController extends Controller {
         ]);
         Auth::user()->createBlueTeam($request->name);
         return $this->home();
-    }
-
-    public function delete(){
-        $team = Auth::user()->getBlueTeam();
-        Auth::user()->deleteTeam($team);
-        return view('home');
     }
 }

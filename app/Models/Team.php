@@ -77,10 +77,6 @@ class Team extends Model
         return User::all()->where('blueteam','=',$this->id)->where('leader','=',0);
     }
 
-    public function assets() {
-        return $this->belongstoManyThrough('App\Models\Asset', 'App\Models\Inventory');
-    }
-
     public function inventories() {
         return Inventory::all()->where('team_id', '=', $this->id);
         //return $this->hasMany('App\Models\Inventory');
@@ -191,6 +187,6 @@ class Team extends Model
             $this->name = $newName;
             return $this->update();
         }
-        throw new TeamNotFoundException();
+        return false;
     }
 }

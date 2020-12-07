@@ -156,7 +156,7 @@ class RedTeamController extends Controller {
 
     public function startAttack(){
         try{
-            $targets = Team::getBlueTeams();
+            $targets = Team::getBlueTeams()->where('id','!=',Auth::user()->blueteam);
         }catch(TeamNotFoundException $e){
             $targets = [];
         }
@@ -217,11 +217,7 @@ class RedTeamController extends Controller {
 
     public function store(){
         $redteam = Auth::user()->getRedTeam();
-        try{
-            $assets = Asset::getBuyableRed();
-        }catch(AssetNotFoundException $e){
-            $assets = null;
-        }
+        $assets = Asset::getBuyableRed();
         return view('redteam.store')->with(compact('redteam', 'assets'));
     }
 
@@ -232,11 +228,5 @@ class RedTeamController extends Controller {
         ]);
         Auth::user()->createRedTeam($request->name);
         return $this->home();
-    }
-
-    public function delete(){
-        $team = Auth::user()->getRedTeam();
-        Auth::user()->deleteTeam($team);
-        return view('home');
     }
 }
