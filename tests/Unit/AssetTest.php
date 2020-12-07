@@ -13,29 +13,60 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class AssetTest extends TestCase {
     use RefreshDatabase;
 
-    public function ctestGetAllAssets() {
+    private function getAll(){
+        $dir = opendir(dirname(__FILE__)."/../../app/Models/Assets");
+        while(($asset = readdir($dir)) !== false){
+            if($asset != "." && $asset != ".."){
+                $length = strlen($asset);
+                $asset = substr($asset, 0, $length - 4);
+                $class = "\\App\\Models\\Assets\\" . $asset;
+                $assets[] = new $class();
+            }
+        }
+        return $assets;
+    }
+
+    private function getAllCount(){
+        $assets = $this->getAll();
+        return count($assets);
+    }
+
+    private function getBuyableBlueCount(){
+        $allAssets = Asset::getAll();
+        foreach($allAssets as $asset){
+            if($asset->buyable == 1 && $asset->blue == 1){
+                $assets[] = $asset;
+            }
+        }
+        return count($assets);
+    }
+
+    private function getBuyableRedCount(){
+        $allAssets = Asset::getAll();
+        foreach($allAssets as $asset){
+            if($asset->buyable == 1 && $asset->blue == 0){
+                $assets[] = $asset;
+            }
+        }
+        return count($assets);
+    }
+
+    public function testGetAllAssets() {
         $assets = Asset::getAll();
-        $expectedAssets = [new FirewallAsset,
-                        new SQLDatabaseAsset,
-                        new TestAttackAsset,
-                        new AdDeptAsset,
-                        new SecurityMonitorAsset,
-                        new PRDeptAsset,
-                        new VPNAsset];
-        $this->assertEquals($expectedAssets, $assets);
+        $expectedCount = $this->getAllCount();
+        $this->assertEquals($expectedCount, count($assets));
     }
 
-    public function ctestGetBuyableBlue() {
+    public function testGetBuyableBlue() {
         $assets = Asset::getBuyableBlue();
-        $expectedAssets = [new FirewallAsset,
-                        new SQLDatabaseAsset];
-        $this->assertEquals($expectedAssets, $assets);
+        $expectedCount = $this->getBuyableBlueCount();
+        $this->assertEquals($expectedCount, count($assets));
     }
 
-    public function ctestGetBuyableRed() {
+    public function testGetBuyableRed() {
         $assets = Asset::getBuyableRed();
-        $expectedAssets = [new TestAttackAsset];
-        $this->assertEquals($expectedAssets, $assets);
+        $expectedCount = $this->getBuyableRedCount();
+        $this->assertEquals($expectedCount, count($assets));
     }
 
     public function testGetAsset() {

@@ -44,7 +44,7 @@
         @foreach ($assets as $asset)
 
         <input type="checkbox" name="results[]" id="{{ $asset->class_name }}" value="{{ $asset->class_name }}">
-        <label for="{{ $asset->class_name }}">{{ $asset->name }}  Type: {{ $asset->type }}  
+        <label for="{{ $asset->class_name }}">{{ $asset->name }}
             Purchase Cost: {{ $asset->purchase_cost }}  Ownership Cost: {{ $asset->ownership_cost }}</label>
         <br>
     
