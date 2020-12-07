@@ -32,6 +32,7 @@ class AttackFeatureTest extends TestCase
         $response->assertSee("Start Attack");
         $response = $this->get('/redteam/startattack');
         $response->assertStatus(200)->assertViewIs('redteam.startAttack');
+        $response->assertSee("Select a blue team to attack:");
     }
 
     public function testUserCanViewTeamsToAttack() {
@@ -50,10 +51,11 @@ class AttackFeatureTest extends TestCase
 
     public function testUserCanSelectTeamToAttack() {
         $blueteam = Team::factory()->create();
-        $response = $this->post('/redteam/startattack', [
+        $response = $this->post('/redteam/chooseattack', [
             'result' => $blueteam->name,
         ]);
-        $response->assertViewIs('redteam.chooseAttack');
+        $response->assertViewIs('redteam.chooseAttack' );
+        $response->assertSee("Select a method of attack against ");
     }
 
     public function testUserCanViewPossibleAttacks() {
