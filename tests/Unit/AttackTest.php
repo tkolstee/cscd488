@@ -61,6 +61,18 @@ class AttackTest extends TestCase {
         $this->assertEquals(SQLInjectionAttack::class, get_class($retrievedAttack));
     }
 
+    public function testGetInvalidAttack() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = new Attack;
+        $attack->class_name = 'NotAnAttack';
+        $attack->redteam = $red->id;
+        $attack->blueteam = $blue->id;
+        $attack->save();
+        $this->expectException(AttackNotFoundException::class);
+        Attack::get('NotAnAttack', $red->id, $blue->id);
+    }
+
     public function testGetPreviousAttacks() {
         $red = Team::factory()->red()->create();
         $diffRed = Team::factory()->red()->create();
@@ -83,18 +95,6 @@ class AttackTest extends TestCase {
         $this->assertEquals($red->id, $prevAttack2->redteam);
     }
 
-    public function testGetInvalidAttack() {
-        $red = Team::factory()->red()->create();
-        $blue = Team::factory()->create();
-        $attack = new Attack;
-        $attack->class_name = 'NotAnAttack';
-        $attack->redteam = $red->id;
-        $attack->blueteam = $blue->id;
-        $attack->save();
-        $this->expectException(AttackNotFoundException::class);
-        Attack::get('NotAnAttack', $red->id, $blue->id);
-    }
-
     public function testCreateAttack() {
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
@@ -115,5 +115,16 @@ class AttackTest extends TestCase {
     public function testCreateAttackInvalidTeams() {
         $this->expectException(TeamNotFoundException::class);
         $attack = Attack::create('SQLInjection', 0, 1);
+    }
+
+    public function testUpdateAttack() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
+
+        $dbAttack = Attack::find(1);
+        $attack->difficulty = 0;
+        Attack::updateAttack($attack);
+        $this->assertEquals(0, $dbAttack->difficulty);
     }
 }
