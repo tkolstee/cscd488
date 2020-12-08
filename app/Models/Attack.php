@@ -127,11 +127,6 @@ class Attack extends Model
         $att->save();
     }
 
-    public static function ttupdateAttack($attack){
-        $att = Attack::convertToBase($attack);
-        $att->update();
-        return $attack;
-    }
     public static function updateAttack($attack){
         $att = Attack::all()->where('class_name','=',$attack->class_name)->
             where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam)->where('success','=',null)->first();
