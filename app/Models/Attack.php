@@ -120,7 +120,7 @@ class Attack extends Model
 
     public static function updateAttack($attack){
         $att = Attack::all()->where('class_name','=',$attack->class_name)->
-            where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam)->where('success','=',null)->first();
+            where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam)->where('detected','=',null)->first();
         $att->name = $attack->name;
         $att->class_name = $attack->class_name;
         $att->tags = $attack->tags;
@@ -144,6 +144,18 @@ class Attack extends Model
 
     public function setSuccess($successIn) {
         $this->success = $successIn;
+        Attack::updateAttack($this);
+        $this->calculateDetected();
+    }
+
+    public function calculateDetected() {
+        $rand = rand(1, 4);
+        if ($rand >= $this->detection_risk) {
+            $this->detected = false;
+        }
+        else {
+            $this->detected = true;
+        }
         Attack::updateAttack($this);
     }
 

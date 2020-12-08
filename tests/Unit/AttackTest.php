@@ -78,6 +78,40 @@ class AttackTest extends TestCase {
         $this->assertTrue($attack->success);
     }
 
+    public function testCalculateDetectedTrue() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+        $attack->detection_risk = 5;
+        $attack->update();
+        $attack->calculateDetected();
+        $this->assertTrue($attack->detected);
+    }
+
+    public function testCalculateDetectedFalse() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+        $attack->detection_risk = 1;
+        $attack->update();
+        $attack->calculateDetected();
+        $this->assertFalse($attack->detected);
+    }
+
+    public function testCalculateDetectedAfterSetSuccess() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+        $attack->success = true;
+        $attack->update();
+
+        $attack->calculateDetected();
+        $this->assertNotNull($attack->detected);
+    }
+
     public function testChangeDifficulty() {
         $baseAttack = new SQLInjectionAttack;
         $red = Team::factory()->red()->create();
