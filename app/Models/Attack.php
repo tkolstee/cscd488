@@ -104,6 +104,10 @@ class Attack extends Model
         return Attack::convertToDerived($attack);
     }
 
+    public static function getPreviousAttacks($redId) {
+        return Attack::all()->where('redteam', '=', $redId);
+    }
+
     public static function create($attackName, $redID, $blueID){
         if (Team::find($redID) == null || Team::find($blueID) == null) {
             throw new TeamNotFoundException();
