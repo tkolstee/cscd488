@@ -94,4 +94,15 @@ class AttackTest extends TestCase {
         $this->expectException(TeamNotFoundException::class);
         $attack = Attack::create('SQLInjection', 0, 1);
     }
+
+    public function testUpdateAttack() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack->difficulty = 1;
+        $att = Attack::updateAttack($attack);
+        $this->assertEquals(1, $att->difficulty);
+        $dbAttack = Attack::find(1);
+        $this->assertEquals(1, $dbAttack->difficulty);
+    }
 }

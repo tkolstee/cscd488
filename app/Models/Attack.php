@@ -16,7 +16,7 @@ class Attack extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'name', 'class_name', 'energy_cost', ];
+    protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk','success','detected','blueteam','redteam'];
     protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', ]; // casts "json" database column to array and back
 
     public $_name    = "Abstract class - do not use";
@@ -77,6 +77,7 @@ class Attack extends Model
 
     public static function convertToDerived($attack){
         try {
+            //if($attack->difficulty != 1) throw new AttackNotFoundException;
             $class = "\\App\\Models\\Attacks\\" . $attack->class_name . "Attack";
             $att = new $class();
             $att->name = $attack->name;
@@ -126,8 +127,27 @@ class Attack extends Model
         $att->save();
     }
 
-    public static function updateAttack($attack){
+    public static function ttupdateAttack($attack){
         $att = Attack::convertToBase($attack);
+        $att->update();
+        return $attack;
+    }
+    public static function updateAttack($attack){
+        $att = Attack::all()->where('class_name','=',$attack->class_name)->
+            where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam)->where('success','=',null)->first();
+        $att->name = $attack->name;
+        $att->class_name = $attack->class_name;
+        $att->tags = $attack->tags;
+        $att->prereqs = $attack->prereqs;
+        $att->difficulty = $attack->difficulty;
+        $att->detection_risk = $attack->detection_risk;
+        $att->success = $attack->success;
+        $att->detected = $attack->detected;
+        $att->energy_cost = $attack->energy_cost;
+        $att->possible = $attack->possible;
+        $att->blueteam = $attack->blueteam;
+        $att->redteam = $attack->redteam;
+        $att->errormsg = $attack->errormsg;
         $att->update();
         return $attack;
     }

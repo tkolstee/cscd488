@@ -64,7 +64,9 @@ class SQLInjectionAttackTest extends TestCase {
         $attack = $this->createAttackAndTeams();
         $attack->difficulty = 1;
         Attack::updateAttack($attack);
+        $this->assertEquals(1, $attack->difficulty);
         $attack->onPreAttack();
+        $this->assertEquals(1, $attack->difficulty);
         $sqldatabase = new SQLDatabaseAsset;
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
@@ -72,7 +74,7 @@ class SQLInjectionAttackTest extends TestCase {
             'attackName' => $attack->class_name,
             'red' => $attack->redteam,
             'blue' => $attack->blueteam,
-            'url' => "'",
+            'url' => "",
         ]);
         $response = $controller->sqlInjection($request);
         $this->assertEquals("Success: true", $response->attMsg);
