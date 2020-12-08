@@ -40,8 +40,7 @@ class AttackController extends Controller
         }
         $attack->success = $success;
         Attack::updateAttack($attack);
-        $attMsg = $attack->difficulty . " " . $attack->success; //testing
-        //return (new RedTeamController)->home()->with(compact('attMsg')); //testing
         return $this->attackComplete($attack);
     }
+    
 }

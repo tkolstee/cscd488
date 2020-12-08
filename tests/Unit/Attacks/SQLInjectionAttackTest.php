@@ -64,9 +64,7 @@ class SQLInjectionAttackTest extends TestCase {
         $attack = $this->createAttackAndTeams();
         $attack->difficulty = 1;
         Attack::updateAttack($attack);
-        $this->assertEquals(1, $attack->difficulty);
         $attack->onPreAttack();
-        $this->assertEquals(1, $attack->difficulty);
         $sqldatabase = new SQLDatabaseAsset;
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
@@ -78,5 +76,185 @@ class SQLInjectionAttackTest extends TestCase {
         ]);
         $response = $controller->sqlInjection($request);
         $this->assertEquals("Success: true", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(1, $attackAfter->success);
+    }
+
+    public function testMinigameDifficultyOneWrongAnswer(){
+        $attack = $this->createAttackAndTeams();
+        $attack->difficulty = 1;
+        Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $sqldatabase = new SQLDatabaseAsset;
+        Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
+        $controller = new AttackController;
+        $request = Request::create('POST','attack/sqlinjection',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'url' => "wrong",
+        ]);
+        $response = $controller->sqlInjection($request);
+        $this->assertEquals("Success: false", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(0, $attackAfter->success);
+    }
+
+    public function testMinigameDifficultyTwo(){
+        $attack = $this->createAttackAndTeams();
+        $attack->difficulty = 2;
+        Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $sqldatabase = new SQLDatabaseAsset;
+        Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
+        $controller = new AttackController;
+        $request = Request::create('POST','attack/sqlinjection',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'url' => "'",
+        ]);
+        $response = $controller->sqlInjection($request);
+        $this->assertEquals("Success: true", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(1, $attackAfter->success);
+    }
+
+    public function testMinigameDifficultyTwoWrongAnswer(){
+        $attack = $this->createAttackAndTeams();
+        $attack->difficulty = 2;
+        Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $sqldatabase = new SQLDatabaseAsset;
+        Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
+        $controller = new AttackController;
+        $request = Request::create('POST','attack/sqlinjection',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'url' => "wrong",
+        ]);
+        $response = $controller->sqlInjection($request);
+        $this->assertEquals("Success: false", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(0, $attackAfter->success);
+    }
+
+    public function testMinigameDifficultyThree(){
+        $attack = $this->createAttackAndTeams();
+        $attack->difficulty = 3;
+        Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $sqldatabase = new SQLDatabaseAsset;
+        Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
+        $controller = new AttackController;
+        $request = Request::create('POST','attack/sqlinjection',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'url' => "'--",
+        ]);
+        $response = $controller->sqlInjection($request);
+        $this->assertEquals("Success: true", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(1, $attackAfter->success);
+    }
+
+    public function testMinigameDifficultyThreeWrongAnswer(){
+        $attack = $this->createAttackAndTeams();
+        $attack->difficulty = 3;
+        Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $sqldatabase = new SQLDatabaseAsset;
+        Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
+        $controller = new AttackController;
+        $request = Request::create('POST','attack/sqlinjection',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'url' => "wrong",
+        ]);
+        $response = $controller->sqlInjection($request);
+        $this->assertEquals("Success: false", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(0, $attackAfter->success);
+    }
+
+    public function testMinigameDifficultyFour(){
+        $attack = $this->createAttackAndTeams();
+        $attack->difficulty = 4;
+        Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $sqldatabase = new SQLDatabaseAsset;
+        Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
+        $controller = new AttackController;
+        $request = Request::create('POST','attack/sqlinjection',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'url' => "' or 1=1--",
+        ]);
+        $response = $controller->sqlInjection($request);
+        $this->assertEquals("Success: true", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(1, $attackAfter->success);
+    }
+
+    public function testMinigameDifficultyFourWrongAnswer(){
+        $attack = $this->createAttackAndTeams();
+        $attack->difficulty = 4;
+        Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $sqldatabase = new SQLDatabaseAsset;
+        Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
+        $controller = new AttackController;
+        $request = Request::create('POST','attack/sqlinjection',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'url' => "wrong",
+        ]);
+        $response = $controller->sqlInjection($request);
+        $this->assertEquals("Success: false", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(0, $attackAfter->success);
+    }
+
+    public function testMinigameDifficultyFiveAlwaysFails(){
+        $attack = $this->createAttackAndTeams();
+        $attack->difficulty = 5;
+        Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $sqldatabase = new SQLDatabaseAsset;
+        Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
+        $controller = new AttackController;
+        $request = Request::create('POST','attack/sqlinjection',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'url' => "",
+        ]);
+        $response = $controller->sqlInjection($request);
+        $this->assertEquals("Success: false", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(0, $attackAfter->success);
     }
 }
