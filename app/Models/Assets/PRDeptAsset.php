@@ -19,7 +19,7 @@ class PRDeptAsset extends Asset
     public function onPreAttack($attack)
     {
         if($attack->detected){
-            $attack->difficulty += 1;
+            $attack->changeDifficulty(1);
         }
     }
 }

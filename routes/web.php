@@ -25,6 +25,8 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::any('/redteam/{page}', [App\Http\Controllers\RedTeamController::class, 'page'])->name('redteam');
 
+    Route::any('/attack/{page}', [App\Http\Controllers\AttackController::class, 'page'])->name('attack');
+
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
 

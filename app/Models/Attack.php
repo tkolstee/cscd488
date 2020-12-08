@@ -132,6 +132,20 @@ class Attack extends Model
         return $att;
     }
 
+    public function changeDifficulty($val){
+        $this->difficulty += $val;
+        if($this->difficulty > 5) $this->difficulty = 5;
+        if($this->difficulty < 0) $this->difficulty = 0;
+        Attack::updateAttack($this);
+    }
+
+    public function changeDetectionRisk($val){
+        $this->detection_risk += $val;
+        if($this->detection_risk > 5) $this->detection_risk = 5;
+        if($this->detection_risk < 0) $this->detection_risk = 0;
+        Attack::updateAttack($this);
+    }
+
     public function onPreAttack() {
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
