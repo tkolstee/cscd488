@@ -18,7 +18,12 @@ class AttackController extends Controller
     public function attackComplete($attack){
         $redteam = Team::find($attack->redteam);
         $attack->onAttackComplete();
-        $attMsg = "Success: ".$attack->success;
+        $attMsg = "Success: ";
+        if($attack->success){
+            $attMsg .= "true";
+        }else {
+            $attMsg .= "false";
+        }
         return (new RedTeamController)->home()->with(compact('attMsg'));
     }
 
@@ -27,14 +32,16 @@ class AttackController extends Controller
         $url = $request->url;
         $success = false;
         switch($attack->difficulty){
-            case 1: if(empty($url)) $success = true; break;
+            case 1: if($url == "") $success = true; break;
             case 2: if($url == "'") $success = true; break;
             case 3: if($url == "'--") $success = true; break;
             case 4: if($url == "' or 1=1--") $success = true; break;
             default: break;
         }
         $attack->success = $success;
-        $attack->update();
+        Attack::updateAttack($attack);
+        //$attMsg = $attack->difficulty . " " . $attack->success; //testing
+        //return (new RedTeamController)->home()->with(compact('attMsg')); //testing
         return $this->attackComplete($attack);
     }
 }
