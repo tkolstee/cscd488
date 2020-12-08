@@ -45,6 +45,28 @@ class AttackTest extends TestCase {
         Attack::get('NotAnAttack', $red->id, $blue->id);
     }
 
+    public function testGetPreviousAttacks() {
+        $red = Team::factory()->red()->create();
+        $diffRed = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $this->assertEmpty(Attack::getPreviousAttacks($red));
+
+        Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1 = Attack::get('SynFlood', $red->id, $blue->id);
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack2 = Attack::get('SQLInjection', $red->id, $blue->id);
+        Attack::create('SynFlood', $diffRed->id, $blue->id);
+
+        $prevAttacks = Attack::getPreviousAttacks($red->id);
+        $this->assertEquals(2, $prevAttacks->count());
+        $prevAttack1 = $prevAttacks[0];
+        $this->assertEquals($attack1->class_name, $prevAttack1->class_name);
+        $this->assertEquals($red->id, $prevAttack1->redteam);
+        $prevAttack2 = $prevAttacks[1];
+        $this->assertEquals($attack2->class_name, $prevAttack2->class_name);
+        $this->assertEquals($red->id, $prevAttack2->redteam);
+    }
+
     public function testCreateAttack() {
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();

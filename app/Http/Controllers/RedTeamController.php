@@ -8,6 +8,7 @@ use App\Models\Inventory;
 use App\Models\Attack;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
+use App\Exceptions\AttackNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use App\Models\AttackLog;
 use Error;
@@ -93,18 +94,16 @@ class RedTeamController extends Controller {
         return view('redteam.home')->with(compact('redteam'));
     }
 
-    //Needs work
     public function attacks(){
-        $possibleAttacks = Attack::all();
         $redteam = Auth::user()->getRedTeam();
-        return view('redteam.attacks')->with(compact('redteam','possibleAttacks')); 
+        $previousAttacks = Attack::getPreviousAttacks($redteam->id);
+        return view('redteam.attacks')->with(compact('redteam','previousAttacks')); 
     }
 
     public function minigameComplete(request $request){
-        
         $attack = Attack::get($request->attackName, $request->red, $request->blue);
         if($attack == null){
-            throw new Exception("Attack null");
+            throw new AttackNotFoundException();
         }
         $attMsg = "Success: ";
         if($request->result == 1){
@@ -121,6 +120,8 @@ class RedTeamController extends Controller {
 
     public function minigameStart($attack){
         if(!$attack->possible){
+            $attack->success = false;
+            Attack::updateAttack($attack);
             $attMsg = $attack->errormsg;
             return $this->home()->with(compact('attMsg'));
         }
