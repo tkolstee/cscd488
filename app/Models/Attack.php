@@ -16,7 +16,7 @@ class Attack extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'name', 'class_name', 'energy_cost', ];
+    protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk','success','detected','blueteam','redteam'];
     protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', ]; // casts "json" database column to array and back
 
     public $_name    = "Abstract class - do not use";
@@ -56,26 +56,9 @@ class Attack extends Model
         }
         return $attacks;
     }
-    
-    public static function convertToBase($attack){
-        $att = new Attack();
-        $att->name = $attack->name;
-        $att->class_name = $attack->class_name;
-        $att->tags = $attack->tags;
-        $att->prereqs = $attack->prereqs;
-        $att->difficulty = $attack->difficulty;
-        $att->detection_risk = $attack->detection_risk;
-        $att->success = $attack->success;
-        $att->detected = $attack->detected;
-        $att->energy_cost = $attack->energy_cost;
-        $att->possible = $attack->possible;
-        $att->blueteam = $attack->blueteam;
-        $att->redteam = $attack->redteam;
-        $att->errormsg = $attack->errormsg;
-        return $att;
-    }
 
-    public static function convertToDerived($attack){
+    public static function get($name, $red, $blue){
+        $attack = Attack::all()->where('class_name','=',$name)->where('redteam','=',$red)->where('blueteam','=',$blue)->where('success','=',null)->first();
         try {
             $class = "\\App\\Models\\Attacks\\" . $attack->class_name . "Attack";
             $att = new $class();
@@ -99,11 +82,6 @@ class Attack extends Model
         return $att;
     }
 
-    public static function get($name, $red, $blue){
-        $attack = Attack::all()->where('class_name','=',$name)->where('redteam','=',$red)->where('blueteam','=',$blue)->first();
-        return Attack::convertToDerived($attack);
-    }
-
     public static function create($attackName, $redID, $blueID){
         if (Team::find($redID) == null || Team::find($blueID) == null) {
             throw new TeamNotFoundException();
@@ -122,14 +100,56 @@ class Attack extends Model
     }
 
     public static function store($attack){
-        $att = Attack::convertToBase($attack);
+        $att = new Attack();
+        $att->name = $attack->name;
+        $att->class_name = $attack->class_name;
+        $att->tags = $attack->tags;
+        $att->prereqs = $attack->prereqs;
+        $att->difficulty = $attack->difficulty;
+        $att->detection_risk = $attack->detection_risk;
+        $att->success = $attack->success;
+        $att->detected = $attack->detected;
+        $att->energy_cost = $attack->energy_cost;
+        $att->possible = $attack->possible;
+        $att->blueteam = $attack->blueteam;
+        $att->redteam = $attack->redteam;
+        $att->errormsg = $attack->errormsg;
         $att->save();
+        return $attack;
     }
 
     public static function updateAttack($attack){
-        $att = Attack::convertToBase($attack);
+        $att = Attack::all()->where('class_name','=',$attack->class_name)->
+            where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam)->where('success','=',null)->first();
+        $att->name = $attack->name;
+        $att->class_name = $attack->class_name;
+        $att->tags = $attack->tags;
+        $att->prereqs = $attack->prereqs;
+        $att->difficulty = $attack->difficulty;
+        $att->detection_risk = $attack->detection_risk;
+        $att->success = $attack->success;
+        $att->detected = $attack->detected;
+        $att->energy_cost = $attack->energy_cost;
+        $att->possible = $attack->possible;
+        $att->blueteam = $attack->blueteam;
+        $att->redteam = $attack->redteam;
+        $att->errormsg = $attack->errormsg;
         $att->update();
-        return $att;
+        return $attack;
+    }
+
+    public function changeDifficulty($val){
+        $this->difficulty += $val;
+        if($this->difficulty > 5) $this->difficulty = 5;
+        if($this->difficulty < 1) $this->difficulty = 1;
+        Attack::updateAttack($this);
+    }
+
+    public function changeDetectionRisk($val){
+        $this->detection_risk += $val;
+        if($this->detection_risk > 5) $this->detection_risk = 5;
+        if($this->detection_risk < 1) $this->detection_risk = 1;
+        Attack::updateAttack($this);
     }
 
     public function onPreAttack() {
@@ -167,6 +187,7 @@ class Attack extends Model
             $this->errormsg = "Not enough energy available.";
         }
         Attack::updateAttack($this);
+        return $this;
     }
 
 }

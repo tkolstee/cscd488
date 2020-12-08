@@ -124,9 +124,21 @@ class RedTeamController extends Controller {
             $attMsg = $attack->errormsg;
             return $this->home()->with(compact('attMsg'));
         }
-        //possibly find the minigame for that attack, then return different view or minigame
         $redteam = Team::find($attack->redteam);
         $blueteam = Team::find($attack->blueteam);
+        //find the minigame for that attack, then return different view
+        $dir = opendir(dirname(__FILE__)."/../../../resources/views/minigame");
+        while(($view = readdir($dir)) !== false){
+            if($view != "." && $view != ".."){
+                $length = strlen($view);
+                $view = substr($view, 0, $length - 10);
+                if(strtolower($attack->class_name) == $view){
+                    return view('minigame.'.$view)->with(compact('attack','redteam','blueteam'));
+                }
+            }
+        }
+        
+        //if the view doesn't exist return default
         return view('redteam.minigame')->with(compact('attack','redteam','blueteam'));
     }
 

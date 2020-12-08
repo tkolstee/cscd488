@@ -18,9 +18,9 @@ class SecurityMonitorAsset extends Asset
 
     public function onPreAttack($attack)
     {
-        if($attack->difficulty > 3){
+        if($attack->detection_risk > 3){
             $attack->detected = true;
-            $attack->update();
+            Attack::updateAttack($attack);
         }
     }
 }

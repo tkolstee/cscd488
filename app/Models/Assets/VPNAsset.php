@@ -18,8 +18,6 @@ class VPNAsset extends Asset
 
     public function onPreAttack($attack)
     {
-        if(!$attack->detected){
-            $attack->difficulty -= 1;
-        }
+        if(in_array('SQLInjection', $attack->tags)) $attack->changeDetectionRisk(-2);
     }
 }
