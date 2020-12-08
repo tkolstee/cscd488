@@ -100,7 +100,7 @@ class Attack extends Model
     }
 
     public static function get($name, $red, $blue){
-        $attack = Attack::all()->where('class_name','=',$name)->where('redteam','=',$red)->where('blueteam','=',$blue)->first();
+        $attack = Attack::all()->where('class_name','=',$name)->where('redteam','=',$red)->where('blueteam','=',$blue)->where('success','=',null)->first();
         return Attack::convertToDerived($attack);
     }
 
@@ -129,20 +129,20 @@ class Attack extends Model
     public static function updateAttack($attack){
         $att = Attack::convertToBase($attack);
         $att->update();
-        return $att;
+        return $attack;
     }
 
     public function changeDifficulty($val){
         $this->difficulty += $val;
         if($this->difficulty > 5) $this->difficulty = 5;
-        if($this->difficulty < 0) $this->difficulty = 0;
+        if($this->difficulty < 1) $this->difficulty = 1;
         Attack::updateAttack($this);
     }
 
     public function changeDetectionRisk($val){
         $this->detection_risk += $val;
         if($this->detection_risk > 5) $this->detection_risk = 5;
-        if($this->detection_risk < 0) $this->detection_risk = 0;
+        if($this->detection_risk < 1) $this->detection_risk = 1;
         Attack::updateAttack($this);
     }
 
@@ -181,6 +181,7 @@ class Attack extends Model
             $this->errormsg = "Not enough energy available.";
         }
         Attack::updateAttack($this);
+        return $this;
     }
 
 }

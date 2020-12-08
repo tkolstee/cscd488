@@ -32,7 +32,7 @@ class AttackController extends Controller
         $url = $request->url;
         $success = false;
         switch($attack->difficulty){
-            case 1: if($url == "") $success = true; break;
+            case 1: if(empty($url)) $success = true; break;
             case 2: if($url == "'") $success = true; break;
             case 3: if($url == "'--") $success = true; break;
             case 4: if($url == "' or 1=1--") $success = true; break;
@@ -40,7 +40,7 @@ class AttackController extends Controller
         }
         $attack->success = $success;
         Attack::updateAttack($attack);
-        //$attMsg = $attack->difficulty . " " . $attack->success; //testing
+        $attMsg = $attack->difficulty . " " . $attack->success; //testing
         //return (new RedTeamController)->home()->with(compact('attMsg')); //testing
         return $this->attackComplete($attack);
     }

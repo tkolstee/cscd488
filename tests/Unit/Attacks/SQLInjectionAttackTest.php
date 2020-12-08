@@ -46,7 +46,21 @@ class SQLInjectionAttackTest extends TestCase {
         $this->assertEquals($expected, $attack);
     }
 
-    public function testMinigameDifficulty1(){
+    public function testSqlInjectionAndVpn(){
+        $attack = $this->createAttackAndTeams();
+        $sqldatabase = new SQLDatabaseAsset;
+        Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
+        $vpn = new VPNAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $vpn->class_name]);
+        $expected = $attack;
+        $expected->possible = true;
+        $expected->difficulty = 1;
+        $attack->onPreAttack();
+        $attack = Attack::get($attack->class_name, $attack->redteam, $attack->blueteam);
+        $this->assertEquals($expected, $attack);
+    }
+
+    public function testMinigameDifficultyOne(){
         $attack = $this->createAttackAndTeams();
         $attack->difficulty = 1;
         Attack::updateAttack($attack);
@@ -58,7 +72,7 @@ class SQLInjectionAttackTest extends TestCase {
             'attackName' => $attack->class_name,
             'red' => $attack->redteam,
             'blue' => $attack->blueteam,
-            'url' => "",
+            'url' => "'",
         ]);
         $response = $controller->sqlInjection($request);
         $this->assertEquals("Success: true", $response->attMsg);

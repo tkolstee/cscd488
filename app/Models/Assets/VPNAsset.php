@@ -20,7 +20,7 @@ class VPNAsset extends Asset
     {
         if(in_array('SQLInjection', $attack->tags)) $attack->changeDetectionRisk(-2);
         if(!$attack->detected){
-            $attack->changeDifficulty(-1);
+            $attack = $attack->changeDifficulty(-1);
         }
     }
 }
