@@ -56,28 +56,10 @@ class Attack extends Model
         }
         return $attacks;
     }
-    
-    public static function convertToBase($attack){
-        $att = new Attack();
-        $att->name = $attack->name;
-        $att->class_name = $attack->class_name;
-        $att->tags = $attack->tags;
-        $att->prereqs = $attack->prereqs;
-        $att->difficulty = $attack->difficulty;
-        $att->detection_risk = $attack->detection_risk;
-        $att->success = $attack->success;
-        $att->detected = $attack->detected;
-        $att->energy_cost = $attack->energy_cost;
-        $att->possible = $attack->possible;
-        $att->blueteam = $attack->blueteam;
-        $att->redteam = $attack->redteam;
-        $att->errormsg = $attack->errormsg;
-        return $att;
-    }
 
-    public static function convertToDerived($attack){
+    public static function get($name, $red, $blue){
+        $attack = Attack::all()->where('class_name','=',$name)->where('redteam','=',$red)->where('blueteam','=',$blue)->where('success','=',null)->first();
         try {
-            //if($attack->difficulty != 1) throw new AttackNotFoundException;
             $class = "\\App\\Models\\Attacks\\" . $attack->class_name . "Attack";
             $att = new $class();
             $att->name = $attack->name;
@@ -100,11 +82,6 @@ class Attack extends Model
         return $att;
     }
 
-    public static function get($name, $red, $blue){
-        $attack = Attack::all()->where('class_name','=',$name)->where('redteam','=',$red)->where('blueteam','=',$blue)->where('success','=',null)->first();
-        return Attack::convertToDerived($attack);
-    }
-
     public static function create($attackName, $redID, $blueID){
         if (Team::find($redID) == null || Team::find($blueID) == null) {
             throw new TeamNotFoundException();
@@ -123,8 +100,22 @@ class Attack extends Model
     }
 
     public static function store($attack){
-        $att = Attack::convertToBase($attack);
+        $att = new Attack();
+        $att->name = $attack->name;
+        $att->class_name = $attack->class_name;
+        $att->tags = $attack->tags;
+        $att->prereqs = $attack->prereqs;
+        $att->difficulty = $attack->difficulty;
+        $att->detection_risk = $attack->detection_risk;
+        $att->success = $attack->success;
+        $att->detected = $attack->detected;
+        $att->energy_cost = $attack->energy_cost;
+        $att->possible = $attack->possible;
+        $att->blueteam = $attack->blueteam;
+        $att->redteam = $attack->redteam;
+        $att->errormsg = $attack->errormsg;
         $att->save();
+        return $attack;
     }
 
     public static function updateAttack($attack){
