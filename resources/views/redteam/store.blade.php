@@ -21,7 +21,7 @@
             @csrf
             @foreach ($inventory ?? [] as $inv)
                 <input type="checkbox" name="results[]"id="{{ $inv->asset_name }}" value="{{ $inv->asset_name }}">
-                <label for="{{ $inv->asset_name }}">{{ $inv->asset_name }} Quantity: {{$inv->quantity }} </label>
+                <label for="{{ $inv->asset_name }}">{{ App\Models\Asset::get($inv->asset_name)->name }} Quantity: {{$inv->quantity }} </label>
                 <br>
         
             @endforeach
