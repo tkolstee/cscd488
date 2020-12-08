@@ -95,9 +95,9 @@ class RedTeamController extends Controller {
 
     //Needs work
     public function attacks(){
-        $possibleAttacks = Attack::all();
         $redteam = Auth::user()->getRedTeam();
-        return view('redteam.attacks')->with(compact('redteam','possibleAttacks')); 
+        $previousAttacks = Attack::getPreviousAttacks($redteam->id);
+        return view('redteam.attacks')->with(compact('redteam','previousAttacks')); 
     }
 
     public function minigameComplete(request $request){
