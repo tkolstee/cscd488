@@ -150,7 +150,7 @@ class RedTeamController extends Controller {
         $redteam = Auth::user()->getRedTeam();
         $blueteam = Team::get($request->blueteam);
         $attack = Attack::create($request->result, $redteam->id, $blueteam->id);
-        $attack = $attack->onPreAttack();
+        $attack->onPreAttack();
         return $this->minigameStart($attack);
     }
 
