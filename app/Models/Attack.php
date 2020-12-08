@@ -138,6 +138,10 @@ class Attack extends Model
         return $attack;
     }
 
+    public static function getPreviousAttacks($redId) {
+        return Attack::all()->where('redteam', '=', $redId);
+    }
+
     public function changeDifficulty($val){
         $this->difficulty += $val;
         if($this->difficulty > 5) $this->difficulty = 5;
