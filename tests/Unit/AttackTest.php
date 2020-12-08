@@ -67,6 +67,17 @@ class AttackTest extends TestCase {
         $this->assertEquals($red->id, $prevAttack2->redteam);
     }
 
+    public function testSetSuccess() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+
+        $this->assertNull($attack->success);
+        $attack->setSuccess(true);
+        $this->assertTrue($attack->success);
+    }
+
     public function testChangeDifficulty() {
         $baseAttack = new SQLInjectionAttack;
         $red = Team::factory()->red()->create();
