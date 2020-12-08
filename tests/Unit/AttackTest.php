@@ -21,34 +21,6 @@ class AttackTest extends TestCase {
         $this->assertEquals($expectedAttacks, $attacks);
     }
 
-    public function testConvertToBaseAttack() {
-        $derived = new SQLInjectionAttack;
-        $base = Attack::convertToBase($derived);
-        $this->assertEquals(Attack::class, get_class($base));
-        $this->assertEquals($derived->name, $base->name);
-        $this->assertEquals($derived->difficulty, $base->difficulty);
-        $this->assertEquals($derived->tags, $base->tags);
-        $this->assertEquals($derived->prereqs, $base->prereqs);
-    }
-
-    public function testConvertToDerivedAttack() {
-        $base = new Attack;
-        $base->class_name = "SQLInjection";
-        $derived = Attack::convertToDerived($base);
-        $this->assertEquals(SQLInjectionAttack::class, get_class($derived));
-        $this->assertEquals($base->name, $derived->name);
-        $this->assertEquals($base->difficulty, $derived->difficulty);
-        $this->assertEquals($base->tags, $derived->tags);
-        $this->assertEquals($base->prereqs, $derived->prereqs);
-    }
-
-    public function testConvertInvalidAttackToDerived() {
-        $base = new Attack;
-        $base->class_name = "NotAnAttack";
-        $this->expectException(AttackNotFoundException::class);
-        Attack::convertToDerived($base);
-    }
-
     public function testGetAttack() {
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
@@ -120,11 +92,11 @@ class AttackTest extends TestCase {
     public function testUpdateAttack() {
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
-        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
-
+        $attack = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack->difficulty = 1;
+        $att = Attack::updateAttack($attack);
+        $this->assertEquals(1, $att->difficulty);
         $dbAttack = Attack::find(1);
-        $attack->difficulty = 0;
-        Attack::updateAttack($attack);
-        $this->assertEquals(0, $dbAttack->difficulty);
+        $this->assertEquals(1, $dbAttack->difficulty);
     }
 }
