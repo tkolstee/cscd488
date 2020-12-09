@@ -1,6 +1,6 @@
 @extends('redteam.base')
 
-@section('title', 'Red Team Home')
+@section('title', 'Red Team Attack History')
 
 @section('pagecontent')
     @if ($previousAttacks->isEmpty())
