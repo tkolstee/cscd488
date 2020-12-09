@@ -7,6 +7,7 @@ use App\Models\Attack;
 use App\Models\Team;
 use App\Exceptions\AttackNotFoundException;
 use App\Exceptions\TeamNotFoundException;
+use App\Models\Attacks\MalvertiseAttack;
 use App\Models\Attacks\SQLInjectionAttack;
 use App\Models\Attacks\SynFloodAttack;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,7 +17,8 @@ class AttackTest extends TestCase {
 
     public function testGetAllAttacks() {
         $attacks = Attack::getAll();
-        $expectedAttacks = [new SQLInjectionAttack,
+        $expectedAttacks = [new MalvertiseAttack,
+                        new SQLInjectionAttack,
                         new SynFloodAttack];
         $this->assertEquals($expectedAttacks, $attacks);
     }
