@@ -18,7 +18,7 @@ class PRDeptAsset extends Asset
 
     public function onPreAttack($attack)
     {
-        if($attack->detected){
+        if($attack->detection_risk > 3){
             $attack->changeDifficulty(1);
         }
     }

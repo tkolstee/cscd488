@@ -45,7 +45,13 @@
 
         <input type="checkbox" name="results[]" id="{{ $asset->class_name }}" value="{{ $asset->class_name }}">
         <label for="{{ $asset->class_name }}">{{ $asset->name }}
-            Purchase Cost: {{ $asset->purchase_cost }}  Ownership Cost: {{ $asset->ownership_cost }}</label>
+            Purchase Cost: {{ $asset->purchase_cost }}  Ownership 
+                @if ($asset->ownership_cost >= 0)
+                    Cost: {{ $asset->ownership_cost }}
+                @else
+                    Profit: {{ (-1 * $asset->ownership_cost )}}
+                @endif
+                </label>
         <br>
     
         @endforeach
