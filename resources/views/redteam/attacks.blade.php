@@ -6,10 +6,24 @@
     @if ($previousAttacks->isEmpty())
         <p>You haven't done any attacks yet!</p>
     @else
-        @foreach ($previousAttacks as $attack)
-            <p>Type: {{$attack->name}} Success: {{$attack->success ? 'true' : 'false'}}  Detected: {{$attack->detected ? 'true' : 'false'}}  Time: {{$attack->created_at}}</p>
-        @endforeach
-
+        <table class="table table-bordered table-hover">
+                <thead>
+                    <th>Attack Type</th>
+                    <th>Success</th>
+                    <th>Detected</th>
+                    <th>Time</th>
+                </thead>
+            <tbody>
+                @foreach ($previousAttacks as $attack)
+                    <tr>
+                        <td>{{$attack->name}}</td>
+                        <td>{{$attack->success ? 'true' : 'false'}}</td>
+                        <td>{{$attack->detected ? 'true' : 'false'}}</td>
+                        <td>{{$attack->created_at}}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
         @include('partials.pagination', ['paginator' => $previousAttacks])
     @endif
 @endsection
