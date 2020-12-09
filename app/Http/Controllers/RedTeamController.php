@@ -35,7 +35,7 @@ class RedTeamController extends Controller {
             case 'store': return $this->store();break;
             case 'status': return view('redteam.status')->with('redteam',$redteam); break;
             case 'buy': return $this->buy($request); break;
-            case 'storeinventory': return $this->storeInventory(); break;
+            case 'inventory': return $this->inventory(); break;
             case 'sell': return $this->sell($request); break;
             case 'startattack': return $this->startAttack(); break;
             case 'chooseattack': return $this->chooseAttack($request); break;
@@ -180,7 +180,7 @@ class RedTeamController extends Controller {
         $assetNames = $request->input('results');
         if($assetNames == null){
             $error = "no-asset-selected";
-            return $this->store()->with(compact('error'));
+            return $this->inventory()->with(compact('error'));
         }
         $redteam = Auth::user()->getRedTeam();
         foreach($assetNames as $assetName){
@@ -188,17 +188,11 @@ class RedTeamController extends Controller {
             $success = $redteam->sellAsset($asset);
             if (!$success) {
                 $error = "not-enough-owned-".$assetName;
-                return $this->store()->with(compact('error'));
+                return $this->inventory()->with(compact('error'));
             }
         }
-        return $this->store();
+        return $this->inventory();
     }//end sell
-
-    public function storeInventory(){
-        $redteam = Auth::user()->getRedTeam();
-        $inventory = $redteam->inventories();
-        return $this->store()->with(compact('inventory'));
-    }
 
     public function buy(request $request){
         $assetNames = $request->input('results');
@@ -229,6 +223,12 @@ class RedTeamController extends Controller {
         $redteam = Auth::user()->getRedTeam();
         $assets = Asset::getBuyableRed();
         return view('redteam.store')->with(compact('redteam', 'assets'));
+    }
+
+    public function inventory(){
+        $redteam = Auth::user()->getRedTeam();
+        $inventory = $redteam->inventories();
+        return view('redteam.inventory')->with(compact('redteam', 'inventory'));
     }
 
     public function create(request $request){

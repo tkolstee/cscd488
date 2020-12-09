@@ -39,7 +39,7 @@ class BlueTeamController extends Controller {
                 case 'store': return $this->store();
                 case 'training': return view('blueteam.training')->with('blueteam',$blueteam); break;
                 case 'buy': return $this->buy($request); break;
-                case 'storeinventory': return $this->storeInventory(); break;
+                case 'inventory': return $this->inventory(); break;
                 case 'sell': return $this->sell($request); break;
                 case 'endturn': return $this->endTurn(); break;
                 case 'changename': return $this->changeName($request); break;
@@ -170,7 +170,7 @@ class BlueTeamController extends Controller {
         $assetNames = $request->input('results');
         if($assetNames == null){
             $error = "no-asset-selected";
-            return $this->store()->with(compact('error'));
+            return $this->inventory()->with(compact('error'));
         }
         $sellCart = session('sellCart');
         foreach($assetNames as $asset){
@@ -178,12 +178,13 @@ class BlueTeamController extends Controller {
             $sellCart[] = $actAsset->name;
         }
         session(['sellCart' => $sellCart]);
-        return $this->store();
+        return $this->inventory();
     }//end sell
 
-    public function storeInventory(){
-        $inventory = Auth::user()->getBlueTeam()->inventories();
-        return $this->store()->with(compact('inventory'));
+    public function inventory(){
+        $blueteam = Auth::user()->getBlueTeam();
+        $inventory = $blueteam->inventories();
+        return view('blueteam.inventory')->with(compact('blueteam', 'inventory'));
     }
 
     public function buy(request $request){
