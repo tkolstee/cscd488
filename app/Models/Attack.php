@@ -119,8 +119,14 @@ class Attack extends Model
     }
 
     public static function updateAttack($attack){
-        $att = Attack::all()->where('class_name','=',$attack->class_name)->
-            where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam)->where('success','=',null)->first();
+        $attacks = Attack::all()->where('class_name','=',$attack->class_name)->
+            where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam);
+        foreach($attacks as $atk){
+            if($atk->success == null || $atk->detected == null){
+                $att = $atk;
+            }
+        }
+        if($att == null) throw new AttackNotFoundException;
         $att->name = $attack->name;
         $att->class_name = $attack->class_name;
         $att->tags = $attack->tags;
@@ -201,10 +207,12 @@ class Attack extends Model
         $unmet_prereqs = array_diff($this->prereqs, $have);
         if ( count($unmet_prereqs) > 0 ) {
             $this->possible = false;
+            $this->detected = false;
             $this->errormsg = "Unsatisfied prereqs for this attack";
         }
         if ( $redteam->getEnergy() < $this->energy_cost ) {
             $this->possible = false;
+            $this->detected = false;
             $this->errormsg = "Not enough energy available.";
         }
         Attack::updateAttack($this);

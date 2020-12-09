@@ -119,7 +119,6 @@ class RedTeamController extends Controller {
 
     public function minigameStart($attack){
         if(!$attack->possible){
-            $attack->setSuccess(false);
             $attMsg = $attack->errormsg;
             return $this->home()->with(compact('attMsg'));
         }

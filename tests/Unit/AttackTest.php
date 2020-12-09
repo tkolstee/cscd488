@@ -72,7 +72,6 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
-
         $this->assertNull($attack->success);
         $attack->setSuccess(true);
         $this->assertTrue($attack->success);
