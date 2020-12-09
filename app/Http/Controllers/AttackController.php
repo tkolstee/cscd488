@@ -32,7 +32,7 @@ class AttackController extends Controller
         $url = $request->url;
         $success = false;
         switch($attack->difficulty){
-            case 1: if(empty($url)) $success = true; break;
+            case 1: $success = true; break;
             case 2: if($url == "'") $success = true; break;
             case 3: if($url == "'--") $success = true; break;
             case 4: if($url == "' or 1=1--") $success = true; break;

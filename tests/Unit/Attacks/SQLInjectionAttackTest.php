@@ -97,11 +97,11 @@ class SQLInjectionAttackTest extends TestCase {
             'url' => "wrong",
         ]);
         $response = $controller->sqlInjection($request);
-        $this->assertEquals("Success: false", $response->attMsg);
+        $this->assertEquals("Success: true", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
-        $this->assertEquals(0, $attackAfter->success);
+        $this->assertEquals(1, $attackAfter->success);
     }
 
     public function testMinigameDifficultyTwo(){
