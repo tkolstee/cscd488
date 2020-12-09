@@ -142,6 +142,23 @@ class Attack extends Model
         return Attack::all()->where('redteam', '=', $redId);
     }
 
+    public function setSuccess($successIn) {
+        $this->success = $successIn;
+        Attack::updateAttack($this);
+        $this->calculateDetected();
+    }
+
+    public function calculateDetected() {
+        $rand = rand(1, 4);
+        if ($rand >= $this->detection_risk) {
+            $this->detected = false;
+        }
+        else {
+            $this->detected = true;
+        }
+        Attack::updateAttack($this);
+    }
+
     public function changeDifficulty($val){
         $this->difficulty += $val;
         if($this->difficulty > 5) $this->difficulty = 5;

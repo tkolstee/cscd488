@@ -67,6 +67,83 @@ class AttackTest extends TestCase {
         $this->assertEquals($red->id, $prevAttack2->redteam);
     }
 
+    public function testSetSuccess() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+
+        $this->assertNull($attack->success);
+        $attack->setSuccess(true);
+        $this->assertTrue($attack->success);
+    }
+
+    public function testCalculateDetectedTrue() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+        $attack->detection_risk = 5;
+        $attack->update();
+        $attack->calculateDetected();
+        $this->assertTrue($attack->detected);
+    }
+
+    public function testCalculateDetectedFalse() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+        $attack->detection_risk = 1;
+        $attack->update();
+        $attack->calculateDetected();
+        $this->assertFalse($attack->detected);
+    }
+
+    public function testCalculateDetectedAfterSetSuccess() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+        $attack->success = true;
+        $attack->update();
+
+        $attack->calculateDetected();
+        $this->assertNotNull($attack->detected);
+    }
+
+    public function testChangeDifficulty() {
+        $baseAttack = new SQLInjectionAttack;
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+
+        $this->assertEquals($baseAttack->difficulty, $attack->difficulty);
+        $attack->changeDifficulty(10);
+        $this->assertEquals(5, $attack->difficulty);
+        $attack->changeDifficulty(-10);
+        $this->assertEquals(1, $attack->difficulty);
+        $attack->changeDifficulty(2);
+        $this->assertEquals(3, $attack->difficulty);
+    }
+
+    public function testChangeDetectionRisk() {
+        $baseAttack = new SQLInjectionAttack;
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+
+        $this->assertEquals($baseAttack->detection_risk, $attack->detection_risk);
+        $attack->changeDetectionRisk(10);
+        $this->assertEquals(5, $attack->detection_risk);
+        $attack->changeDetectionRisk(-10);
+        $this->assertEquals(1, $attack->detection_risk);
+        $attack->changeDetectionRisk(2);
+        $this->assertEquals(3, $attack->detection_risk);
+    }
+
     public function testCreateAttack() {
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();

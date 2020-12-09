@@ -96,7 +96,7 @@ class RedTeamController extends Controller {
 
     public function attacks(){
         $redteam = Auth::user()->getRedTeam();
-        $previousAttacks = Attack::getPreviousAttacks($redteam->id);
+        $previousAttacks = Attack::getPreviousAttacks($redteam->id)->paginate(4);
         return view('redteam.attacks')->with(compact('redteam','previousAttacks')); 
     }
 
@@ -107,21 +107,19 @@ class RedTeamController extends Controller {
         }
         $attMsg = "Success: ";
         if($request->result == 1){
-            $attack->success = true;
+            $attack->setSuccess(true);
             $attMsg .= "true";
         }else{
-            $attack->success = false;
+            $attack->setSuccess(false);
             $attMsg .= "false";
         }
-        Attack::updateAttack($attack);
         $attack->onAttackComplete();
         return $this->home()->with(compact('attMsg'));
     }
 
     public function minigameStart($attack){
         if(!$attack->possible){
-            $attack->success = false;
-            Attack::updateAttack($attack);
+            $attack->setSuccess(false);
             $attMsg = $attack->errormsg;
             return $this->home()->with(compact('attMsg'));
         }
