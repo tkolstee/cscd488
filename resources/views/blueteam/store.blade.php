@@ -7,32 +7,30 @@
     @if(count($assets ?? []) == 0)
         <p>No items are available for purchase right now.</p>
     @else
-    <form method="POST" action="/blueteam/buy">
-        @csrf
-        @foreach ($assets as $asset)
-
-        <input type="checkbox" name="results[]" id="{{ $asset->class_name }}" value="{{ $asset->class_name }}">
-        <label for="{{ $asset->class_name }}">{{ $asset->name }}
-            Purchase Cost: {{ $asset->purchase_cost }}  Ownership 
-                @if ($asset->ownership_cost >= 0)
-                    Cost: {{ $asset->ownership_cost }}
-                @else
-                    Profit: {{ (-1 * $asset->ownership_cost )}}
-                @endif
-                </label>
-        <br>
-    
-        @endforeach
-
-
-        <div class="form-group row mb-0">
-            <div class="col-md-8 offset-md-4">
-                <button type="submit" class="btn btn-primary">
-                    Add to cart
-                </button>
-            </div>
-        </div>
-    </form>
+        <form method="POST" action="/blueteam/buy">
+            @csrf
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Purchase Cost</th>
+                    <th>Ownership Cost</th>
+                </thead>
+                <tbody>
+                    @foreach ($assets as $asset)
+                        <tr>
+                            <td><input type="checkbox" name="results[]" value="{{ $asset->class_name }}"></td>
+                            <td>{{$asset->name}}</td>
+                            <td>{{$asset->purchase_cost}}</td>
+                            <td>{{$asset->ownership_cost}}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">
+                Purchase
+            </button>
+        </form>
     @endif
 
 @endsection

@@ -8,19 +8,26 @@
     @else
         <form method="POST" action="/blueteam/sell">
             @csrf
-            @foreach ($inventory ?? [] as $inv)
-                <input type="checkbox" name="results[]" id="{{ $inv->id }}" value="{{ $inv->asset_name }}">
-                <label for="{{ $inv->id }}">{{ App\Models\Asset::get($inv->asset_name)->name }} Quantity: {{$inv->quantity }} </label>
-                <br>
-            @endforeach
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                </thead>
+                <tbody>
+                    @foreach ($inventory ?? [] as $inv)
+                        <tr>
+                            <td><input type="checkbox" name="results[]" value="{{ $inv->asset_name }}"></td>
+                            <td>{{ App\Models\Asset::get($inv->asset_name)->name }}</td>
+                            <td>{{$inv->quantity }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
-            <div class="form-group row mb-0">
-                <div class="col-md-8 offset-md-4">
-                    <button type="submit" class="btn btn-primary">
-                        Sell
-                    </button>
-                </div>
-            </div>
+            <button type="submit" class="btn btn-primary">
+                Sell
+            </button>
         </form>
     @endif
 @endsection

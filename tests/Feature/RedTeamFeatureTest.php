@@ -117,6 +117,6 @@ class RedTeamFeatureTest extends TestCase
             'quantity' => 5,
         ]);
         $response = $this->get('/redteam/inventory');
-        $response->assertSee([$asset->name, "Quantity: 5"]);
+        $response->assertSeeInOrder([$asset->name, "5"]);
     }
 }

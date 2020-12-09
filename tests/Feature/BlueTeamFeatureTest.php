@@ -131,6 +131,6 @@ class BlueTeamFeatureTest extends TestCase
             'quantity' => 5,
         ]);
         $response = $this->get('/blueteam/inventory');
-        $response->assertSee([$asset->name, "Quantity: 5"]);
+        $response->assertSeeInOrder([$asset->name, "5"]);
     }
 }
