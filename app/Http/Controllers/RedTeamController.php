@@ -96,7 +96,7 @@ class RedTeamController extends Controller {
 
     public function attacks(){
         $redteam = Auth::user()->getRedTeam();
-        $previousAttacks = Attack::getPreviousAttacks($redteam->id);
+        $previousAttacks = Attack::getPreviousAttacks($redteam->id)->paginate(2);
         return view('redteam.attacks')->with(compact('redteam','previousAttacks')); 
     }
 

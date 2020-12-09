@@ -9,5 +9,7 @@
         @foreach ($previousAttacks as $attack)
             <p>Type: {{$attack->name}} Success: {{$attack->success ? 'true' : 'false'}}  Detected: {{$attack->detected ? 'true' : 'false'}}  Time: {{$attack->created_at}}</p>
         @endforeach
+
+        @include('partials.pagination', ['paginator' => $previousAttacks])
     @endif
 @endsection
