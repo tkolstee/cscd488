@@ -4,7 +4,7 @@
 
 @section('pagecontent')
     @if ($previousAttacks->isEmpty())
-        <p>You haven't done any attacks yet!</p>
+        <p>You havent done any attacks yet!</p>
     @else
         <table class="table table-bordered table-hover">
                 <thead>
