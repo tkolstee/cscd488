@@ -11,6 +11,7 @@ use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use Exception;
+use App\Models\Attack;
 
 class BlueTeamController extends Controller {
 
@@ -34,6 +35,7 @@ class BlueTeamController extends Controller {
             //logged in with blueteam options
             switch ($page) {
                 case 'home': return $this->home(); break;
+                case 'news': return $this->news(); break;
                 case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
                 case 'status': return view('blueteam.status')->with('blueteam',$blueteam); break;
                 case 'store': return $this->store();
@@ -164,6 +166,17 @@ class BlueTeamController extends Controller {
         $members = $blueteam->members();
         $turn = Auth::user()->getTurnTaken();
         return  view('blueteam.home')->with(compact('blueteam','leader','members', 'turn'));
+    }
+
+    public function news(){
+        try {
+            $blueteam = Auth::user()->getBlueTeam();
+        }
+        catch (TeamNotFoundException $e) {
+            return view('blueteam.home');
+        }
+        $detectedAttacks = Attack::getDetectedAttacks();
+        return view('blueteam.news')->with(compact('blueteam', 'detectedAttacks'));
     }
 
     public function sell(request $request){
