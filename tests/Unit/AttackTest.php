@@ -7,6 +7,7 @@ use App\Models\Attack;
 use App\Models\Team;
 use App\Exceptions\AttackNotFoundException;
 use App\Exceptions\TeamNotFoundException;
+use App\Models\Attacks\MalvertiseAttack;
 use App\Models\Attacks\SQLInjectionAttack;
 use App\Models\Attacks\SynFloodAttack;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,7 +17,8 @@ class AttackTest extends TestCase {
 
     public function testGetAllAttacks() {
         $attacks = Attack::getAll();
-        $expectedAttacks = [new SQLInjectionAttack,
+        $expectedAttacks = [new MalvertiseAttack,
+                        new SQLInjectionAttack,
                         new SynFloodAttack];
         $this->assertEquals($expectedAttacks, $attacks);
     }
@@ -65,6 +67,24 @@ class AttackTest extends TestCase {
         $prevAttack2 = $prevAttacks[1];
         $this->assertEquals($attack2->class_name, $prevAttack2->class_name);
         $this->assertEquals($red->id, $prevAttack2->redteam);
+    }
+
+    public function testGetDetectedAttacks() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $this->assertEmpty(Attack::getDetectedAttacks());
+
+        $attackDetected = Attack::create('SynFlood', $red->id, $blue->id);
+        $attackDetected->detected = true;
+        Attack::updateAttack($attackDetected);
+        $attackNotDetected = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attackNotDetected->detected = false;
+        Attack::updateAttack($attackDetected);
+        
+        $attacks = Attack::getDetectedAttacks();
+        $this->assertEquals(1, $attacks->count());
+        $this->assertEquals(true, $attacks[0]->detected);
+        $this->assertEquals('SynFlood', $attacks[0]->class_name);
     }
 
     public function testSetSuccess() {

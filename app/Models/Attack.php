@@ -148,6 +148,10 @@ class Attack extends Model
         return Attack::all()->where('redteam', '=', $redId);
     }
 
+    public static function getDetectedAttacks() {
+        return Attack::all()->where('detected', '=', true);
+    }
+
     public function setSuccess($successIn) {
         $this->success = $successIn;
         Attack::updateAttack($this);
