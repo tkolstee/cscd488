@@ -8,6 +8,7 @@ use App\Models\Team;
 use App\Models\Asset;
 use App\Models\Game;
 use Tests\TestCase;
+use App\Models\Inventory;
 
 class BlueTeamFeatureTest extends TestCase
 {
@@ -111,5 +112,25 @@ class BlueTeamFeatureTest extends TestCase
         $response = $this->actingAs($user)->get('/blueteam/endturn');
         $response->assertViewIs('blueteam.home');
         $response->assertSee('Revenue: ' . $expectedBalance);
+    }
+
+    public function testBlueTeamCanViewAssetsInInventory()
+    {
+        $asset = Asset::getBuyableBlue()[0];
+        $team = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $team->id,
+        ]);
+        $this->be($user);
+        $response = $this->get('/blueteam/inventory');
+        $response->assertSee("You have no assets.");
+
+        Inventory::factory()->create([
+            'asset_name' => $asset->name,
+            'team_id' => $team->id,
+            'quantity' => 5,
+        ]);
+        $response = $this->get('/blueteam/inventory');
+        $response->assertSeeInOrder([$asset->name, "5"]);
     }
 }

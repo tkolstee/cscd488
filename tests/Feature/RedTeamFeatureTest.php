@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Team;
 use App\Models\Asset;
+use App\Models\Inventory;
 use Tests\TestCase;
 
 class RedTeamFeatureTest extends TestCase
@@ -25,6 +26,8 @@ class RedTeamFeatureTest extends TestCase
         $response = $this->get('/redteam/status');
         $response->assertStatus(200);
         $response = $this->get('/redteam/store');
+        $response->assertStatus(200);
+        $response = $this->get('/redteam/inventory');
         $response->assertStatus(200);
         $response = $this->get('/redteam/attacks');
         $response->assertStatus(200);
@@ -95,5 +98,25 @@ class RedTeamFeatureTest extends TestCase
         ]);
         $response->assertViewIs('redteam.store');
         $response->assertSee('Cash: ' . $expectedBalance);
+    }
+
+    public function testRedTeamCanViewAssetsInInventory()
+    {
+        $asset = Asset::getBuyableRed()[0];
+        $team = Team::factory()->red()->create();
+        $user = User::factory()->create([
+            'redteam' => $team->id,
+        ]);
+        $this->be($user);
+        $response = $this->get('/redteam/inventory');
+        $response->assertSee("You have no assets.");
+
+        Inventory::factory()->create([
+            'asset_name' => $asset->name,
+            'team_id' => $team->id,
+            'quantity' => 5,
+        ]);
+        $response = $this->get('/redteam/inventory');
+        $response->assertSeeInOrder([$asset->name, "5"]);
     }
 }

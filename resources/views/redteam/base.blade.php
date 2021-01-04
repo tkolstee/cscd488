@@ -24,6 +24,7 @@
             <a href="/redteam/attacks"><button>Attacks</button></a>
             <a href="/redteam/learn"><button>Learn</button></a>
             <a href="/redteam/store"><button>Store</button></a>
+            <a href="/redteam/inventory"><button>Inventory</button></a>
             <a href="/redteam/status"><button>Status</button></a>
             <a href="/redteam/settings"><button>Team Settings</button></a>
         </div>

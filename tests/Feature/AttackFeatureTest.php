@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Auth;
 use App\Models\User;
 use App\Models\Team;
+use App\Models\Attack;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AttackFeatureTest extends TestCase
@@ -86,5 +87,22 @@ class AttackFeatureTest extends TestCase
             'result' => "Syn Flood",
         ]);
         $response->assertSee(["Press a correct button", $blueteam->name]);
+    }
+
+    public function testViewPreviousAttacksEmpty() {
+        $response = $this->get('redteam/attacks');
+        $response->assertViewIs('redteam.attacks');
+        $response->assertSee("You havent done any attacks yet!");
+    }
+
+    public function testViewPreviousAttacks() {
+        $blueteam = Team::factory()->create();
+        $attack1 = Attack::create('SynFlood', Auth::user()->redteam, $blueteam->id);
+        $attack2 = Attack::create('SynFlood', Auth::user()->redteam, $blueteam->id);
+
+        $response = $this->get('redteam/attacks');
+        $response->assertViewIs('redteam.attacks');
+        $response->assertSeeInOrder([$attack1->name, $attack1->success, $attack1->detected, $attack1->created_at,
+            $attack2->name, $attack2->success, $attack2->detected, $attack2->created_at]);
     }
 }

@@ -39,6 +39,7 @@
             <a href="/blueteam/planning"><button>Planning</button></a>
             <a href="/blueteam/status"><button>Status</button></a>
             <a href="/blueteam/store"><button>Store</button></a>
+            <a href="/blueteam/inventory"><button>Inventory</button></a>
             <a href="/blueteam/training"><button>Training</button></a>
             <a href="/blueteam/settings"><button>Team Settings</button></a>            
             @if ($blueteam ?? null != null)
