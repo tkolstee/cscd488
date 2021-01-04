@@ -36,6 +36,7 @@
         </div>
         <div>
             <a href="/blueteam/home"><button>Home</button></a>
+            <a href="/blueteam/news"><button>News</button></a>
             <a href="/blueteam/planning"><button>Planning</button></a>
             <a href="/blueteam/status"><button>Status</button></a>
             <a href="/blueteam/store"><button>Store</button></a>
