@@ -61,6 +61,17 @@ class Asset //extends Model
         return $assets;
     }
 
+    public static function getAllTags(){
+        $assets = Asset::getAll();
+        $tags = [];
+        foreach($assets as $asset){
+            foreach($asset->tags as $tag){
+                $tags[] = $tag;
+            }
+        }
+        return $tags;
+    }
+
     public static function get($name){
         $assets = Asset::getAll();
         foreach($assets as $asset){

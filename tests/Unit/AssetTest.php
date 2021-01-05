@@ -57,6 +57,16 @@ class AssetTest extends TestCase {
         $this->assertEquals($expectedCount, count($assets));
     }
 
+    public function testGetAllAssetTags() {
+        $allTags = Asset::getAllTags();
+        $assets = Asset::getAll();
+        foreach($assets as $asset){
+            foreach($asset->tags as $tag){
+                $this->assertContains($tag, $allTags);
+            }
+        }
+    }
+
     public function testGetBuyableBlue() {
         $assets = Asset::getBuyableBlue();
         $expectedCount = $this->getBuyableBlueCount();
