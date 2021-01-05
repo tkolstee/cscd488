@@ -39,6 +39,7 @@ class BlueTeamController extends Controller {
                 case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
                 case 'status': return view('blueteam.status')->with('blueteam',$blueteam); break;
                 case 'store': return $this->store();
+                case 'filter': return $this->filter($request);
                 case 'training': return view('blueteam.training')->with('blueteam',$blueteam); break;
                 case 'buy': return $this->buy($request); break;
                 case 'inventory': return $this->inventory(); break;
@@ -220,7 +221,19 @@ class BlueTeamController extends Controller {
     public function store(){
         $blueteam = Auth::user()->getBlueTeam();
         $assets = Asset::getBuyableBlue();
-        return view('blueteam.store')->with(compact('blueteam', 'assets'));
+        $tags = Asset::getAllTags();
+        return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags'));
+    }
+
+    public function filter(request $request){
+        $tagFilter = $request->filter;
+        $blueteam = Auth::user()->getBlueTeam();
+        $tags = Asset::getAllTags();
+        $unfilteredAssets = collect(Asset::getBuyableBlue());
+        $assets = $unfilteredAssets->filter(function ($asset, $tagFilter) {
+            return in_array($tagFilter, $asset->tags);
+        });
+        return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags'));
     }
 
     public function join(request $request){

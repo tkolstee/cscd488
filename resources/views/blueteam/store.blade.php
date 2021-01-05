@@ -4,6 +4,16 @@
 
 @section('pagecontent')
     <p>This is the blue team store.</p>
+    <form method="POST" action="/blueteam/filter">
+        @csrf
+        Tag Filter: 
+        <select name="filter" onchange="this.form.submit();">
+            <option disabled selected value> -- select an option -- </option>
+            @foreach ($tags as $tag)
+                <option>{{$tag}}</option>
+            @endforeach
+        </select>
+    </form>
     @if(count($assets ?? []) == 0)
         <p>No items are available for purchase right now.</p>
     @else
