@@ -3,6 +3,7 @@
 
 @section('title', 'Blue Team Home')
 
+
 @section('pagecontent')
 
     @if (Auth::user()->blueteam == "")
@@ -10,7 +11,7 @@
         <a href="/blueteam/join"><button>Join Blue Team</button></a>
      @else
         <h3>Team Members:</h3>
-        <strong>{{ $leader->name }}</strong><br>
+        <p class="userName">{{ $leader->name }}</p<br>
         
         @foreach ($members ?? [] as $member)
         {{ $member->name }}<br>

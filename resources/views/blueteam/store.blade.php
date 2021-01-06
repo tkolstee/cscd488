@@ -4,7 +4,7 @@
 
 @section('pagecontent')
     @if (empty($inventory))
-        <form method="POST" action="/blueteam/storeinventory">
+        <form class="storeForm" method="POST" action="/blueteam/storeinventory">
             @csrf
             <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">
@@ -17,7 +17,7 @@
     @elseif($inventory->isEmpty())
         <p>You have no assets.</p>
     @else
-        <form method="POST" action="/blueteam/sell">
+        <form class="storeForm" method="POST" action="/blueteam/sell">
             @csrf
             @foreach ($inventory ?? [] as $inv)
                 <?php $asset = $assets->find($inv->asset_id); ?>
@@ -42,7 +42,7 @@
     @if($assets->isEmpty())
         <p>No items are available for purchase right now.</p>
     @else
-    <form method="POST" action="/blueteam/buy">
+    <form class="storeForm" method="POST" action="/blueteam/buy">
         @csrf
         @foreach ($assets as $asset)
 

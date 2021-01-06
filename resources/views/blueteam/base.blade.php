@@ -1,23 +1,43 @@
+<style>
+.blueMiddleContainer{
+    background: url('../images/h3Background.jpg'), repeat;
+}
+.h2Container{
+    /*background: url('../images/h3Background.jpg'), no-repeat;*/
+}
+
+</style>
 @extends('layouts.base')
 @section('basecontent')
-    <div style="background-color: blue; padding: 0px;">
-
-        <h2>Blue Team Content</h2>
-        <table width="100%"><tr>
-            <td width="50%">
-                <img src="blah" alt="messages" height=20 width=20>
+    <div class="blueTeamContainer">
+        <div class="blueLogoContainer"> 
+            <div class="blueLogo">
+                <img src="../images/blueTeamLogo1.jpg" alt="messages" >
+            </div><!--END blueLogo-->
+            <div class="h2Container">
+                <h2>Blue Team Content</h2>
+            </div><!--END h2Container-->
+        </div><!--END blueLogoContainer-->
+       <!--<div class="testtest"></div>-->
+        <div class="blueTeamImage">
+                <!--
+                <img src="blah" alt="messages" height=50 width=50>
                 <img src="blah" alt="notifications" height=20 width=20>
-            </td>
+                -->
+        </div><!--END blueTeamImage-->
+        <div class="blueTeamRevenueStatus">
             @if ($blueteam->name  ?? '' != "")
-                <td width="50%">
-                <strong>{{  $blueteam->name ?? '' }} </strong>
-                    <br>Revenue: {{ $blueteam->balance ?? '' }}    Reputation: {{ $blueteam->reputation ?? '' }}
-                    <br>Turn: {{ App\Models\Game::turnNumber() }}
-                </td>
+                <div class="statsContainer">
+                    <div class="statsName"><div class="loggedIn"><p> You are logged in as:</p> </div><div class="loggedInName"> {{  $blueteam->name ?? '' }}</div></div>
+                    <div class="stats">Revenue: {{ $blueteam->balance ?? '' }}  |  Reputation: {{ $blueteam->reputation ?? '' }}</div>
+                    <div class="stats">Turn: {{ App\Models\Game::turnNumber() }}</div>
+                </div><!--END statsContainer-->
             @endif
-        </tr></table>
 
-        <div style="background-color: #77F; padding: 80px; align: center; vertical-align: center;">
+        </div><!--END blueTeamRevenueStatus-->
+        
+
+        <div class="blueMiddleContainer" >   
             @yield('pagecontent')
             @if (!empty(session('buyCart')))
                 <p>Shopping Cart: </p>
@@ -33,22 +53,25 @@
                     {{ $item }} <br>
                 @endforeach
             @endif
-        </div>
-        <div>
-            <a href="/blueteam/home"><button>Home</button></a>
-            <a href="/blueteam/planning"><button>Planning</button></a>
-            <a href="/blueteam/status"><button>Status</button></a>
-            <a href="/blueteam/store"><button>Store</button></a>
-            <a href="/blueteam/training"><button>Training</button></a>
-            <a href="/blueteam/settings"><button>Team Settings</button></a>            
-            @if ($blueteam ?? null != null)
+        </div><!--END blueMiddleContainer-->
+
+        <div class="blueTeamMenuSelection">
+            <ul>
+                <li class="startTurn"><a href="/blueteam/home">Home</a></li>
+                <li class="startTurn"><a href="/blueteam/planning">Planning</a></li>
+                <li class="startTurn"><a href="/blueteam/status">Status</a></li>
+                <li class="startTurn"><a href="/blueteam/store">Store</a></li>
+                <li class="startTurn"><a href="/blueteam/training">Training</a></li>
+                <li class="startTurn"><a href="/blueteam/settings">Team Settings</a></li>
+                @if ($blueteam ?? null != null)
                 @if (($turn ?? 0) != 1)
-                <a href="/blueteam/endturn"><button>End Turn</button></a>
+                <li class="startTurn2"><a href="/blueteam/endturn">End Turn</a></li>
                 @else
-                <a href="/blueteam/startturn"><button>Start Turn</button></a>
+                <li class="startTurn2"><a  href="/blueteam/startturn">Start Turn</a></li>
                 @endif
-            @endif
-        </div>
+                @endif
+            </ul>
+        </div><!--End blueTeamMenuSelection class-->
     </div>
 
 @endsection

@@ -3,14 +3,14 @@
 @section('title', 'Blue Team Settings')
 
 @section('pagecontent')
-    <h2>Team Settings<br>
-    {{ $blueteam->name }}</h2>
+    <h3>Team Settings<br></h3>
+        <p class="userName">{{ $blueteam->name }}</p>
     <h3>Team Members:</h3>
-    <strong>Leader: {{ $leader->name }}</strong><br>
+    <p class="userName">Leader: {{ $leader->name }}</p><br>
     @foreach ($members ?? [] as $member)
         {{ $member->name }}<br>
     @endforeach
-    <h2>Stats</h2>
+    <h3>Stats</h3>
     <strong>Balance: </strong>{{ $blueteam->balance }}<br>
     <strong>Reputation: </strong>{{ $blueteam->reputation }}<br><br>
     @if (Auth::user()->leader == 1)
@@ -69,6 +69,7 @@
                     </button>
                 </div>
             </div>
+            
         </form>
     @endif
     
