@@ -203,7 +203,7 @@ class BlueTeamTest extends TestCase
         $response = $controller->sell($request);
         $sellCart = session('sellCart');
         $this->assertEquals(1, count($sellCart));
-        $this->assertEquals("Firewall", $sellCart[0]);
+        $this->assertEquals("Firewall1", $sellCart[0]);
     }
 
     public function testSellNoItem(){

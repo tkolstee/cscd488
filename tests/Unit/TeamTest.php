@@ -99,10 +99,11 @@ class TeamTest extends TestCase {
         $team = Team::factory()->create();
         $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'SQLDatabase']);
         $asset = new SQLDatabaseAsset;
-        $invReceived = $team->inventory($asset);
+        $invReceived = $team->inventory($asset, 1);
         $this->assertEquals($inv->quantity, $invReceived->quantity);
         $this->assertEquals($inv->team_id, $invReceived->team_id);
         $this->assertEquals($inv->asset_name, $invReceived->asset_name);
+        $this->assertEquals(1, $invReceived->level);
     }
 
     public function testSellAsset() {
@@ -110,16 +111,16 @@ class TeamTest extends TestCase {
         $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'SQLDatabase']);
         $asset = new SQLDatabaseAsset;
         $oldBalance = $team->balance;
-        $this->assertTrue($team->sellAsset($asset));
+        $this->assertTrue($team->sellAsset($asset, 1));
         $this->assertEquals($oldBalance + $asset->purchase_cost, $team->balance);
-        $inv = $team->inventory($asset);
+        $inv = $team->inventory($asset, 1);
         $this->assertNull($inv);
     }
 
     public function testSellAssetNotOwned() {
         $team = Team::factory()->create();
         $asset = new SQLDatabaseAsset;
-        $this->assertFalse($team->sellAsset($asset));
+        $this->assertFalse($team->sellAsset($asset, 1));
     }
 
     public function testBuyAsset() {

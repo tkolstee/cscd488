@@ -36,6 +36,7 @@ class RedTeamController extends Controller {
             case 'status': return view('redteam.status')->with('redteam',$redteam); break;
             case 'buy': return $this->buy($request); break;
             case 'inventory': return $this->inventory(); break;
+            case 'upgrade': return $this->upgrade($request); break;
             case 'sell': return $this->sell($request); break;
             case 'startattack': return $this->startAttack(); break;
             case 'chooseattack': return $this->chooseAttack($request); break;
@@ -174,6 +175,16 @@ class RedTeamController extends Controller {
         return view('redteam.startAttack')->with(compact('targets','redteam'));
     }
 
+    public function upgrade(request $request){
+        $result = array_keys($_POST['submit'])[0];
+        $asset = Asset::get(substr($result, 0, strlen($result)-1));
+        $level = substr($result, -1);
+        $success = Auth::user()->getRedTeam()->inventory($asset, $level)->upgrade();
+        if($success == false) $error = "unsuccessful";
+        else $error = null;
+        return $this->inventory()->with(compact('error'));
+    }
+
     public function sell(request $request){
         //change this to proportion sell rate
         $sellRate = 1;
@@ -183,11 +194,17 @@ class RedTeamController extends Controller {
             return $this->inventory()->with(compact('error'));
         }
         $redteam = Auth::user()->getRedTeam();
-        foreach($assetNames as $assetName){
-            $asset = Asset::get($assetName);
-            $success = $redteam->sellAsset($asset);
+        foreach($assetNames as $asset){
+            if(!is_numeric(substr($asset, -1))){
+                $asset = Asset::get($asset);
+                $level = 1;
+            }else{
+                $level = substr($asset, -1);
+                $asset = Asset::get(substr($asset, 0, strlen($asset)-1));
+            }
+            $success = $redteam->sellAsset($asset, $level);
             if (!$success) {
-                $error = "not-enough-owned-".$assetName;
+                $error = "not-enough-owned-".$asset->class_name;
                 return $this->inventory()->with(compact('error'));
             }
         }

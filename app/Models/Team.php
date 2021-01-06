@@ -82,8 +82,8 @@ class Team extends Model
         //return $this->hasMany('App\Models\Inventory');
     }
 
-    public function inventory($asset) {
-        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->first();
+    public function inventory($asset, $level) {
+        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->where('level', '=', $level)->first();
     }
 
     public function changeBalance($balChange){
@@ -95,31 +95,34 @@ class Team extends Model
     }
 
     public function changeReputation($repChange){
-        $this->balance += $repChange;
+        $this->reputation += $repChange;
         if ($this->reputation < 0){
             $this->reputation = 0;
         }
         $this->update();
     }
 
-    public function sellAsset($asset) {
-        $inv = $this->inventory($asset);
+    public function sellAsset($asset, $level) {
+        $inv = $this->inventory($asset, $level);
         if ($inv == null) { return false;}
-        elseif ($inv->quantity == 1){
+        //get last upgrade cost
+        $inv->level--;
+        $lastUpCost = $inv->getUpgradeCost();
+        $inv->level++;
+        if ($inv->quantity == 1){
             Inventory::destroy($inv->id);
         }
         else{
             $inv->quantity--;
             $inv->update();
         }
-        $this->balance += $asset->purchase_cost;
+        $this->balance += $asset->purchase_cost + $lastUpCost;
         return $this->update();
     }
 
     public function buyAsset($asset) {
         if ($asset->purchase_cost > $this->balance) { return false;}
-
-        $inv = $this->inventory($asset);
+        $inv = $this->inventory($asset, 1);
         if ($inv == null) {
             Inventory::create([
                 'asset_name' => $asset->class_name,

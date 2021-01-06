@@ -18,6 +18,7 @@ class CreateInventoriesTable extends Migration
             $table->integer('quantity');
             $table->foreignId('team_id')->constrained('teams')->onDelete('cascade');
             $table->text('asset_name');
+            $table->integer('level')->default(1);
             $table->timestamps();
         });
     }

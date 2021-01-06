@@ -42,6 +42,7 @@ class BlueTeamController extends Controller {
                 case 'training': return view('blueteam.training')->with('blueteam',$blueteam); break;
                 case 'buy': return $this->buy($request); break;
                 case 'inventory': return $this->inventory(); break;
+                case 'upgrade': return $this->upgrade($request);break;
                 case 'sell': return $this->sell($request); break;
                 case 'endturn': return $this->endTurn(); break;
                 case 'changename': return $this->changeName($request); break;
@@ -115,17 +116,25 @@ class BlueTeamController extends Controller {
         $totalBalance = 0;
         $sellCart = session('sellCart');
         if (!empty($sellCart)){
-            foreach($sellCart as $assetName){
+            foreach($sellCart as $sellItem){
+                if(!is_numeric(substr($sellItem,-1))){
+                    $assetName = $sellItem;
+                    $level = 1;
+                }
+                else{
+                    $assetName = substr($sellItem, 0, strlen($sellItem)-1);
+                    $level = substr($sellItem, -1);
+                }
                 $asset = Asset::getByName($assetName);
-                $success = $blueteam->sellAsset($asset);
+                $success = $blueteam->sellAsset($asset, $level);
                 if (!$success) {
                     $error = "not-enough-owned-".$assetName;
-                    $key = array_search($assetName, $sellCart);
+                    $key = array_search($sellItem, $sellCart);
                     unset($sellCart[$key]);
                     session(['sellCart' => $sellCart]);
                     return $this->store()->with(compact('error'));
                 }
-                $key = array_search($assetName, $sellCart);
+                $key = array_search($sellItem, $sellCart);
                 unset($sellCart[$key]);
             }
         }
@@ -179,6 +188,16 @@ class BlueTeamController extends Controller {
         return view('blueteam.news')->with(compact('blueteam', 'detectedAttacks'));
     }
 
+    public function upgrade(request $request){
+        $result = array_keys($_POST['submit'])[0];
+        $asset = Asset::get(substr($result, 0, strlen($result)-1));
+        $level = substr($result, -1);
+        $success = Auth::user()->getBlueTeam()->inventory($asset, $level)->upgrade();
+        if($success == false) $error = "unsuccessful";
+        else $error = null;
+        return $this->inventory()->with(compact('error'));
+    }
+
     public function sell(request $request){
         $assetNames = $request->input('results');
         if($assetNames == null){
@@ -187,8 +206,12 @@ class BlueTeamController extends Controller {
         }
         $sellCart = session('sellCart');
         foreach($assetNames as $asset){
-            $actAsset = Asset::get($asset);
-            $sellCart[] = $actAsset->name;
+            if(!is_numeric(substr($asset, -1))){
+                $sellCart[] = Asset::get($asset)->name . 1;
+            }else{
+                $actAsset = Asset::get(substr($asset, 0, strlen($asset)-1));
+                $sellCart[] = $actAsset->name . substr($asset, -1);
+            }
         }
         session(['sellCart' => $sellCart]);
         return $this->inventory();
@@ -228,7 +251,7 @@ class BlueTeamController extends Controller {
             try{
                 $blueteams = Team::getBlueTeams();
             }catch(TeamNotFoundException $e){
-                $blueteams = null;
+                $blueteams = [];
             }
             return view('blueteam.join')->with(compact('blueteams'));
         }
