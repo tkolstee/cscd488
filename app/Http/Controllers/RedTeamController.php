@@ -177,7 +177,7 @@ class RedTeamController extends Controller {
     }
 
     public function upgrade(request $request){
-        $result = array_keys($_POST['submit'])[0];
+        $result = $request->submit;
         $asset = Asset::get(substr($result, 0, strlen($result)-1));
         $level = substr($result, -1);
         $success = Auth::user()->getRedTeam()->inventory($asset, $level)->upgrade();
