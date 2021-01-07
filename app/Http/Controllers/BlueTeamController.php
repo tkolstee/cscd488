@@ -103,7 +103,8 @@ class BlueTeamController extends Controller {
         $blueteam = Auth::user()->getBlueTeam();
         $leader = $blueteam->leader();
         $members = $blueteam->members();
-        return view('blueteam/settings')->with(compact('blueteam','leader','members','changeName','leaveTeam'));
+        $turn = Auth::user()->getTurnTaken();
+        return view('blueteam/settings')->with(compact('blueteam','leader','members','changeName','leaveTeam', 'turn'));
     }
 
     public function startTurn(){ //Testing Purposes
