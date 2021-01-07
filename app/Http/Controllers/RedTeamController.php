@@ -33,6 +33,7 @@ class RedTeamController extends Controller {
             case 'attacks': return $this->attacks(); break;
             case 'learn': return (new LearnController)->page($page, $request); break;
             case 'store': return $this->store();break;
+            case 'filter': return $this->filter($request);break;
             case 'status': return view('redteam.status')->with('redteam',$redteam); break;
             case 'buy': return $this->buy($request); break;
             case 'inventory': return $this->inventory(); break;
@@ -239,7 +240,18 @@ class RedTeamController extends Controller {
     public function store(){
         $redteam = Auth::user()->getRedTeam();
         $assets = Asset::getBuyableRed();
-        return view('redteam.store')->with(compact('redteam', 'assets'));
+        $tags = Asset::getTags($assets);
+        return view('redteam.store')->with(compact('redteam', 'assets', 'tags'));
+    }
+
+    public function filter(request $request){
+        $tagFilter = $request->filter;
+        $redteam = Auth::user()->getRedTeam();
+        $redAssets = Asset::getBuyableRed();
+        $tags = Asset::getTags($redAssets);
+        $unfilteredAssets = collect($redAssets);
+        $assets = Asset::filterByTag($unfilteredAssets, $tagFilter);
+        return view('redteam.store')->with(compact('redteam', 'assets', 'tags'));
     }
 
     public function inventory(){

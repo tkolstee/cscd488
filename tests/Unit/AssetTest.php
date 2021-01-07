@@ -8,6 +8,7 @@ use App\Models\Asset;
 use App\Models\Assets\FirewallAsset;
 use App\Models\Assets\SQLDatabaseAsset;
 use App\Models\Assets\TestAttackAsset;
+use App\Models\Assets\TestDefenseAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AssetTest extends TestCase {
@@ -55,6 +56,24 @@ class AssetTest extends TestCase {
         $assets = Asset::getAll();
         $expectedCount = $this->getAllCount();
         $this->assertEquals($expectedCount, count($assets));
+    }
+
+    public function testGetAssetTags() {
+        $assets = Asset::getAll();
+        $tags = Asset::getTags($assets);
+        foreach($assets as $asset){
+            foreach($asset->tags as $tag){
+                $this->assertContains($tag, $tags);
+            }
+        }
+    }
+
+    public function testAssetFilterByTag() { //Update this test when we have more tags on assets!
+        $assets = collect(Asset::getAll());
+        $tagFilter = "defensive tag 1"; //this requires testDefenseAsset and its tag
+        $filtered = Asset::filterByTag($assets, $tagFilter);
+        $this->assertEquals(1, count($filtered));
+        $this->assertEquals(new TestDefenseAsset, $filtered->first());
     }
 
     public function testGetBuyableBlue() {
