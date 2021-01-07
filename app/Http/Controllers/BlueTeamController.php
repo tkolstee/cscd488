@@ -45,6 +45,7 @@ class BlueTeamController extends Controller {
                 case 'upgrade': return $this->upgrade($request);break;
                 case 'sell': return $this->sell($request); break;
                 case 'endturn': return $this->endTurn(); break;
+                case 'cancel': return $this->cancel($request); break;
                 case 'changename': return $this->changeName($request); break;
                 case 'leaveteam': return $this->leaveTeam($request); break;
                 default: return $this->home(); break;
@@ -108,6 +109,26 @@ class BlueTeamController extends Controller {
         Auth::user()->setTurnTaken(0);
         $turn = 0;
         return $this->home()->with(compact('turn'));
+    }
+
+    public function cancel(Request $request){
+        $result = array_keys($_POST['cancel'])[0];
+        $view = $this->store();
+        if($request->cart == "buy"){
+            $session = session('buyCart');
+        }else{
+            $session = session('sellCart');
+            $view = $this->inventory();
+        }
+        $key = array_search($result, $session);
+        unset($session[$key]);
+        if($request->cart == "buy"){
+            session(['buyCart' => $session]);
+        }else{
+            session(['sellCart' => $session]);
+        }
+        $error = null;
+        return $view;
     }
 
     public function endTurn(){

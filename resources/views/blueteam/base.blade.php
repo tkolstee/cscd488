@@ -22,16 +22,44 @@
             @if (!empty(session('buyCart')))
                 <p>Shopping Cart: </p>
                 <?php $cart = session('buyCart'); ?>
+                <table>
+                <tbody>
                 @foreach ($cart as $item)
-                    {{ $item }} <br>
+                <tr>
+                    <td>{{ $item }} </td>
+                   <form method="POST" action="/blueteam/cancel">
+                        @csrf
+                        <input type="hidden" name="cart" value="buy">
+                        <td><button type="submit" formaction="/blueteam/cancel" 
+                            class="btn btn-primary" 
+                            name="{{"cancel[" . $item . "]"}}">
+                            Cancel</button></td>
+                    </form>
+                </tr>
                 @endforeach
+                </tbody>
+                </table>
             @endif
             @if (!empty(session('sellCart')))
                 <p>Sell Cart</p>
                 <?php $cart = session('sellCart'); ?>
+                <table>
+                <tbody>
                 @foreach ($cart as $item)
-                    {{ $item }} <br>
+                <tr>
+                    <td>{{ $item }} </td> 
+                    <form method="POST" action="/blueteam/cancel">
+                        @csrf
+                        <input type="hidden" name="cart" value="sell">
+                        <td><button type="submit" formaction="/blueteam/cancel" 
+                            class="btn btn-primary" 
+                            name="{{"cancel[" . $item . "]"}}">
+                            Cancel</button></td>
+                    </form>
+                </tr>
                 @endforeach
+                </tbody>
+                </table>
             @endif
         </div>
         <div>

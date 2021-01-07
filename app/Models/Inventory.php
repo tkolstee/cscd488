@@ -42,19 +42,27 @@ class Inventory extends Model
         if($team->balance < $cost) return false;
         $team->balance -= $cost;
         $team->update();
+        $asset_name = $this->asset_name;
+        $level = $this->level;
         if($this->quantity == 1){
-            $this->level++;
-            $this->update();
+            $this->destroy($this->id);
         }
         else{
             $this->quantity--;
-            $this->update;
+            $this->update();
+        }
+        $asset = Asset::get($asset_name);
+        $inv = $team->inventory($asset, $level + 1);
+        if($inv == null){
             $inv = new Inventory();
             $inv->quantity = 1;
             $inv->team_id = $this->team_id;
             $inv->asset_name = $this->asset_name;
             $inv->level = $this->level + 1;
             $inv->save();
+        }else{
+            $inv->quantity++;
+            $inv->update();
         }
         return true;
     }
