@@ -61,8 +61,7 @@ class Asset //extends Model
         return $assets;
     }
 
-    public static function getAllTags(){
-        $assets = Asset::getAll();
+    public static function getTags($assets){
         $tags = [];
         foreach($assets as $asset){
             foreach($asset->tags as $tag){
@@ -70,6 +69,14 @@ class Asset //extends Model
             }
         }
         return $tags;
+    }
+
+    public static function filterByTag($assets, $targetTag) {
+        return $assets->filter->hasTag($targetTag);
+    }
+
+    public function hasTag($targetTag) {
+        return in_array($targetTag, $this->tags);
     }
 
     public static function get($name){
