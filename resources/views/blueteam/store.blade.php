@@ -14,6 +14,10 @@
             @endforeach
         </select>
     </form>
+    <form  action="/blueteam/store">
+        <button>Clear Filter</button>
+    </form>
+    
     @if(count($assets ?? []) == 0)
         <p>No items are available for purchase right now.</p>
     @else
