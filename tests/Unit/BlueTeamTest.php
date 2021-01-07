@@ -545,6 +545,57 @@ class BlueTeamTest extends TestCase
         $this->assertNull(Auth::user()->blueteam);
         $this->assertNotNull(Team::find($team->id));
     }
+
+    //Upgrade Tests
+    //Should return inventory with correct upgrade
+    //error if costs too much or level max
+    //exception if not owned
+
+    public function testUpgradeNoTeam(){
+        $controller = new BlueTeamController();
+        $request = Request::create('/upgrade', 'POST', []);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->leaveTeam($request);
+    }  
+
+    public function testUpgradeNotOwned(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $request = Request::create('/upgrade', 'POST', ['submit' => "SQLDatabase1"]);
+        $this->expectException(AssetNotFoundException::class);
+        $response = $controller->upgrade($request);
+    }
+
+    public function testUpgradeNotEnoughMoney(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team->balance = 0;
+        $team->update();
+        $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 1]);
+        $request = Request::create('/upgrade', 'POST', ['submit' => "Firewall1"]);
+        $response = $controller->upgrade($request);
+        $this->assertEquals("unsuccessful", $response->error);
+    }
+
+    public function testUpgradeAlreadyMax(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 1, 'level' => 3]);
+        $request = Request::create('/upgrade', 'POST', ['submit' => "Firewall3"]);
+        $response = $controller->upgrade($request);
+        $this->assertEquals("unsuccessful", $response->error);
+    }
+
+    public function testUpgradeValid(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2, 'level' => 2]);
+        $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2, 'level' => 1]);
+        $request = Request::create('/upgrade', 'POST', ['submit' => "Firewall1"]);
+        $response = $controller->upgrade($request);
+        //working here
+    }
+
 }
 
 

@@ -210,10 +210,12 @@ class BlueTeamController extends Controller {
     }
 
     public function upgrade(request $request){
-        $result = array_keys($_POST['submit'])[0];
+        $result = $request->submit;
         $asset = Asset::get(substr($result, 0, strlen($result)-1));
         $level = substr($result, -1);
-        $success = Auth::user()->getBlueTeam()->inventory($asset, $level)->upgrade();
+        $inv = Auth::user()->getBlueTeam()->inventory($asset, $level);
+        if($inv == null) throw new AssetNotFoundException();
+        $success = $inv->upgrade();
         if($success == false) $error = "unsuccessful";
         else $error = null;
         return $this->inventory()->with(compact('error'));
