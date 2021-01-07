@@ -113,7 +113,22 @@ class BlueTeamController extends Controller {
 
     public function cancel(Request $request){
         $result = array_keys($_POST['cancel'])[0];
-        
+        $view = $this->store();
+        if($request->cart == "buy"){
+            $session = session('buyCart');
+        }else{
+            $session = session('sellCart');
+            $view = $this->inventory();
+        }
+        $key = array_search($result, $session);
+        unset($session[$key]);
+        if($request->cart == "buy"){
+            session(['buyCart' => $session]);
+        }else{
+            session(['sellCart' => $session]);
+        }
+        $error = null;
+        return $view;
     }
 
     public function endTurn(){
