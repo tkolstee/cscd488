@@ -9,7 +9,7 @@
         <form method="POST" action="/blueteam/sell">
             @csrf
             @include('partials.inventory_table', ['inventory' => $inventory])
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" name="sellSubmit">
                 Sell
             </button>
         </form>

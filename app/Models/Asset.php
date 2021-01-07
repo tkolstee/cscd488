@@ -22,6 +22,7 @@ class Asset //extends Model
         'buyable',
         'purchase_cost',
         'ownership_cost',
+        'level',
     ];
     protected $casts = [ 'tags' => 'array', ];
 
@@ -32,6 +33,7 @@ class Asset //extends Model
     public $_buyable = 1;
     public $_purchase_cost = 100;
     public $_ownership_cost = 0;
+    public $_upgrade_cost = 50;
 
     function __construct() {
         $this->name           = $this->_name;
@@ -41,6 +43,7 @@ class Asset //extends Model
         $this->buyable      = $this->_buyable;
         $this->purchase_cost        = $this->_purchase_cost;
         $this->ownership_cost       = $this->_ownership_cost;
+        $this->upgrade_cost         = $this->_upgrade_cost;
     }
 
     public function onPreAttack($attack) {}
@@ -106,4 +109,5 @@ class Asset //extends Model
         }
         return $assets;
     }
+    
 }

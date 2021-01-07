@@ -5,7 +5,7 @@
 @section('pagecontent')
 
     <h2>Join A Team</h2>
-    @if ($blueteams->isEmpty())
+    @if (count($blueteams ?? []) == 0)
         No teams to join.<br>
     @else
         <form method="POST" action="/blueteam/join">
