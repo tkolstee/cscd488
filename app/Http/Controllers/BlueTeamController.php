@@ -26,6 +26,8 @@ class BlueTeamController extends Controller {
             //methods available while not on a turn
             if($page == 'startturn') return $this->startTurn(); //Testing Purposes
             if($page == 'settings') return $this->settings($request);
+            if($page == 'changename') return $this->changeName($request); 
+            if($page == 'leaveteam') return $this->leaveTeam($request);
             $team_id = Auth::user()->blueteam;
             $turn = Auth::user()->getTurnTaken();
             if($turn == 1){
@@ -47,8 +49,7 @@ class BlueTeamController extends Controller {
                 case 'sell': return $this->sell($request); break;
                 case 'endturn': return $this->endTurn(); break;
                 case 'cancel': return $this->cancel($request); break;
-                case 'changename': return $this->changeName($request); break;
-                case 'leaveteam': return $this->leaveTeam($request); break;
+                
                 default: return $this->home(); break;
             }
         }

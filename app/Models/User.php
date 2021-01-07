@@ -84,6 +84,7 @@ class User extends Authenticatable
     public function leaveBlueTeam() {
         $blueteam = $this->getBlueTeam();
         $this->blueteam = null;
+        $this->update();
         if ($this->leader == 1){
             $members = $blueteam->members();
             if($members->isEmpty()){
@@ -94,7 +95,6 @@ class User extends Authenticatable
                 $newLeader->update();
             }
         }
-        return $this->update();
     }
 
     public function leaveRedTeam() {
