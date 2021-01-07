@@ -589,11 +589,14 @@ class BlueTeamTest extends TestCase
     public function testUpgradeValid(){
         $controller = new BlueTeamController();
         $team = $this->assignTeam();
-        $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2, 'level' => 2]);
-        $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2, 'level' => 1]);
+        $inventory2 = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2, 'level' => 2]);
+        $inventory1 = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2, 'level' => 1]);
         $request = Request::create('/upgrade', 'POST', ['submit' => "Firewall1"]);
         $response = $controller->upgrade($request);
-        //working here
+        $inventory1After = $team->inventory(Asset::get($inventory1->asset_name), $inventory1->level);        
+        $inventory2After = $team->inventory(Asset::get($inventory2->asset_name), $inventory2->level);
+        $this->assertEquals($inventory1->quantity - 1, $inventory1After->quantity);
+        $this->assertEquals($inventory2->quantity + 1, $inventory2After->quantity);
     }
 
 }
