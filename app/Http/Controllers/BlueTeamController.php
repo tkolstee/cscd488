@@ -230,7 +230,7 @@ class BlueTeamController extends Controller {
         $blueteam = Auth::user()->getBlueTeam();
         $blueAssets = Asset::getBuyableBlue();
         $tags = Asset::getTags($blueAssets);
-        $unfilteredAssets = collect(Asset::getBuyableBlue());
+        $unfilteredAssets = collect($blueAssets);
         $assets = Asset::filterByTag($unfilteredAssets, $tagFilter);
         return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags'));
     }
