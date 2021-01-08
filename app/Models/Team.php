@@ -88,6 +88,7 @@ class Team extends Model
 
     public function assets() {
         $inventories = Inventory::all()->where('team_id', '=', $this->id);
+        $assets_arr = [];
         foreach ($inventories as $inventory){
             $assets_arr[] = Asset::get($inventory->asset_name);
         }
