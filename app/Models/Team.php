@@ -86,6 +86,14 @@ class Team extends Model
         return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->where('level', '=', $level)->first();
     }
 
+    public function assets() {
+        $inventories = Inventory::all()->where('team_id', '=', $this->id);
+        foreach ($inventories as $inventory){
+            $assets_arr[] = Asset::get($inventory->asset_name);
+        }
+        return collect($assets_arr);
+    }
+
     public function changeBalance($balChange){
         $this->balance += $balChange;
         if ($this->balance < 0){
