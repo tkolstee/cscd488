@@ -16,6 +16,17 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
+    public function page($page, Request $request){
+        switch($page){
+            case("about"): return $this->about(); break;
+            default: return $this->index();
+        }
+    }
+
+    public function about(){
+        return view('about');
+    }
+
     /**
      * Show the application dashboard.
      *
@@ -23,6 +34,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return view('welcome');
     }
 }

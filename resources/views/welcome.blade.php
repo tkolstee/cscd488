@@ -45,8 +45,8 @@
             <div class="navbar">
                 <div class="navbarSelection">
                     <ul>
-                        <li><a href="{{ url('http://localhost:8000/') }}">Home</a></li>
-                        <li><a href="about.php">About</a></li>
+                        <li><a href="/home/d">Home</a></li>
+                        <li><a href="/home/about">About</a></li>
                         <li><a href="gamePlay.php">Rules</a></li>
                         <li><a href="contact.php">Contact</a></li>
                     </ul>

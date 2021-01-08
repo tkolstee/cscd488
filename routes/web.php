@@ -29,7 +29,7 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::any('/learn/{page}', [App\Http\Controllers\LearnController::class, 'page'])->name('learn');
 
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::any('/home/{page}', [App\Http\Controllers\HomeController::class, 'page'])->name('home');
 });
 
 //TestFill Assets
