@@ -23,7 +23,7 @@
     @else
         <form method="POST" action="/blueteam/buy">
             @csrf
-            @include('partials.store_assets_table', ['assets' => $assets])
+            @include('partials.store_assets_table', ['assets' => $assets, 'ownedAssets' => $ownedAssets])
             <button type="submit" class="btn btn-primary">
                 Purchase
             </button>

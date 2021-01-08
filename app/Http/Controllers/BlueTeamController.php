@@ -284,7 +284,8 @@ class BlueTeamController extends Controller {
         $blueteam = Auth::user()->getBlueTeam();
         $assets = Asset::getBuyableBlue();
         $tags = Asset::getTags($assets);
-        return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags'));
+        $ownedAssets = $blueteam->assets();
+        return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags', 'ownedAssets'));
     }
 
     public function filter(request $request){
@@ -294,7 +295,8 @@ class BlueTeamController extends Controller {
         $tags = Asset::getTags($blueAssets);
         $unfilteredAssets = collect($blueAssets);
         $assets = Asset::filterByTag($unfilteredAssets, $tagFilter);
-        return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags'));
+        $ownedAssets = $blueteam->assets();
+        return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags', 'ownedAssets'));
     }
 
     public function joinMembers(request $request){
