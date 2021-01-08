@@ -59,6 +59,7 @@ class BlueTeamController extends Controller {
             case 'home': return $this->home(); break;
             case 'create': return $this->create($request); break;
             case 'join': return $this->join($request); break;
+            case 'joinmembers': return $this->joinMembers($request); break;
             default: return $this->home(); break;
         }
         
@@ -294,6 +295,16 @@ class BlueTeamController extends Controller {
         $unfilteredAssets = collect($blueAssets);
         $assets = Asset::filterByTag($unfilteredAssets, $tagFilter);
         return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags'));
+    }
+
+    public function joinMembers(request $request){
+        $teamName = $request->submit;
+        $team = Team::get($teamName);
+        $viewMembers = $team->name;
+        $viewTeamLeader = $team->leader();
+        $viewTeamMembers = $team->members();
+        $request->result = "";
+        return $this->join($request)->with(compact('viewMembers','viewTeamLeader','viewTeamMembers'));
     }
 
     public function join(request $request){

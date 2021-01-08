@@ -634,6 +634,29 @@ class BlueTeamTest extends TestCase
         $this->assertEquals($user1->username, $team->leader()->username);
     }
 
+    //JoinMembers Test
+    //Should return join page with team name and members + leader
+    //Throws TeamNotFound if invalid team name
+
+    public function testJoinMembersInvalidTeam(){
+        $controller = new BlueTeamController();
+        $request = Request::create('/joinmembers', 'POST', ['submit' => 'InvalidName']);
+        $this->expectException(TeamNotFoundException::class);
+        $controller->joinMembers($request);
+    }
+
+    public function testJoinMembersValid(){
+        $controller = new BlueTeamController();
+        $team = Team::factory()->create();
+        $user1 = User::factory()->create(['blueteam' => $team->id, 'leader' => 1]);
+        $user2 = User::factory()->create(['blueteam' => $team->id, 'leader' => 0]);
+        $request = Request::create('/joinmembers', 'POST', ['submit' => $team->name]);
+        $response = $controller->joinMembers($request);
+        $this->assertEquals($team->name, $response->viewMembers);
+        $this->assertEquals($user1->id, $response->viewTeamLeader->id);
+        $this->assertEquals($user2->id, $response->viewTeamMembers->first()->id);
+    }
+
 }
 
 
