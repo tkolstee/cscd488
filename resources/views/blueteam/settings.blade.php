@@ -6,9 +6,9 @@
     <h2>Team Settings<br>
     {{ $blueteam->name }}</h2>
     <h3>Team Members:</h3>
-    <strong>Leader: {{ $leader->name }}</strong><br>
+    <strong>Leader: {{ $leader->username }}</strong><br>
     @foreach ($members ?? [] as $member)
-        {{ $member->name }}<br>
+        {{ $member->username }}<br>
     @endforeach
     <h2>Stats</h2>
     <strong>Balance: </strong>{{ $blueteam->balance }}<br>
@@ -38,6 +38,37 @@
                     </div>
                 </div>
             </form>
+        @endif
+        @if(count($members) > 0)
+            @if (!($changeLeader ?? false))
+                <form method="POST" action="/blueteam/settings">
+                @csrf
+                    <input type="hidden" name="changeLeaderBtn" value="1">
+                    <div class="form-group row mb-0">
+                        <div class="col-md-8 offset-md-4">
+                            <button type="submit" name="changeLeaderButton" class="btn btn-primary">
+                                Change Leader
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            @elseif($changeLeader ?? false)
+            <form method="POST" action="/blueteam/changeleader">
+            @csrf
+                @foreach ($members as $member)
+                <input type="radio" name="result" id="{{ $leader->username }}" value="{{ $member->username }}">
+                <label for="{{ $member->username }}">{{ $member->username }}</label>
+                <br>
+                @endforeach
+                <div class="form-group row mb-0">
+                    <div class="col-md-8 offset-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            Change Leader
+                        </button>
+                    </div>
+                </div>
+            </form>
+            @endif
         @endif
     @endif
     @if (!$leaveTeam ?? false)

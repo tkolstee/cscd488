@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Exceptions\UserNotFoundException;
 
 class User extends Authenticatable
 {
@@ -45,6 +46,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public static function getByUsername($username){
+        $user = User::all()->where('username','=',$username)->first();
+        if($user == null){
+            throw new UserNotFoundException();
+        }
+        return $user;
+    }
 
     public function getBlueTeam() {
         $blueteam =  Team::find($this->blueteam);
@@ -95,6 +104,18 @@ class User extends Authenticatable
                 $newLeader->update();
             }
         }
+    }
+
+    public function changeLeader($newUsername){
+        $blueteam = $this->getBlueTeam();
+        $newUser = $this->getByUsername($newUsername);
+        if($newUser->blueteam != $blueteam->id){
+            return false;
+        }
+        $newUser->leader = 1;
+        $newUser->update();
+        $this->leader = 0;
+        $this->update();
     }
 
     public function leaveRedTeam() {

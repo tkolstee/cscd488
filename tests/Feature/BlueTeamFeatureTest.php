@@ -55,7 +55,7 @@ class BlueTeamFeatureTest extends TestCase
             'result' => $team->name,
         ]);
         $response->assertViewIs('blueteam.home');
-        $response->assertSee([$team->name, $team->balance, $leaderUser->name, $user->name]);
+        $response->assertSee([$team->name, $team->balance, $leaderUser->username, $user->username]);
     }
 
     public function testBlueTeamHomePageDisplaysTeamInfo()

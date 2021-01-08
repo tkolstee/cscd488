@@ -15,6 +15,7 @@ use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use App\Exceptions\InventoryNotFoundException;
+use App\Exceptions\UserNotFoundException;
 
 
 class BlueTeamTest extends TestCase
@@ -597,6 +598,40 @@ class BlueTeamTest extends TestCase
         $inventory2After = $team->inventory(Asset::get($inventory2->asset_name), $inventory2->level);
         $this->assertEquals($inventory1->quantity - 1, $inventory1After->quantity);
         $this->assertEquals($inventory2->quantity + 1, $inventory2After->quantity);
+    }
+
+    //ChangeLeader tests
+    //Should return settings with leader changed or error if user not on correct team
+    //throws UserNotFoundException if incorrect username
+
+    public function testChangeLeaderInvalidName(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $request = Request::create('/changeLeader', 'POST', ['result' => 'invalidName']);
+        $this->expectException(UserNotFoundException::class);
+        $controller->changeLeader($request);
+    }
+
+    public function testChangeLeaderNotAMember(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team2 = Team::factory()->create();
+        $user1 = User::factory()->create(['blueteam' => $team2->id]);
+        $request = Request::create('/changeLeader', 'POST', ['result' => $user1->username]);
+        $response = $controller->changeLeader($request);
+        $this->assertEquals("user-not-on-team", $response->error);
+    }
+
+    public function testChangeLeaderValid(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $user1 = User::factory()->create(['blueteam' => $team->id]);
+        $request = Request::create('/changeLeader', 'POST', ['result' => $user1->username]);
+        $response = $controller->changeLeader($request);
+        $user1After = User::find($user1->id);
+        $this->assertEquals(0, Auth::user()->leader);
+        $this->assertEquals(1, $user1After->leader);
+        $this->assertEquals($user1->username, $team->leader()->username);
     }
 
 }
