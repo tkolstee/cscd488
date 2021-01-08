@@ -19,6 +19,7 @@ class HomeController extends Controller
     public function page($page, Request $request){
         switch($page){
             case("about"): return $this->about(); break;
+            case("home"): return $this->index(); break;
             default: return $this->index();
         }
     }

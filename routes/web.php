@@ -17,7 +17,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::any('/home/{page}', [App\Http\Controllers\HomeController::class, 'page'])->name('home');
+
 Auth::routes();
+
+
 
 Route::group(['middleware' => ['auth']], function() {
 
@@ -29,8 +33,10 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::any('/learn/{page}', [App\Http\Controllers\LearnController::class, 'page'])->name('learn');
 
-    Route::any('/home/{page}', [App\Http\Controllers\HomeController::class, 'page'])->name('home');
+   
 });
+
+
 
 //TestFill Assets
 Route::any('/asset/prefillTest', [App\Http\Controllers\AssetController::class, 'prefillTest'])->name('prefillAssets');
