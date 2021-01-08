@@ -28,6 +28,7 @@ class BlueTeamController extends Controller {
             if($page == 'settings') return $this->settings($request);
             if($page == 'changename') return $this->changeName($request); 
             if($page == 'leaveteam') return $this->leaveTeam($request);
+            if($page == 'changeleader') return $this->changeLeader($request);
             $team_id = Auth::user()->blueteam;
             $turn = Auth::user()->getTurnTaken();
             if($turn == 1){
@@ -79,6 +80,14 @@ class BlueTeamController extends Controller {
         
     }
 
+    public function changeLeader(request $request){
+        $user = Auth::user();
+        $success = $user->changeLeader($request->result);
+        if(!$success) $error = "user-not-on-team";
+        else $error = null;
+        return $this->settings($request)->with(compact('error'));
+    }
+
     public function changeName(request $request){
         try{
             Team::get($request->name);
@@ -95,17 +104,21 @@ class BlueTeamController extends Controller {
     public function settings(request $request){
         $changeName = false;
         $leaveTeam = false;
+        $changeLeader = false;
         if($request->changeNameBtn == 1){
             $changeName = true;
         }
         if($request->leaveTeamBtn == 1){
             $leaveTeam = true;
         }
+        if($request->changeLeaderBtn == 1){
+            $changeLeader = true;
+        }
         $blueteam = Auth::user()->getBlueTeam();
         $leader = $blueteam->leader();
         $members = $blueteam->members();
         $turn = Auth::user()->getTurnTaken();
-        return view('blueteam/settings')->with(compact('blueteam','leader','members','changeName','leaveTeam', 'turn'));
+        return view('blueteam/settings')->with(compact('blueteam','leader','members','changeName','leaveTeam', 'turn', 'changeLeader'));
     }
 
     public function startTurn(){ //Testing Purposes

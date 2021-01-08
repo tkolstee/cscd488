@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
+use App\Exceptions\InventoryNotFoundException;
 use App\Models\Team;
 use App\Models\Asset;
 
@@ -35,7 +36,7 @@ class Inventory extends Model
             return false;
         }
         if($this->quantity == 0){
-            throw new AssetNotFoundException();
+            throw new InventoryNotFoundException();
         }
         $cost = $this->getUpgradeCost();
         $team = Team::find($this->team_id);

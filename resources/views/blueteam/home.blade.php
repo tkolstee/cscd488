@@ -10,10 +10,10 @@
         <a href="/blueteam/join"><button>Join Blue Team</button></a>
      @else
         <h3>Team Members:</h3>
-        <strong>{{ $leader->name }}</strong><br>
+        <strong>{{ $leader->username }}</strong><br>
         
         @foreach ($members ?? [] as $member)
-        {{ $member->name }}<br>
+        {{ $member->username }}<br>
         @endforeach
         
         @if (($turn ?? 0) == 1)
