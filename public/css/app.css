@@ -6,7 +6,10 @@
     width:100%;
     	
 }
-
+h4{
+    margin-bottom:3%;
+    margin-top:3%;
+}
 .body_home{
     background-color:black;
 }
@@ -278,6 +281,9 @@
     padding-top:15px;
     width:116%;
 }
+.form-blueTeamJoinForm{
+    padding-top:35%;
+}
 .offset-md-4{
     margin-left:10%;
 }
@@ -451,7 +457,7 @@
 .blueTeamMenuSelection ul{
     list-style-type: none;
     padding-top:1%;
-    padding-left: 6.8%;
+    padding-left: 15%;
     padding-bottom:1%;
     float:left;    
     background-color: rgb(3, 3, 148);      
@@ -462,7 +468,7 @@
 }
 .blueTeamMenuSelection li a{
     color:white;
-    font-size: 16pt;
+    font-size: 12pt;
     padding-left:3.8%;
     padding-top:1.2%;
     padding-bottom:1.2%;
@@ -471,7 +477,7 @@
 
 .blueTeamMenuSelection a {
     
-    padding-right:5%;
+    padding-right:4%;
     padding-left: 34%;
     text-decoration: none;
     background-color: rgb(3, 3, 148);
@@ -506,7 +512,8 @@ h2{
     padding-left:1.3%;
     padding-top:1.3%;
     background-color: black;
-    width: 24.5%;
+   
+    margin-bottom:2%;
     
     
 }
@@ -549,7 +556,7 @@ h2{
 }
 .loggedIn{
     float:left;
-    width:27%;
+    width:25%;
     margin-left:25%;
     
 }
@@ -632,4 +639,44 @@ h2{
 .redLogo{
     width:75px;
     float:left;
+}
+.statsContainer{
+    width: 100%;
+    margin-top:.5%;
+}
+.leaveAndStayOnTeam{
+    color:white;
+}
+#name{
+    /*
+    width:25%;
+    margin-left:37%;
+    */
+    width:55%
+    
+
+   
+}
+.testP p{
+    margin-top:20%;
+    color:#ffffff;
+    background-color: #00FFCC;
+}
+.createBlueTeam{
+
+}
+.text-md-right{
+    
+}
+#name2{
+    width:30.5%;
+    margin-left:34%;
+}
+.blueNameLabel{
+    width:29%;
+    color:white;
+    text-align: right;
+}
+.chooseTeamRadioButtons{
+    color:white;
 }

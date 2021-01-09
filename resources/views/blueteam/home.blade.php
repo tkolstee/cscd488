@@ -7,8 +7,10 @@
 @section('pagecontent')
 
     @if (Auth::user()->blueteam == "")
-        <a href="/blueteam/create"><button>Create Blue Team</button></a>
-        <a href="/blueteam/join"><button>Join Blue Team</button></a>
+    <div class="createBlueTeam">
+        <a href="/blueteam/create"><button class="btn btn-primary2">Create Blue Team</button></a>
+        <a href="/blueteam/join"><button class="btn btn-primary2">Join Blue Team</button></a>
+    </div>
      @else
         <h3>Team Members:</h3>
         <p class="userName">{{ $leader->name }}</p<br>

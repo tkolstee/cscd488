@@ -4,15 +4,15 @@
 
 @section('pagecontent')
 
-    <h2>Join A Team</h2>
+    <h4>Join A Team</h4>
     @if ($blueteams->isEmpty())
         No teams to join.<br>
     @else
-        <form method="POST" action="/blueteam/join">
+        <form class="blueTeamJoinForm" method="POST" action="/blueteam/join">
         @csrf
             @foreach ($blueteams as $blueteam)
             <input type="radio" name="result" id="{{ $blueteam->name }}" value="{{ $blueteam->name }}">
-            <label for="{{ $blueteam->name }}">{{ $blueteam->name }}</label>
+            <label class="chooseTeamRadioButtons" for="{{ $blueteam->name }}">{{ $blueteam->name }}</label>
             <br>
             @endforeach
             <div class="form-group row mb-0">

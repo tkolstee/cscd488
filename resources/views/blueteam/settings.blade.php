@@ -29,7 +29,7 @@
         @elseif ($changeName ?? false)
             <form method="POST" action="/blueteam/changename">
             @csrf
-            <input id="name" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+            <input id="name2" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
                 <div class="form-group row mb-0">
                     <div class="col-md-8 offset-md-4">
                         <button type="submit" name="changeNameSubmit" class="btn btn-primary">
@@ -57,10 +57,10 @@
         <form method="POST" action="/blueteam/leaveteam">
         @csrf
             <input type="radio" name="result" id="leave" value="leave">
-            <label for="leave">Leave Team</label>
+            <label class="leaveAndStayOnTeam" for="leave">Leave Team</label>
             <br>
             <input type="radio" name="result" id="stay" value="stay">
-            <label for="stay">Stay on Team</label>
+            <label class="leaveAndStayOnTeam" for="stay">Stay on Team</label>
             <br>
             <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">
