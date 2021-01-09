@@ -8,7 +8,7 @@
     @if (count($blueteams ?? []) == 0)
         No teams to join.<br>
     @else
-        <form method="POST" action="/blueteam/join">
+        <form class="blueTeamJoinForm" method="POST" action="/blueteam/join">
         @csrf
         <table>
             @foreach ($blueteams as $blueteam)

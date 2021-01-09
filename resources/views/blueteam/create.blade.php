@@ -4,14 +4,16 @@
 
 @section('pagecontent')
 
-<h2>Create New Blue Team</h2>
+<h3>Create New Blue Team</h3>
 <form method="POST" action="/blueteam/create">
+
     @csrf
 
     <div class="form-group row">
-        <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Team Name') }}</label>
+        <label  for="name" class="blueNameLabel">{{ __('Team Name') }}</label>
 
         <div class="col-md-6">
+            
             <input id="name" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
             @error('name')

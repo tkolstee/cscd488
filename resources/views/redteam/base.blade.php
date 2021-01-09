@@ -1,7 +1,27 @@
+<style>
+.blueMiddleContainer{
+    background: url('../images/h3Background.jpg'), repeat;
+}
+.h2Container{
+    /*background: url('../images/h3Background.jpg'), no-repeat;*/
+}
+
+</style>
+
+
 @extends('layouts.base')
 @section('basecontent')
-    <div style="background-color: red; padding: 0px;">
-        <h2>Red Team Content</h2>
+    <div class="redTeamContainer">
+        <div class="redLogoContainer"> 
+            <div class="redLogo">
+                 <img src="../images/blueTeamLogo1.jpg" alt="messages" >
+            </div><!--END redLogo-->
+            <div class="h2Container">
+                <h2>Red Team Content</h2>
+            </div><!--END h2Container-->
+        </div><!--END redLogoContainer-->
+
+        
         <table width="100%"><tr>
             <td width="50%">
                 <img src="blah" alt="messages" height=20 width=20>
@@ -19,14 +39,16 @@
         <div style="background-color: #F77; padding: 80px; align: center; vertical-align: center;">
             @yield('pagecontent')
         </div>
-        <div>
-            <a href="/redteam/home"><button>Home</button></a>
-            <a href="/redteam/attacks"><button>Attacks</button></a>
-            <a href="/redteam/learn"><button>Learn</button></a>
-            <a href="/redteam/store"><button>Store</button></a>
-            <a href="/redteam/inventory"><button>Inventory</button></a>
-            <a href="/redteam/status"><button>Status</button></a>
-            <a href="/redteam/settings"><button>Team Settings</button></a>
-        </div>
-    </div>
+        <div class="redTeamMenuSelection">
+            <ul>
+                <li class="startTurn"><a href="/redteam/home">Home</a></li>
+                <li class="startTurn"><a href="/redteam/attacks">Attacks</a></li>
+                <li class="startTurn"><a href="/redteam/learn">Learn</a></li>
+                <li class="startTurn"><a href="/redteam/store">Store</a></li>
+                <li class="startTurn"><a href="/redteam/inventory">Inventory</a></li>
+                <li class="startTurn"><a href="/redteam/status">Status</a></li>
+                <li class="startTurn"><a href="/redteam/settings">Team Settings</a></li>
+            </ul>
+        </div><!--End redTeamMenuSelection class-->
+    </div><!--End redTeamContainer class-->
 @endsection

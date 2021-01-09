@@ -4,7 +4,7 @@
 
 @section('pagecontent')
     <p>This is the blue team store.</p>
-    <form method="POST" action="/blueteam/filter">
+    <form class="storeForm" method="POST" action="/blueteam/filter">
         @csrf
         Tag Filter: 
         <select name="filter" onchange="this.form.submit();">
@@ -21,7 +21,7 @@
     @if(count($assets ?? []) == 0)
         <p>No items are available for purchase right now.</p>
     @else
-        <form method="POST" action="/blueteam/buy">
+        <form class="storeForm" method="POST" action="/blueteam/buy">
             @csrf
             @include('partials.store_assets_table', ['assets' => $assets, 'ownedAssets' => $ownedAssets])
             <button type="submit" class="btn btn-primary">
