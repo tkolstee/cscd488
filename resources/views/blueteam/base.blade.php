@@ -29,15 +29,13 @@
         @if ($blueteam->name  ?? '' != "")
                 <div class="statsContainer">
                     <div class="statsName"><div class="loggedIn"><p> Your team name is:</p> </div><div class="loggedInName"> {{  $blueteam->name ?? '' }}</div></div>
-                   
                     <div class="stats">Revenue: {{ $blueteam->balance ?? '' }}  |  Reputation: {{ $blueteam->reputation ?? '' }}</div>
                     <div class="stats">Turn: {{ App\Models\Game::turnNumber() }}</div>
                
                 </div><!--END statsContainer-->
          @else
          <div class="statsContainer">
-                    <div class="statsName"><div class="loggedIn"><p> You are logged in as:</p> </div><div class="loggedInName"> {{  $blueteam->name ?? '' }}</div></div>
-                   
+                    <div class="statsName"><div class="loggedIn"><p> Your team name is:</p> </div><div class="loggedInName"> {{  $blueteam->name ?? '' }}</div></div>
                     <div class="stats">Revenue: {{ $blueteam->balance ?? '' }}  |  Reputation: {{ $blueteam->reputation ?? '' }}</div>
                     <div class="stats">Turn: {{ App\Models\Game::turnNumber() }}</div>
                
