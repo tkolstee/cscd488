@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Exception;
+use Auth;
+use Redirect;
 
 class HomeController extends Controller
 {
@@ -18,6 +20,9 @@ class HomeController extends Controller
     }
 
     public function chooseTeam(){
+        if(!Auth::check()){
+            return Redirect::route('login');
+        }
         return view('home');
     }
 
