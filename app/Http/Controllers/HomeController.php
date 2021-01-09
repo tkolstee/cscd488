@@ -3,17 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Exception;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
+    
+    public function page($page, Request $request){
+        switch($page){
+            case("about"): return $this->about(); break;
+            case("home"): return $this->index(); break;
+            case("chooseteam"): return $this->chooseTeam(); break;
+            default: return $this->index();
+        }
+    }
+
+    public function chooseTeam(){
+        return view('home');
+    }
+
+    public function about(){
+        return view('about');
     }
 
     /**
@@ -23,6 +32,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return view('welcome');
     }
 }
