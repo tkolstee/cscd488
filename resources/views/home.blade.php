@@ -1,23 +1,23 @@
 <style>
     .homeContainer{
     height: 100%;
-    background: url('images/repeatingBackground.jpg'), center no-repeat;
+    background: url('/images/repeatingBackground.jpg'), center no-repeat;
 }
 .card {
-    background: url('images/redVsBlue1.jpg'), center no-repeat;
+    background: url('/images/redVsBlue1.jpg'), center no-repeat;
    
 }
 .RteamChoice{
-    background: url('images/redSelection.jpg'), no-repeat;
+    background: url('/images/redSelection.jpg'), no-repeat;
 }
 .RteamChoice:hover {
-    background: url('images/redSelectionHover.jpg'), no-repeat;
+    background: url('/images/redSelectionHover.jpg'), no-repeat;
 }
 .BteamChoice{
-    background: url('images/blueSelection.jpg'), no-repeat;
+    background: url('/images/blueSelection.jpg'), no-repeat;
 }
 .BteamChoice:hover{
-    background: url('images/blueSelectionHover.jpg'), no-repeat;
+    background: url('/images/blueSelectionHover.jpg'), no-repeat;
 }
 
 /*#rForm_container{

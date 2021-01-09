@@ -21,7 +21,7 @@
             <div class="header"> 
                 <div class="headerContainer">
                     <div class="logo">
-                        <a href="{{ url('http://localhost:8000/') }}"><img src="../images/LOGOcscd488.png" class="img-fluid" alt="Responsive image"/></a>
+                        <a href="/home/home"><img src="../images/LOGOcscd488.png" class="img-fluid" alt="Responsive image"/></a>
                     </div><!-- end logo class-->
                     <div class=loginAndRegister>
                         <div class="login">
