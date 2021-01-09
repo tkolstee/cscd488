@@ -71,11 +71,11 @@ class LoginTest extends TestCase
 
     public function testUnauthUserCannotViewGamePages()
     {
-        $response = $this->get('/home');
-        $response->assertRedirect('/login');
         $response = $this->get('/blueteam/home');
         $response->assertRedirect('/login');
         $response = $this->get('/redteam/home');
+        $response->assertRedirect('/login');
+        $response = $this->get('/home/chooseteam');
         $response->assertRedirect('/login');
     }
 }
