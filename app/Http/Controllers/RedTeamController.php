@@ -241,7 +241,8 @@ class RedTeamController extends Controller {
         $redteam = Auth::user()->getRedTeam();
         $assets = Asset::getBuyableRed();
         $tags = Asset::getTags($assets);
-        return view('redteam.store')->with(compact('redteam', 'assets', 'tags'));
+        $ownedAssets = $redteam->assets();
+        return view('redteam.store')->with(compact('redteam', 'assets', 'tags', 'ownedAssets'));
     }
 
     public function filter(request $request){
@@ -251,7 +252,8 @@ class RedTeamController extends Controller {
         $tags = Asset::getTags($redAssets);
         $unfilteredAssets = collect($redAssets);
         $assets = Asset::filterByTag($unfilteredAssets, $tagFilter);
-        return view('redteam.store')->with(compact('redteam', 'assets', 'tags'));
+        $ownedAssets = $redteam->assets();
+        return view('redteam.store')->with(compact('redteam', 'assets', 'tags', 'ownedAssets'));
     }
 
     public function inventory(){

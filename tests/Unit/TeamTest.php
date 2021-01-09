@@ -7,6 +7,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Inventory;
 use App\Exceptions\TeamNotFoundException;
+use App\Models\Assets\FirewallAsset;
 use App\Models\Assets\SQLDatabaseAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -104,6 +105,16 @@ class TeamTest extends TestCase {
         $this->assertEquals($inv->team_id, $invReceived->team_id);
         $this->assertEquals($inv->asset_name, $invReceived->asset_name);
         $this->assertEquals(1, $invReceived->level);
+    }
+
+    public function testGetAssets() {
+        $team = Team::factory()->create();
+        Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'SQLDatabase']);
+        Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'Firewall']);
+        $assets = $team->assets();
+        $this->assertEquals(new SQLDatabaseAsset, $assets[0]);
+        $this->assertEquals(new FirewallAsset, $assets[1]);
+        $this->assertEquals(2, $assets->count());
     }
 
     public function testSellAsset() {
