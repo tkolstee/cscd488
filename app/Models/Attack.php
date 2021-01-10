@@ -38,6 +38,7 @@ class Attack extends Model
         $this->prereqs        = $this->_prereqs;
         $this->success        = null;
         $this->detected       = null;
+        $this->notified       = null;
         $this->energy_cost    = $this->_initial_energy_cost;
     }
 
@@ -71,6 +72,7 @@ class Attack extends Model
             $att->detection_risk = $attack->detection_risk;
             $att->success = $attack->success;
             $att->detected = $attack->detected;
+            $att->notified = $attack->notified;
             $att->possible = $attack->possible;
             $att->blueteam = $attack->blueteam;
             $att->redteam = $attack->redteam;
@@ -122,7 +124,7 @@ class Attack extends Model
         $attacks = Attack::all()->where('class_name','=',$attack->class_name)->
             where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam);
         foreach($attacks as $atk){
-            if($atk->success == null || $atk->detected == null){
+            if($atk->success == null || $atk->detected == null || $atk->notified == false){
                 $att = $atk;
             }
         }
@@ -135,6 +137,7 @@ class Attack extends Model
         $att->detection_risk = $attack->detection_risk;
         $att->success = $attack->success;
         $att->detected = $attack->detected;
+        $att->notified = $attack->notified;
         $att->energy_cost = $attack->energy_cost;
         $att->possible = $attack->possible;
         $att->blueteam = $attack->blueteam;
@@ -152,6 +155,15 @@ class Attack extends Model
         return Attack::all()->where('detected', '=', true);
     }
 
+    public static function getUnreadDetectedAttacks($blueID) {
+        return Attack::all()->where('detected', '=', true)->where('notified', '=', false)->where('blueteam', '=', $blueID);
+    }
+
+    public function setNotified($notifiedIn) {
+        $this->notified = $notifiedIn;
+        Attack::updateAttack($this);
+    }
+
     public function setSuccess($successIn) {
         $this->success = $successIn;
         Attack::updateAttack($this);
@@ -165,6 +177,7 @@ class Attack extends Model
         }
         else {
             $this->detected = true;
+            $this->notified = false;
         }
         Attack::updateAttack($this);
     }
