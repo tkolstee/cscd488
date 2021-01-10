@@ -23,5 +23,14 @@
             
         @endif
 
+        @if (!$unreadAttacks->isEmpty())
+            <p>Your team was attacked while you were away!</p>
+            @foreach ($unreadAttacks as $attack)
+                <p>{{$attack->name}} attack at {{$attack->created_at}}.</p>
+            @endforeach
+            <form  action="/blueteam/clearNotifs">
+                <button>Clear Attack Notifications</button>
+            </form>
+        @endif
     @endif
 @endsection
