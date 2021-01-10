@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Team;
+use App\Models\Attack;
 use App\Models\Asset;
 use App\Models\Game;
 use Tests\TestCase;
@@ -132,5 +133,40 @@ class BlueTeamFeatureTest extends TestCase
         ]);
         $response = $this->get('/blueteam/inventory');
         $response->assertSeeInOrder([$asset->name, "5"]);
+    }
+
+    public function testBlueTeamCanViewAttackNotifications()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+        ]);
+        $red = Team::factory()->red()->create();
+        $attack1 = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack1->detected = true;
+        $attack1->setNotified(false);
+        $attack2 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack2->detected = true;
+        $attack2->setNotified(false);
+
+        $response = $this->actingAs($user)->get('/blueteam/home');
+        $response->assertSeeInOrder([$attack1->name, $attack2->name]);
+    }
+
+    public function testBlueTeamCanClearAttackNotifications()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detected = true;
+        $attack1->setNotified(false);
+
+        $response = $this->actingAs($user)->get('/blueteam/clearNotifs');
+        $response->assertViewIs('blueteam.home');
+        $response->assertDontSee($attack1->name);
     }
 }
