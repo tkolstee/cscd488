@@ -11,6 +11,7 @@ class AttackController extends Controller
     public function page($page, Request $request) {
         switch($page){
             case 'sqlinjection': return $this->sqlInjection($request); break;
+            case 'synflood': return $this->synFlood($request); break;
             default: return (new RedTeamController)->home(); break;
         }
     }
@@ -25,6 +26,11 @@ class AttackController extends Controller
             $attMsg .= "false";
         }
         return (new RedTeamController)->home()->with(compact('attMsg'));
+    }
+
+    public function synFlood(request $request){
+        $attack = Attack::get($request->attackName, $request->red, $request->blue);
+        
     }
 
     public function sqlInjection(request $request){
