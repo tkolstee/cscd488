@@ -3,9 +3,12 @@
 @section('title', 'Red Team Store')
 
 @section('pagecontent')
+<h4>Red Team Store Page</h4>
     @if (empty($inventory))
         <form method="POST" action="/redteam/storeinventory">
+        
             @csrf
+            
             <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">
                     <button type="submit" class="btn btn-primary">
@@ -22,7 +25,7 @@
             @foreach ($inventory ?? [] as $inv)
                 <?php $asset = $assets->find($inv->asset_id); ?>
                 <input type="checkbox" name="results[]" id="{{ $asset->name }}" value="{{ $asset->name }}">
-                <label for="{{ $asset->name }}">{{ $asset->name }} Quantity: {{$inv->quantity }} 
+                <label  for="{{ $asset->name }}">{{ $asset->name }} Quantity: {{$inv->quantity }} 
                     Type: {{ $asset->type }} Purchase Cost: {{ $asset->purchase_cost }}  
                     Ownership Cost: {{ $asset->ownership_cost }}</label>
                 <br>
@@ -47,7 +50,7 @@
         @foreach ($assets as $asset)
 
         <input type="checkbox" name="results[]" id="{{ $asset->name }}" value="{{ $asset->name }}">
-        <label for="{{ $asset->name }}">{{ $asset->name }}  Type: {{ $asset->type }}  
+        <label class="redTeamRadio" for="{{ $asset->name }}">{{ $asset->name }}  Type: {{ $asset->type }}  
             Purchase Cost: {{ $asset->purchase_cost }}  Ownership Cost: {{ $asset->ownership_cost }}</label>
         <br>
     

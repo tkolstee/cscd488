@@ -3,6 +3,7 @@
 @section('title', 'Blue Team Store')
 
 @section('pagecontent')
+<h4>Blue Team Store Page</h4>
     @if (empty($inventory))
         <form class="storeForm" method="POST" action="/blueteam/storeinventory">
             @csrf

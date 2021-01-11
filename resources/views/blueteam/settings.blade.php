@@ -3,7 +3,7 @@
 @section('title', 'Blue Team Settings')
 
 @section('pagecontent')
-    <h3>Team Settings<br></h3>
+    <h3>Blue Team Settings<br></h3>
         <p class="userName">{{ $blueteam->name }}</p>
     <h3>Team Members:</h3>
     <p class="userName">Leader: {{ $leader->name }}</p><br>

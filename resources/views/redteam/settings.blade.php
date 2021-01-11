@@ -3,12 +3,12 @@
 @section('title', 'Red Team Settings')
 
 @section('pagecontent')
-    <h2>Team Settings<br>
-    {{ $redteam->name }}</h2>
-    <br>
-    <h2>User</h2>
-    <strong>{{ Auth::user()->username }}</strong>
-    <h2>Stats</h2>
+    <h3>Red Team Settings <br></h3>
+    <p class="userName">{{ $redteam->name }}</p>
+    
+    <h3>User:</h3>
+    <p class="userName">{{ Auth::user()->username }}</p>
+    <h3>Stats</h3>
     <strong>Balance: </strong>{{ $redteam->balance }}<br>
     <strong>Reputation: </strong>{{ $redteam->reputation }}<br><br>
     @if (!$changeName ?? false)
@@ -26,7 +26,7 @@
     @elseif ($changeName ?? false)
         <form method="POST" action="/redteam/changename">
         @csrf
-        <input id="name" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+        <input id="name2" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
             <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">
                     <button type="submit" name="changeNameSubmit" class="btn btn-primary">
@@ -53,10 +53,10 @@
         <form method="POST" action="/redteam/leaveteam">
         @csrf
             <input type="radio" name="result" id="leave" value="leave">
-            <label for="leave">Leave Team</label>
+            <label class="leaveAndStayOnTeam" for="leave">Leave Team</label>
             <br>
             <input type="radio" name="result" id="stay" value="stay">
-            <label for="stay">Stay on Team</label>
+            <label class="leaveAndStayOnTeam" for="stay">Stay on Team</label>
             <br>
             <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">

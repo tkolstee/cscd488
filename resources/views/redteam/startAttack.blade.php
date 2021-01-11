@@ -3,13 +3,13 @@
 @section('title', 'Red Team Home')
 
 @section('pagecontent')
-<h3>Select a blue team to attack:</h3>
+<h4>Select a blue team to attack:</h4>
 <form method="POST" action="/redteam/chooseattack">
     @csrf
     @foreach ($targets as $target)
 
     <input type="radio" name="result" id="{{ $target->name }}" value="{{ $target->name }}">
-    <label for="{{ $target->name }}">{{ $target->name }}</label>
+    <label class="chooseTeamRadioButtons" for="{{ $target->name }}">{{ $target->name }}</label>
     <br>
     
     @endforeach

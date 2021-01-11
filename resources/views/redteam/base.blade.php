@@ -1,10 +1,9 @@
 <style>
-.blueMiddleContainer{
-    background: url('../images/h3Background.jpg'), repeat;
+.redMiddleContainer{
+    background: url('../images/redGradiantContainer.jpg'), repeat;
 }
-.h2Container{
-    /*background: url('../images/h3Background.jpg'), no-repeat;*/
-}
+
+
 
 </style>
 
@@ -14,29 +13,50 @@
     <div class="redTeamContainer">
         <div class="redLogoContainer"> 
             <div class="redLogo">
-                 <img src="../images/blueTeamLogo1.jpg" alt="messages" >
+                 <img src="../images/redTeamLogo1.jpg" alt="messages" >
             </div><!--END redLogo-->
             <div class="h2Container">
                 <h2>Red Team Content</h2>
             </div><!--END h2Container-->
         </div><!--END redLogoContainer-->
-
-        
-        <table width="100%"><tr>
-            <td width="50%">
-                <img src="blah" alt="messages" height=20 width=20>
+        <div class="redTeamImage">
+                <!--
+                <img src="blah" alt="messages" height=50 width=50>
                 <img src="blah" alt="notifications" height=20 width=20>
-            </td>
-            @if ($redteam->name  ?? '' != "")
-                <td width="50%">
-                <strong>{{  $redteam->name ?? '' }} </strong>
-                    <br>Cash: {{ $redteam->balance ?? '' }}    Reputation: {{ $redteam->reputation ?? '' }}
-                    <br>Turn: {{ App\Models\Setting::get('turn') }}
-                </td>
-            @endif
-        </tr></table>
-        <br clear>
-        <div style="background-color: #F77; padding: 80px; align: center; vertical-align: center;">
+                -->
+        </div><!--END blueTeamImage-->
+        <div class="blueTeamRevenueStatus">
+        @if ($redteam->name  ?? '' != "")
+                <div class="statsContainer">
+                    <div class="statsNameRed">
+                        <div class="loggedIn">
+                            <p> Your team name is:</p> 
+                        </div>
+                    <div class="loggedInName"> 
+                        {{  $redteam->name ?? '' }}
+
+                    </div>
+                </div>
+                    <div class="statsRed">Revenue: {{ $redteam->balance ?? '' }}  |  Reputation: {{ $redteam->reputation ?? '' }}</div>
+                    <div class="statsRed">Turn: {{ App\Models\Game::turnNumber() }}</div>
+               
+                </div><!--END statsContainer-->
+         @else
+         <div class="statsContainer">
+                    <div class="statsNameRed"><div class="loggedIn"><p> You are logged in as:</p> </div><div class="loggedInName"> {{  $redteam->name ?? '' }}</div></div>
+                   
+                    <div class="statsRed">Revenue: {{ $redteam->balance ?? '' }}  |  Reputation: {{ $redteam->reputation ?? '' }}</div>
+                    <div class="statsRed">Turn: {{ App\Models\Game::turnNumber() }}</div>
+               
+                </div><!--END statsContainer-->
+         @endif
+
+        </div><!--END blueTeamRevenueStatus-->
+    
+           
+        
+      
+        <div class="redMiddleContainer">
             @yield('pagecontent')
         </div>
         <div class="redTeamMenuSelection">

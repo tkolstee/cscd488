@@ -3,5 +3,6 @@
 @section('title', 'Red Team Home')
 
 @section('pagecontent')
-    <p>This is the red team attacks page. Much Wow.</p>
+<h4>Red Team Attack Page</h4>
+    <p>Your on the red team attacks page. Much Wow.</p>
 @endsection

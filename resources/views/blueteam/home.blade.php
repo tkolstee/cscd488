@@ -5,6 +5,7 @@
 
 
 @section('pagecontent')
+<h4>Blue Team Home Page</h4>
 
     @if (Auth::user()->blueteam == "")
     <div class="createBlueTeam">
