@@ -57,7 +57,7 @@ class Attack extends Model
             $redteam->changeBalance($this->red_gain);
         }
         if ( $this->detected ) {
-            $redteam->changeReputation($this->reputation_loss);
+            $blueteam->changeReputation($this->reputation_loss);
         }
         $redteam->useEnergy($this->energy_cost);
     }
