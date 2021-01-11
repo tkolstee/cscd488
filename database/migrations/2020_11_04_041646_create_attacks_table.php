@@ -27,6 +27,9 @@ class CreateAttacksTable extends Migration
             $table->boolean('detected')->nullable();
             $table->boolean('notified')->nullable();
             $table->integer('energy_cost');
+            $table->integer('blue_loss');
+            $table->integer('red_gain');
+            $table->integer('reputation_loss');
             $table->timestamps();
         });
     }

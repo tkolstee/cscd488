@@ -26,6 +26,9 @@ class Attack extends Model
     public $_initial_difficulty = 3;
     public $_initial_detection_risk = 3;
     public $_initial_energy_cost = 100;
+    public $_initial_blue_loss = 0;
+    public $_initial_red_gain = 0;
+    public $_initial_reputation_loss = 0;
     public $possible = true;
     public $errormsg = "";
 
@@ -40,9 +43,24 @@ class Attack extends Model
         $this->detected       = null;
         $this->notified       = null;
         $this->energy_cost    = $this->_initial_energy_cost;
+        $this->blue_loss      = $this->_initial_blue_loss;
+        $this->red_gain       = $this->_initial_red_gain;
+        $this->reputation_loss= $this->_initial_reputation_loss;
     }
 
-    function onAttackComplete() { }
+    function onAttackComplete() { 
+        $blueteam = Team::find($this->blueteam);
+        $redteam  = Team::find($this->redteam);
+
+        if ( $this->success ) {
+            $blueteam->changeBalance($this->blue_loss);
+            $redteam->changeBalance($this->red_gain);
+        }
+        if ( $this->detected ) {
+            $redteam->changeReputation($this->reputation_loss);
+        }
+        $redteam->useEnergy($this->energy_cost);
+    }
 
     public static function getAll(){
         $dir = opendir(dirname(__FILE__)."/Attacks");
@@ -77,6 +95,9 @@ class Attack extends Model
             $att->blueteam = $attack->blueteam;
             $att->redteam = $attack->redteam;
             $att->errormsg = $attack->errormsg;
+            $att->blue_loss = $attack->blue_loss;
+            $att->red_gain = $attack->red_gain;
+            $att->reputation_loss = $attack->reputation_loss;
         }
         catch (Error $e) {
             throw new AttackNotFoundException();
@@ -116,6 +137,9 @@ class Attack extends Model
         $att->blueteam = $attack->blueteam;
         $att->redteam = $attack->redteam;
         $att->errormsg = $attack->errormsg;
+        $att->blue_loss = $attack->blue_loss;
+        $att->red_gain = $attack->red_gain;
+        $att->reputation_loss = $attack->reputation_loss;
         $att->save();
         return $attack;
     }
@@ -143,6 +167,9 @@ class Attack extends Model
         $att->blueteam = $attack->blueteam;
         $att->redteam = $attack->redteam;
         $att->errormsg = $attack->errormsg;
+        $att->blue_loss = $attack->blue_loss;
+        $att->red_gain = $attack->red_gain;
+        $att->reputation_loss = $attack->reputation_loss;
         $att->update();
         return $attack;
     }
