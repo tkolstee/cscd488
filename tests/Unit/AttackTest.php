@@ -87,6 +87,53 @@ class AttackTest extends TestCase {
         $this->assertEquals('SynFlood', $attacks[0]->class_name);
     }
 
+    public function testGetUnreadDetectedAttacks() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $this->assertEmpty(Attack::getUnreadDetectedAttacks($blue->id));
+
+        $attackNotNotified = Attack::create('SynFlood', $red->id, $blue->id);
+        $attackNotNotified->detected = true;
+        $attackNotNotified->notified = false;
+        Attack::updateAttack($attackNotNotified);
+        $attackNotified = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attackNotified->detected = true;
+        $attackNotified->notified = true;
+        Attack::updateAttack($attackNotified);
+
+        $attacks = Attack::getUnreadDetectedAttacks($blue->id);
+        $this->assertEquals(1, $attacks->count());
+        $this->assertEquals('SynFlood', $attacks[0]->class_name);
+    }
+
+    public function testGetUnreadDetectedGetsCorrectBlueTeam() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $blue2 = Team::factory()->create();
+
+        $correctAttack = Attack::create('SQLInjection', $red->id, $blue->id);
+        $correctAttack->detected = true;
+        $correctAttack->notified = false;
+        Attack::updateAttack($correctAttack);
+        $wrongAttack = Attack::create('SynFlood', $red->id, $blue2->id);
+        $wrongAttack->detected = true;
+        $wrongAttack->notified = false;
+
+        $attacks = Attack::getUnreadDetectedAttacks($blue->id);
+        $this->assertEquals(1, $attacks->count());
+        $this->assertEquals($correctAttack->class_name, $attacks[0]->class_name);
+    }
+
+    public function testSetNotified() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack = Attack::find(1);
+        $this->assertNull($attack->notified);
+        $attack->setNotified(true);
+        $this->assertTrue($attack->notified);
+    }
+
     public function testSetSuccess() {
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();

@@ -25,7 +25,11 @@ class CreateAttacksTable extends Migration
             $table->integer('detection_risk');    // 1 - 5. 1 is never detected, 5 is always detected
             $table->boolean('success')->nullable();
             $table->boolean('detected')->nullable();
+            $table->boolean('notified')->nullable();
             $table->integer('energy_cost');
+            $table->integer('blue_loss');
+            $table->integer('red_gain');
+            $table->integer('reputation_loss');
             $table->timestamps();
         });
     }
