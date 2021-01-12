@@ -42,6 +42,7 @@ class Attack extends Model
         $this->success        = null;
         $this->detected       = null;
         $this->notified       = null;
+        $this->isNews         = null;
         $this->energy_cost    = $this->_initial_energy_cost;
         $this->blue_loss      = $this->_initial_blue_loss;
         $this->red_gain       = $this->_initial_red_gain;
@@ -91,6 +92,7 @@ class Attack extends Model
             $att->success = $attack->success;
             $att->detected = $attack->detected;
             $att->notified = $attack->notified;
+            $att->isNews = $attack->isNews;
             $att->possible = $attack->possible;
             $att->blueteam = $attack->blueteam;
             $att->redteam = $attack->redteam;
@@ -132,6 +134,8 @@ class Attack extends Model
         $att->detection_risk = $attack->detection_risk;
         $att->success = $attack->success;
         $att->detected = $attack->detected;
+        $att->notified = $attack->notified;
+        $att->isNews = $attack->isNews;
         $att->energy_cost = $attack->energy_cost;
         $att->possible = $attack->possible;
         $att->blueteam = $attack->blueteam;
@@ -162,6 +166,7 @@ class Attack extends Model
         $att->success = $attack->success;
         $att->detected = $attack->detected;
         $att->notified = $attack->notified;
+        $att->isNews = $attack->isNews;
         $att->energy_cost = $attack->energy_cost;
         $att->possible = $attack->possible;
         $att->blueteam = $attack->blueteam;
@@ -184,6 +189,10 @@ class Attack extends Model
 
     public static function getDetectedAttacks() {
         return Attack::all()->where('detected', '=', true);
+    }
+
+    public static function getNews() {
+        return Attack::all()->where('isNews', '=', true);
     }
 
     public static function getUnreadDetectedAttacks($blueID) {
@@ -210,6 +219,11 @@ class Attack extends Model
             $this->detected = true;
             $this->notified = false;
         }
+        Attack::updateAttack($this);
+    }
+
+    public function setNews($newsIn) {
+        $this->isNews = $newsIn;
         Attack::updateAttack($this);
     }
 

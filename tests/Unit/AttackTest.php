@@ -101,6 +101,24 @@ class AttackTest extends TestCase {
         $this->assertEquals('SynFlood', $attacks[0]->class_name);
     }
 
+    public function testGetNews() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $this->assertEmpty(Attack::getNews());
+
+        $attackNews = Attack::create('SynFlood', $red->id, $blue->id);
+        $attackNews->isNews = true;
+        Attack::updateAttack($attackNews);
+        $attackNotNews = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attackNotNews->isNews = false;
+        Attack::updateAttack($attackNotNews);
+
+        $news = Attack::getNews();
+        $this->assertEquals(1, $news->count());
+        $this->assertEquals(true, $news[0]->isNews);
+        $this->assertEquals($attackNews->class_name, $news[0]->class_name);
+    }
+
     public function testGetUnreadDetectedAttacks() {
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
@@ -146,6 +164,15 @@ class AttackTest extends TestCase {
         $this->assertNull($attack->notified);
         $attack->setNotified(true);
         $this->assertTrue($attack->notified);
+    }
+
+    public function testSetNews() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
+        $this->assertNull($attack->isNews);
+        $attack->setNews(true);
+        $this->assertTrue($attack->isNews);
     }
 
     public function testSetSuccess() {
