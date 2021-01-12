@@ -81,24 +81,6 @@ class AttackTest extends TestCase {
         $prevAttacks = Attack::getBluePreviousAttacks($blue->id);
         $this->assertEquals(1, $prevAttacks->count());
         $this->assertEquals($attack1->class_name, $prevAttacks[0]->class_name);
-    }   
-
-    public function testGetDetectedAttacks() {
-        $red = Team::factory()->red()->create();
-        $blue = Team::factory()->create();
-        $this->assertEmpty(Attack::getDetectedAttacks());
-
-        $attackDetected = Attack::create('SynFlood', $red->id, $blue->id);
-        $attackDetected->detected = true;
-        Attack::updateAttack($attackDetected);
-        $attackNotDetected = Attack::create('SQLInjection', $red->id, $blue->id);
-        $attackNotDetected->detected = false;
-        Attack::updateAttack($attackDetected);
-        
-        $attacks = Attack::getDetectedAttacks();
-        $this->assertEquals(1, $attacks->count());
-        $this->assertEquals(true, $attacks[0]->detected);
-        $this->assertEquals('SynFlood', $attacks[0]->class_name);
     }
 
     public function testGetNews() {

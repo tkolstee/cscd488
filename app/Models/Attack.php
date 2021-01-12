@@ -184,11 +184,7 @@ class Attack extends Model
     }
 
     public static function getBluePreviousAttacks($blueId) {
-        return Attack::all()->where('blueteam', '=', $blueId);
-    }
-
-    public static function getDetectedAttacks() {
-        return Attack::all()->where('detected', '=', true);
+        return Attack::all()->where('blueteam', '=', $blueId)->where('detected', '=', true);
     }
 
     public static function getNews() {
