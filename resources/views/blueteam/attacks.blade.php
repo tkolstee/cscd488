@@ -20,6 +20,15 @@
                         <td>{{App\Models\Team::find($attack->redteam)->name}}</td>
                         <td>{{$attack->success ? 'true' : 'false'}}</td>
                         <td>{{$attack->created_at->diffForHumans()}}</td>
+                        @if (!$attack->isNews && $attack->created_at->diffInDays() <= 3)
+                            <td>
+                                <form action="/blueteam/broadcast" method="post">
+                                    @csrf
+                                    <input type="hidden" name="attID" value={{$attack->id}}>
+                                    <input type="submit" name="broadcast" value="Broadcast"/>
+                                </form>
+                            </td>
+                        @endif
                     </tr>
                 @endforeach
             </tbody>
