@@ -38,6 +38,7 @@ class BlueTeamController extends Controller {
             //logged in with blueteam options
             switch ($page) {
                 case 'home': return $this->home(); break;
+                case 'broadcast': return $this->broadcast($request); break;
                 case 'clearNotifs': return $this->clearNotifs(); break;
                 case 'news': return $this->news(); break;
                 case 'attacks': return $this->attacks(); break;
@@ -216,6 +217,14 @@ class BlueTeamController extends Controller {
         $turn = Auth::user()->getTurnTaken();
         $unreadAttacks = Attack::getUnreadDetectedAttacks($blueteam->id);
         return  view('blueteam.home')->with(compact('blueteam','leader','members', 'turn', 'unreadAttacks'));
+    }
+
+    public function broadcast(request $request) {
+        $attID = $request->attID;
+        $attack = Attack::find($attID);
+        $attack->setNews(true);
+        $attack->setNotified(true);
+        return $this->home();
     }
 
     public function clearNotifs() {

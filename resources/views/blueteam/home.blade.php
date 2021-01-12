@@ -27,7 +27,13 @@
             <p>Your team was attacked while you were away!</p>
             @foreach ($unreadAttacks as $attack)
                 <p>{{$attack->name}} attack {{$attack->created_at->diffForHumans()}}. 
-                    You lost ${{$attack->blue_loss*-1}} and {{$attack->reputation_loss*-1}} reputation</p>
+                    You lost ${{$attack->blue_loss*-1}} and {{$attack->reputation_loss*-1}} reputation
+                    <form action="/blueteam/broadcast" method="post">
+                        @csrf
+                        <input type="hidden" name="attID" value={{$attack->id}}>
+                        <input type="submit" name="broadcast" value="Broadcast"/>
+                    </form>
+                </p>
             @endforeach
             <form  action="/blueteam/clearNotifs">
                 <button>Clear Attack Notifications</button>

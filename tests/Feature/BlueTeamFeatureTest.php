@@ -169,4 +169,27 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertViewIs('blueteam.home');
         $response->assertDontSee($attack1->name);
     }
+
+    public function testBlueTeamCanBroadcastFromHomePage()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detected = true;
+        $attack1->setNotified(false);
+        $attack1 = Attack::find(1);
+
+        $response = $this->actingAs($user)->post('/blueteam/broadcast', [
+            'attID' => $attack1->id,
+        ]);
+        $response->assertViewIs('blueteam.home');
+        $response->assertDontSee($attack1->class_name);
+
+        $response = $this->actingAs($user)->get('/blueteam/news');
+        $response->assertSeeInOrder([$red->name, $blue->name]); //Check for 'redname attacked bluename' text basically. Change when we add more to news page?
+    }
 }
