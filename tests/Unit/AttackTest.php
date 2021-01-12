@@ -76,7 +76,11 @@ class AttackTest extends TestCase {
         $this->assertEmpty(Attack::getBluePreviousAttacks($blue->id));
 
         $attack1 =  Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detected = true;
+        Attack::updateAttack($attack1);
         $attack2 = Attack::create('SQLInjection', $red->id, $diffBlue->id);
+        $attack2->detected = true;
+        Attack::updateAttack($attack2);
 
         $prevAttacks = Attack::getBluePreviousAttacks($blue->id);
         $this->assertEquals(1, $prevAttacks->count());
