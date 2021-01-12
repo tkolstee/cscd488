@@ -47,11 +47,11 @@ class AttackTest extends TestCase {
         Attack::get('NotAnAttack', $red->id, $blue->id);
     }
 
-    public function testGetPreviousAttacks() {
+    public function testGetRedTeamPreviousAttacks() {
         $red = Team::factory()->red()->create();
         $diffRed = Team::factory()->red()->create();
         $blue = Team::factory()->create();
-        $this->assertEmpty(Attack::getPreviousAttacks($red));
+        $this->assertEmpty(Attack::getRedPreviousAttacks($red->id));
 
         Attack::create('SynFlood', $red->id, $blue->id);
         $attack1 = Attack::get('SynFlood', $red->id, $blue->id);
@@ -59,7 +59,7 @@ class AttackTest extends TestCase {
         $attack2 = Attack::get('SQLInjection', $red->id, $blue->id);
         Attack::create('SynFlood', $diffRed->id, $blue->id);
 
-        $prevAttacks = Attack::getPreviousAttacks($red->id);
+        $prevAttacks = Attack::getRedPreviousAttacks($red->id);
         $this->assertEquals(2, $prevAttacks->count());
         $prevAttack1 = $prevAttacks[0];
         $this->assertEquals($attack1->class_name, $prevAttack1->class_name);
@@ -68,6 +68,20 @@ class AttackTest extends TestCase {
         $this->assertEquals($attack2->class_name, $prevAttack2->class_name);
         $this->assertEquals($red->id, $prevAttack2->redteam);
     }
+
+    public function testGetBlueTeamPreviousAttacks() {
+        $red = Team::factory()->red()->create();
+        $diffBlue = Team::factory()->create();
+        $blue = Team::factory()->create();
+        $this->assertEmpty(Attack::getBluePreviousAttacks($blue->id));
+
+        $attack1 =  Attack::create('SynFlood', $red->id, $blue->id);
+        $attack2 = Attack::create('SQLInjection', $red->id, $diffBlue->id);
+
+        $prevAttacks = Attack::getBluePreviousAttacks($blue->id);
+        $this->assertEquals(1, $prevAttacks->count());
+        $this->assertEquals($attack1->class_name, $prevAttacks[0]->class_name);
+    }   
 
     public function testGetDetectedAttacks() {
         $red = Team::factory()->red()->create();

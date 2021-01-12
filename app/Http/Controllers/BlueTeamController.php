@@ -40,6 +40,7 @@ class BlueTeamController extends Controller {
                 case 'home': return $this->home(); break;
                 case 'clearNotifs': return $this->clearNotifs(); break;
                 case 'news': return $this->news(); break;
+                case 'attacks': return $this->attacks(); break;
                 case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
                 case 'status': return view('blueteam.status')->with('blueteam',$blueteam); break;
                 case 'store': return $this->store();
@@ -235,6 +236,12 @@ class BlueTeamController extends Controller {
         }
         $detectedAttacks = Attack::getDetectedAttacks()->paginate(5);
         return view('blueteam.news')->with(compact('blueteam', 'detectedAttacks'));
+    }
+
+    public function attacks() {
+        $blueteam = Auth::user()->getBlueTeam();
+        $previousAttacks = Attack::getBluePreviousAttacks($blueteam->id)->paginate(4);
+        return view('blueteam.attacks')->with(compact('blueteam', 'previousAttacks'));
     }
 
     public function upgrade(request $request){

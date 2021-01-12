@@ -174,8 +174,12 @@ class Attack extends Model
         return $attack;
     }
 
-    public static function getPreviousAttacks($redId) {
+    public static function getRedPreviousAttacks($redId) {
         return Attack::all()->where('redteam', '=', $redId);
+    }
+
+    public static function getBluePreviousAttacks($blueId) {
+        return Attack::all()->where('blueteam', '=', $blueId);
     }
 
     public static function getDetectedAttacks() {
