@@ -23,13 +23,13 @@
             <div class="header"> 
                 <div class="headerContainer">
                         <div class="logo">
-                            <a href="{{ url('http://localhost:8000/') }}"><img src="images/LOGOcscd488.png" class="img-fluid" alt="Responsive image"/></a>
+                            <a href="/home/home"><img src="/images/LOGOcscd488.png" class="img-fluid" alt="Responsive image"/></a>
                         </div><!-- end logo class-->
                         @if (Route::has('login'))
                         <div class=loginAndRegister>
                             <div class="login">
                                 @auth
-                                <a href="{{ url('/home') }}" class="text-sm text-gray-700 underline">Home</a>
+                                <a href="{{ url('/home/chooseteam') }}" class="text-sm text-gray-700 underline">Home</a>
                                  @else
                                 <a href="{{ route('login') }}"><input type="button" class="btn btn-primary" value="Login"></a>
                                 @if (Route::has('register'))
@@ -45,8 +45,8 @@
             <div class="navbar">
                 <div class="navbarSelection">
                     <ul>
-                        <li><a href="{{ url('http://localhost:8000/') }}">Home</a></li>
-                        <li><a href="about.php">About</a></li>
+                        <li><a href="/home/home">Home</a></li>
+                        <li><a href="/home/about">About</a></li>
                         <li><a href="gamePlay.php">Rules</a></li>
                         <li><a href="contact.php">Contact</a></li>
                     </ul>
@@ -54,7 +54,7 @@
             </div><!--End navbar class-->
             
             <div class="container_frontpage" >
-                <img src="images/FPslideshow_new1.jpg" />
+                <img src="/images/FPslideshow_new1.jpg" />
             </div><!--End container class-->
             
             <div class="footer">

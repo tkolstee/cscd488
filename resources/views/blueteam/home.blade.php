@@ -17,7 +17,7 @@
         <p class="userName">{{ $leader->name }}</p<br>
         
         @foreach ($members ?? [] as $member)
-        {{ $member->name }}<br>
+        {{ $member->username }}<br>
         @endforeach
         
         @if (($turn ?? 0) == 1)
@@ -27,5 +27,15 @@
             
         @endif
 
+        @if (!$unreadAttacks->isEmpty())
+            <p>Your team was attacked while you were away!</p>
+            @foreach ($unreadAttacks as $attack)
+                <p>{{$attack->name}} attack {{$attack->created_at->diffForHumans()}}. 
+                    You lost ${{$attack->blue_loss*-1}} and {{$attack->reputation_loss*-1}} reputation</p>
+            @endforeach
+            <form  action="/blueteam/clearNotifs">
+                <button>Clear Attack Notifications</button>
+            </form>
+        @endif
     @endif
 @endsection

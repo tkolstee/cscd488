@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Interfaces\AttackHandler;
 use Error;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
+use App\Models\Blueteam;
 
-class Team extends Model implements AttackHandler
+class Team extends Model
 {
     use HasFactory;
     /**
@@ -22,6 +22,7 @@ class Team extends Model implements AttackHandler
         'balance',
         'reputation',
         'blue',
+        'energy',
     ];
 
     public static function get($name){
@@ -54,6 +55,7 @@ class Team extends Model implements AttackHandler
             'balance' => 0,
             'reputation' => 0
         ]);
+        Blueteam::create($team->id);
         return $team;
     }
 
@@ -63,31 +65,8 @@ class Team extends Model implements AttackHandler
             'balance' => 0,
             'reputation' => 0
         ]);
+        Redteam::create($team->id);
         return $team;
-    }
-
-    public function onPreAttack($attackLog) {
-        if ($this->blue == 1){
-            $attackLog->blueteam_id = $this->id;
-        }
-        else if ($this->blue == 0){
-            $attackLog->redteam_id = $this->id;
-        }
-        //check all assets and call onPreAttack() if possible
-        $inventories = Inventory::all()->where('team_id','=', $this->id);
-        foreach($inventories as $inventory){
-            $asset = Asset::find($inventory->asset_id);
-            $class = "\\App\\Models\\Assets\\" . $asset->name . "Asset";
-            try {
-                $attackHandler = new $class();
-                $attackLog = $attackHandler->onPreAttack($attackLog);
-            }
-            catch (Error $e) {
-                //Caused by specific asset model class not existing. So onPreAttack() cannot be called
-                throw new AssetNotFoundException();
-            }
-        }
-        return $attackLog;
     }
 
     public function leader() {
@@ -98,40 +77,64 @@ class Team extends Model implements AttackHandler
         return User::all()->where('blueteam','=',$this->id)->where('leader','=',0);
     }
 
-    public function assets() {
-        return $this->belongstoManyThrough('App\Models\Asset', 'App\Models\Inventory');
-    }
-
     public function inventories() {
         return Inventory::all()->where('team_id', '=', $this->id);
         //return $this->hasMany('App\Models\Inventory');
     }
 
-    public function inventory($asset) {
-        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_id', '=', $asset->id)->first();
+    public function inventory($asset, $level) {
+        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->where('level', '=', $level)->first();
     }
 
-    public function sellAsset($asset) {
-        $inv = $this->inventory($asset);
+    public function assets() {
+        $inventories = Inventory::all()->where('team_id', '=', $this->id);
+        $assets_arr = [];
+        foreach ($inventories as $inventory){
+            $assets_arr[] = Asset::get($inventory->asset_name);
+        }
+        return collect($assets_arr);
+    }
+
+    public function changeBalance($balChange){
+        $this->balance += $balChange;
+        if ($this->balance < 0){
+            $this->balance = 0;
+        }
+        $this->update();
+    }
+
+    public function changeReputation($repChange){
+        $this->reputation += $repChange;
+        if ($this->reputation < 0){
+            $this->reputation = 0;
+        }
+        $this->update();
+    }
+
+    public function sellAsset($asset, $level) {
+        $inv = $this->inventory($asset, $level);
         if ($inv == null) { return false;}
-        elseif ($inv->quantity == 1){
+        //get last upgrade cost
+        $inv->level--;
+        $lastUpCost = $inv->getUpgradeCost();
+        $inv->level++;
+        if ($inv->quantity == 1){
             Inventory::destroy($inv->id);
         }
         else{
             $inv->quantity--;
             $inv->update();
         }
-        $this->balance += $asset->purchase_cost;
+        $this->balance += $asset->purchase_cost + $lastUpCost;
         return $this->update();
     }
 
     public function buyAsset($asset) {
         if ($asset->purchase_cost > $this->balance) { return false;}
-
-        $inv = $this->inventory($asset);
+        $inv = $this->inventory($asset, 1);
         if ($inv == null) {
             Inventory::create([
-                'asset_id' => $asset->id,
+                'asset_name' => $asset->class_name,
                 'team_id' => $this->id,
                 'quantity' => 1,
             ]);
@@ -158,7 +161,35 @@ class Team extends Model implements AttackHandler
             throw new TeamNotFoundException();
         }
         $blueteam = Blueteam::get($this->id);
-        return $blueteam->turn_taken;
+        $turn = $blueteam->turn_taken;
+        if($turn == null) $turn = 0;
+        return $turn;
+    }
+
+    public function getEnergy(){
+        if($this->blue == 1){
+            throw new TeamNotFoundException();
+        }
+        $redteam = Redteam::get($this->id);
+        $energy = $redteam->energy;
+        if($energy == null) $energy = 0;
+        return $energy;
+    }
+
+    public function setEnergy($energy){
+        if($this->blue == 1){
+            throw new TeamNotFoundException();
+        }
+        $redteam = Redteam::get($this->id);
+        $redteam->setEnergy($energy);
+    }
+
+    public function useEnergy($energyCost){
+        if($this->blue == 1){
+            throw new TeamNotFoundException();
+        }
+        $redteam = Redteam::get($this->id);
+        $redteam->useEnergy($energyCost);
     }
 
     public function setName($newName) {
@@ -168,6 +199,6 @@ class Team extends Model implements AttackHandler
             $this->name = $newName;
             return $this->update();
         }
-        throw new TeamNotFoundException();
+        return false;
     }
 }

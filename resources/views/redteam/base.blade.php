@@ -37,8 +37,8 @@
 
                     </div>
                 </div>
-                    <div class="statsRed">Revenue: {{ $redteam->balance ?? '' }}  |  Reputation: {{ $redteam->reputation ?? '' }}</div>
-                    <div class="statsRed">Turn: {{ App\Models\Game::turnNumber() }}</div>
+                    <div class="statsRed">Cash: {{ $redteam->balance ?? '' }}  |  Reputation: {{ $redteam->reputation ?? '' }}</div>
+                    <div class="statsRed">Energy: p{{ App\Models\Redteam::getEnergy($redteam->id) }}</div>
                
                 </div><!--END statsContainer-->
          @else
@@ -65,6 +65,7 @@
                 <li class="startTurn"><a href="/redteam/attacks">Attacks</a></li>
                 <li class="startTurn"><a href="/redteam/learn">Learn</a></li>
                 <li class="startTurn"><a href="/redteam/store">Store</a></li>
+                <li class="startTurn"><a href="/redteam/inventory">Inventory</a></li>
                 <li class="startTurn"><a href="/redteam/status">Status</a></li>
                 <li class="startTurn"><a href="/redteam/settings">Team Settings</a></li>
             </ul>

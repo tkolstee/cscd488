@@ -5,13 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Blueteam;
+use App\Http\Controllers\SetupController;
 
 class Game extends Model
 {
     use HasFactory;
 
     public static function get() {
-        return Game::all()->first();
+        $game = Game::all()->first();
+        if($game == null){
+            $controller = new SetupController();
+            $controller->prefill_settings();
+            $game = Game::all()->first();
+        }
+        return $game;
     }
 
     public static function turnNumber() {
@@ -25,8 +32,11 @@ class Game extends Model
         $game->save();
         $blueteams = Blueteam::all();
         foreach ($blueteams as $blueteam){
-            $blueteam->turn_taken = 0;
-            $blueteam->update();
+            $blueteam->setTurnTaken(0);
+        }
+        $redteams = Redteam::all();
+        foreach($redteams as $redteam){
+            $redteam->setEnergy(1000);
         }
     }
 }

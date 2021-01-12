@@ -3,18 +3,20 @@
 @section('title', 'Red Team Home')
 
 @section('pagecontent')
-    @if (!empty($attackLog))
-        <h2>{{ $redteam->name }} attacking {{ $blueteam->name }}</h2>
+    @if (!empty($attack))
+        <h2>{{ $redteam->name }} attacking {{ $blueteam->name }} with {{ $attack->name }}</h2>
         <h3>Press a correct button:</h3>
-        Each button has a {{ 5 - $attackLog->difficulty }}/5 chance.
+        Each button has a {{ 5 - $attack->difficulty }}/4 chance.
         <form method="POST" action="/redteam/minigamecomplete">
         @csrf
-            <input type="hidden" name="attackLogID" value="{{ $attackLog->id }}">
+            <input type="hidden" name="attackName" value="{{ $attack->class_name }}">
+            <input type="hidden" name="blue" value="{{ $attack->blueteam }}">
+            <input type="hidden" name="red" value="{{ $attack->redteam }}">
             @for ($i = 0; $i < 10; $i++)
                 <?php 
-                    $randInt = rand(0,5);
+                    $randInt = rand(1,4);
                     $val = 0;
-                    if($randInt > $attackLog->difficulty){
+                    if($randInt > $attack->difficulty - 1){
                         $val = 1;
                     }
                 ?>

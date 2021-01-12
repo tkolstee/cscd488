@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Exceptions\UserNotFoundException;
 
 class User extends Authenticatable
 {
@@ -46,6 +47,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public static function getByUsername($username){
+        $user = User::all()->where('username','=',$username)->first();
+        if($user == null){
+            throw new UserNotFoundException();
+        }
+        return $user;
+    }
+
     public function getBlueTeam() {
         $blueteam =  Team::find($this->blueteam);
         if ($blueteam == null){ throw new TeamNotFoundException();}
@@ -58,32 +67,55 @@ class User extends Authenticatable
         return $redteam;
     }
 
+    public function setEnergy($energy){
+        $team = $this->getRedTeam();
+        $team->setEnergy($energy);
+    }
+
+    public function getEnergy(){
+        $team = $this->getRedTeam();
+        $energy = $team->getEnergy();
+        return $energy;
+    }
+
     public function setTurnTaken($turn_taken){
         $team = $this->getBlueTeam();
         $team->setTurnTaken($turn_taken);
     }
 
     public function getTurnTaken(){
-        $team = getBlueTeam();
+        $team = $this->getBlueTeam();
         $turn_taken = $team->getTurnTaken();
+        if($turn_taken == null) $turn_taken = 0;
         return $turn_taken;
     }
 
     public function leaveBlueTeam() {
         $blueteam = $this->getBlueTeam();
-
         $this->blueteam = null;
+        $this->update();
         if ($this->leader == 1){
             $members = $blueteam->members();
             if($members->isEmpty()){
-                Team::destroy($this->blueteam);
+                Team::destroy($blueteam->id);
             }else{
                 $newLeader = $members->first();
                 $newLeader->leader = 1;
                 $newLeader->update();
             }
         }
-        return $this->update();
+    }
+
+    public function changeLeader($newUsername){
+        $blueteam = $this->getBlueTeam();
+        $newUser = $this->getByUsername($newUsername);
+        if($newUser->blueteam != $blueteam->id){
+            return false;
+        }
+        $newUser->leader = 1;
+        $newUser->update();
+        $this->leader = 0;
+        $this->update();
     }
 
     public function leaveRedTeam() {
@@ -110,13 +142,5 @@ class User extends Authenticatable
         $team = Team::createRedTeam($teamName);
         $this->redteam = $team->id;
         return $this->update();
-    }
-
-    public function deleteTeam($team) {
-        if ($team->blue == 1 && $this->leader == 1){
-            $this->leader = 0;
-            $this->update();
-        }
-        return Team::destroy($team->id);
     }
 }

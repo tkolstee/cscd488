@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAssetsTable extends Migration
+class CreateRedteamsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,10 @@ class CreateAssetsTable extends Migration
      */
     public function up()
     {
-        Schema::create('assets', function (Blueprint $table) {
+        Schema::create('redteams', function (Blueprint $table) {
             $table->id();
-            $table->text('name');
-            $table->integer('type');
-            $table->integer('blue');
-            $table->integer('buyable');
-            $table->integer('purchase_cost');
-            $table->integer('ownership_cost');
+            $table->foreignId('team_id')->constrained('teams')->onDelete('cascade');
+            $table->integer('energy')->default(1000);
             $table->timestamps();
         });
     }
@@ -32,6 +28,6 @@ class CreateAssetsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('assets');
+        Schema::dropIfExists('redteams');
     }
 }
