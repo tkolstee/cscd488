@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Attack;
 use App\Models\Team;
+use App\Exceptions\AttackNotFoundException;
 
 class AttackController extends Controller
 {
     public function page($page, Request $request) {
         switch($page){
             case 'sqlinjection': return $this->sqlInjection($request); break;
+            case 'synflood': return $this->synFlood($request); break;
             default: return (new RedTeamController)->home(); break;
         }
     }
@@ -27,8 +29,18 @@ class AttackController extends Controller
         return (new RedTeamController)->home()->with(compact('attMsg'));
     }
 
+    public function synFlood(request $request){
+        $attack = Attack::get($request->attackName, $request->red, $request->blue);
+        if($attack == null) throw new AttackNotFoundException();
+        if($request->result1 == 1 && $request->result2 == 1) $success = true;
+        else $success = false;
+        $attack->setSuccess($success);
+        return $this->attackComplete($attack);
+    }
+
     public function sqlInjection(request $request){
         $attack = Attack::get($request->attackName, $request->red, $request->blue);
+        if($attack == null) throw new AttackNotFoundException();
         $url = $request->url;
         $success = false;
         switch($attack->difficulty){
@@ -38,8 +50,7 @@ class AttackController extends Controller
             case 4: if($url == "' or 1=1--") $success = true; break;
             default: break;
         }
-        $attack->success = $success;
-        Attack::updateAttack($attack);
+        $attack->setSuccess($success);
         return $this->attackComplete($attack);
     }
     

@@ -2,9 +2,13 @@
 
 namespace Tests\Attacks\Unit;
 
+use Auth;
+use Illuminate\Http\Request;
 use App\Models\Assets\FirewallAsset;
 use App\Models\Attacks\SynFloodAttack;
+use App\Http\Controllers\AttackController;
 use App\Models\Team;
+use App\Models\User;
 use App\Models\Attack;
 use App\Models\Inventory;
 use Tests\TestCase;
@@ -14,7 +18,11 @@ class SynFloodAttackTest extends TestCase {
     use RefreshDatabase;
 
     public function createAttackAndTeams() {
+        $user = User::factory()->create();
+        $this->be($user);
         $red = Team::factory()->red()->create();
+        Auth::user()->redteam = $red->id;
+        Auth::user()->update();
         $blue = Team::factory()->create();
         $sqlAttack = new SynFloodAttack;
         return Attack::create($sqlAttack->class_name, $red->id, $blue->id);
@@ -36,4 +44,81 @@ class SynFloodAttackTest extends TestCase {
         $attack->onPreAttack();
         $this->assertEquals($expected, $attack);
     }
+
+    public function testSynFloodMinigameSuccess() {
+        $attack = $this->createAttackAndTeams();
+        $attack->onPreAttack();
+        $controller = new AttackController();
+        $request = Request::create('POST','attack/synflood',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'result1' => 1,
+            'result2' => 1,
+        ]);
+        $response = $controller->synFlood($request);
+        $this->assertEquals("Success: true", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(1, $attackAfter->success);
+    }
+
+    public function testSynFloodMinigameResult1Is0() {
+        $attack = $this->createAttackAndTeams();
+        $attack->onPreAttack();
+        $controller = new AttackController();
+        $request = Request::create('POST','attack/synflood',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'result1' => 0,
+            'result2' => 1,
+        ]);
+        $response = $controller->synFlood($request);
+        $this->assertEquals("Success: false", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(0, $attackAfter->success);
+    }
+
+    public function testSynFloodMinigameResult2Is0() {
+        $attack = $this->createAttackAndTeams();
+        $attack->onPreAttack();
+        $controller = new AttackController();
+        $request = Request::create('POST','attack/synflood',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'result1' => 1,
+            'result2' => 0,
+        ]);
+        $response = $controller->synFlood($request);
+        $this->assertEquals("Success: false", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(0, $attackAfter->success);
+    }
+
+    public function testSynFloodMinigameBothResults0() {
+        $attack = $this->createAttackAndTeams();
+        $attack->onPreAttack();
+        $controller = new AttackController();
+        $request = Request::create('POST','attack/synflood',[
+            'attackName' => $attack->class_name,
+            'red' => $attack->redteam,
+            'blue' => $attack->blueteam,
+            'result1' => 0,
+            'result2' => 0,
+        ]);
+        $response = $controller->synFlood($request);
+        $this->assertEquals("Success: false", $response->attMsg);
+        $attackAfter = Attack::find(1);
+        $this->assertEquals($attack->name, $attackAfter->name);
+        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals(0, $attackAfter->success);
+    }
+
 }
