@@ -38,12 +38,12 @@
                     </div>
                 </div>
                     <div class="statsRed">Cash: {{ $redteam->balance ?? '' }}  |  Reputation: {{ $redteam->reputation ?? '' }}</div>
-                    <div class="statsRed">Energy: p{{ App\Models\Redteam::getEnergy($redteam->id) }}</div>
+                    <div class="statsRed">Energy: {{ App\Models\Redteam::getEnergy($redteam->id) }}</div>
                
                 </div><!--END statsContainer-->
          @else
          <div class="statsContainer">
-                    <div class="statsNameRed"><div class="loggedIn"><p> You are logged in as:</p> </div><div class="loggedInName"> {{  $redteam->name ?? '' }}</div></div>
+                    <div class="statsNameRed"><div class="loggedIn"><p> Your team name is:</p> </div><div class="loggedInName"> {{  $redteam->name ?? '' }}</div></div>
                    
                     <div class="statsRed">Revenue: {{ $redteam->balance ?? '' }}  |  Reputation: {{ $redteam->reputation ?? '' }}</div>
                     <div class="statsRed">Turn: {{ App\Models\Game::turnNumber() }}</div>

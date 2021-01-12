@@ -106,6 +106,7 @@
                 <li class="startTurn"><a href="/blueteam/planning">Planning</a></li>
                 <li class="startTurn"><a href="/blueteam/status">Status</a></li>
                 <li class="startTurn"><a href="/blueteam/store">Store</a></li>
+                <li class="startTurn"><a href="/blueteam/inventory">Inventory</a></li>
                 <li class="startTurn"><a href="/blueteam/training">Training</a></li>
                 <li class="startTurn"><a href="/blueteam/settings">Team Settings</a></li>
                 @if ($blueteam ?? null != null)

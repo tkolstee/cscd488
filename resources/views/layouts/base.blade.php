@@ -24,6 +24,7 @@
                         <a href="{{ url('http://localhost:8000/') }}"><img src="../images/LOGOcscd488.png" class="img-fluid" alt="Responsive image"/></a>
                     </div><!-- end logo class-->
                     <div class=loginAndRegister>
+                    @if(Auth::check())
                         <div class="login">
                             <div class="lLogin" style="font-size:.85vw; ">
                                 <p id="loggedinas" >You are logged in as :</p>
@@ -44,13 +45,14 @@
                                 </div>
                             </div>                   
                         </div>
+                    @endif
                     </div>     
                 </div><!--end header-->
                 <div class="navbar">
                     <div class="navbarSelection">
                         <ul>
-                            <li><a href="{{ url('http://localhost:8000/') }}">Home</a></li>
-                            <li><a href="about.php">About</a></li>
+                            <li><a href="/home/home">Home</a></li>
+                            <li><a href="/home/about">About</a></li>
                             <li><a href="gamePlay.php">Rules</a></li>
                             <li><a href="contact.php">Contact</a></li>
                         </ul>
