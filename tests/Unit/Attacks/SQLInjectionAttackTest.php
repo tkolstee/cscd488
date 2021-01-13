@@ -74,7 +74,6 @@ class SQLInjectionAttackTest extends TestCase {
             'url' => "",
         ]);
         $response = $controller->sqlInjection($request);
-        $this->assertEquals("Success: true", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -94,7 +93,6 @@ class SQLInjectionAttackTest extends TestCase {
             'url' => "wrong",
         ]);
         $response = $controller->sqlInjection($request);
-        $this->assertEquals("Success: true", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -114,7 +112,6 @@ class SQLInjectionAttackTest extends TestCase {
             'url' => "'",
         ]);
         $response = $controller->sqlInjection($request);
-        $this->assertEquals("Success: true", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -134,7 +131,6 @@ class SQLInjectionAttackTest extends TestCase {
             'url' => "wrong",
         ]);
         $response = $controller->sqlInjection($request);
-        $this->assertEquals("Success: false", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -154,7 +150,6 @@ class SQLInjectionAttackTest extends TestCase {
             'url' => "'--",
         ]);
         $response = $controller->sqlInjection($request);
-        $this->assertEquals("Success: true", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -174,7 +169,6 @@ class SQLInjectionAttackTest extends TestCase {
             'url' => "wrong",
         ]);
         $response = $controller->sqlInjection($request);
-        $this->assertEquals("Success: false", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -194,7 +188,6 @@ class SQLInjectionAttackTest extends TestCase {
             'url' => "' or 1=1--",
         ]);
         $response = $controller->sqlInjection($request);
-        $this->assertEquals("Success: true", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -214,7 +207,6 @@ class SQLInjectionAttackTest extends TestCase {
             'url' => "wrong",
         ]);
         $response = $controller->sqlInjection($request);
-        $this->assertEquals("Success: false", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -234,7 +226,6 @@ class SQLInjectionAttackTest extends TestCase {
             'url' => "",
         ]);
         $response = $controller->sqlInjection($request);
-        $this->assertEquals("Success: false", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);

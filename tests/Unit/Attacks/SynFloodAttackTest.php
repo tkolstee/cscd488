@@ -57,8 +57,7 @@ class SynFloodAttackTest extends TestCase {
             'result2' => 1,
         ]);
         $response = $controller->synFlood($request);
-        $this->assertEquals("Success: true", $response->attMsg);
-        $attackAfter = Attack::find(1);
+        $attackAfter = Attack::find($attack->id);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
         $this->assertEquals(1, $attackAfter->success);
@@ -74,8 +73,7 @@ class SynFloodAttackTest extends TestCase {
             'result2' => 1,
         ]);
         $response = $controller->synFlood($request);
-        $this->assertEquals("Success: false", $response->attMsg);
-        $attackAfter = Attack::find(1);
+        $attackAfter = Attack::find($attack->id);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
         $this->assertEquals(0, $attackAfter->success);
@@ -91,8 +89,7 @@ class SynFloodAttackTest extends TestCase {
             'result2' => 0,
         ]);
         $response = $controller->synFlood($request);
-        $this->assertEquals("Success: false", $response->attMsg);
-        $attackAfter = Attack::find(1);
+        $attackAfter = Attack::find($attack->id);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
         $this->assertEquals(0, $attackAfter->success);
@@ -108,8 +105,7 @@ class SynFloodAttackTest extends TestCase {
             'result2' => 0,
         ]);
         $response = $controller->synFlood($request);
-        $this->assertEquals("Success: false", $response->attMsg);
-        $attackAfter = Attack::find(1);
+        $attackAfter = Attack::find($attack->id);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
         $this->assertEquals(0, $attackAfter->success);
