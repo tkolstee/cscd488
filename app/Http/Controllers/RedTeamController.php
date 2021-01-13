@@ -247,12 +247,18 @@ class RedTeamController extends Controller {
     }
 
     public function filter(request $request){
-        $tagFilter = $request->filter;
+        $assets = collect(Asset::getBuyableRed());
+        if (!empty($request->filter)) {
+            $tagFilter = $request->filter;
+            $assets = Asset::filterByTag($assets, $tagFilter);
+        }
+        if (!empty($request->sort)) {
+            $sort = $request->sort;
+            $assets = $assets->sortBy($sort);
+        }
         $redteam = Auth::user()->getRedTeam();
         $redAssets = Asset::getBuyableRed();
         $tags = Asset::getTags($redAssets);
-        $unfilteredAssets = collect($redAssets);
-        $assets = Asset::filterByTag($unfilteredAssets, $tagFilter);
         $ownedAssets = $redteam->assets();
         return view('redteam.store')->with(compact('redteam', 'assets', 'tags', 'ownedAssets'));
     }
