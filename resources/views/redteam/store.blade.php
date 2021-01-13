@@ -16,8 +16,8 @@
         Sort:
         <select name="sort">
             <option disabled selected value> -- select an option -- </option>
-            <option>name</option>
-            <option>purchase_cost</option>
+            <option value="name">Name</option>
+            <option value="purchase_cost">Purchase Cost</option>
         </select>
         <button type="submit" class="btn btn-primary">
             Submit
