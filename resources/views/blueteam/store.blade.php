@@ -7,15 +7,24 @@
     <form method="POST" action="/blueteam/filter">
         @csrf
         Tag Filter: 
-        <select name="filter" onchange="this.form.submit();">
+        <select name="filter">
             <option disabled selected value> -- select an option -- </option>
             @foreach ($tags as $tag)
                 <option>{{$tag}}</option>
             @endforeach
         </select>
+        Sort:
+        <select name="sort">
+            <option disabled selected value> -- select an option -- </option>
+            <option value="name">Name</option>
+            <option value="purchase_cost">Purchase Cost</option>
+        </select>
+        <button type="submit" class="btn btn-primary">
+            Submit
+        </button>
     </form>
     <form  action="/blueteam/store">
-        <button>Clear Filter</button>
+        <button>Clear Sort/Filter</button>
     </form>
     
     @if(count($assets ?? []) == 0)
