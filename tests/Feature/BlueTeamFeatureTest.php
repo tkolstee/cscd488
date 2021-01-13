@@ -257,4 +257,21 @@ class BlueTeamFeatureTest extends TestCase
         $response = $this->get('blueteam/attacks');
         $response->assertDontSee('Broadcast');
     }
+
+    public function testLeaderboardDisplaysInfo()
+    {
+        $blue1 = Team::factory()->create(['reputation' => 10000]);
+        $blue2 = Team::factory()->create(['reputation' => 500]);
+        $blue3 = Team::factory()->create(['reputation' => 100]);
+        $user = User::factory()->create([
+            'blueteam' => $blue1->id,
+            'leader' => 1,
+        ]);
+        $this->be($user);
+
+        $response = $this->get('blueteam/leaderboard');
+        $response->assertSeeInOrder([$blue1->name, $blue1->reputation, 
+                                    $blue2->name, $blue2->reputation,
+                                    $blue3->name, $blue3->reputation]);
+    }
 }

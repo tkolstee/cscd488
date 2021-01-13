@@ -71,6 +71,7 @@
             <a href="/blueteam/store"><button>Store</button></a>
             <a href="/blueteam/inventory"><button>Inventory</button></a>
             <a href="/blueteam/training"><button>Training</button></a>
+            <a href="/blueteam/leaderboard"><button>Leaderboard</button></a>
             <a href="/blueteam/settings"><button>Team Settings</button></a>            
             @if ($blueteam ?? null != null)
                 @if (($turn ?? 0) != 1)
