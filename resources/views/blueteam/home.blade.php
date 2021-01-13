@@ -24,7 +24,7 @@
         @endif
 
         @if (!$unreadAttacks->isEmpty())
-            <p>Your team was attacked while you were away!</p>
+            <h4>Your team was attacked while you were away!</h4>
             @foreach ($unreadAttacks as $attack)
                 <p>{{$attack->name}} attack {{$attack->created_at->diffForHumans()}}. 
                     You lost ${{$attack->blue_loss*-1}} and {{$attack->reputation_loss*-1}} reputation
@@ -35,7 +35,8 @@
                     </form>
                 </p>
             @endforeach
-            <form  action="/blueteam/clearNotifs">
+            <form  action="/blueteam/clearNotifs" method="post">
+                @csrf
                 <button>Clear Attack Notifications</button>
             </form>
         @endif
