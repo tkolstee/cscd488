@@ -243,13 +243,13 @@ class BlueTeamController extends Controller {
         catch (TeamNotFoundException $e) {
             return view('blueteam.home');
         }
-        $news = Attack::getNews()->paginate(5);
+        $news = Attack::getNews()->sortByDesc('created_at')->paginate(5);
         return view('blueteam.news')->with(compact('blueteam', 'news'));
     }
 
     public function attacks() {
         $blueteam = Auth::user()->getBlueTeam();
-        $previousAttacks = Attack::getBluePreviousAttacks($blueteam->id)->paginate(4);
+        $previousAttacks = Attack::getBluePreviousAttacks($blueteam->id)->sortByDesc('created_at')->paginate(4);
         return view('blueteam.attacks')->with(compact('blueteam', 'previousAttacks'));
     }
 
