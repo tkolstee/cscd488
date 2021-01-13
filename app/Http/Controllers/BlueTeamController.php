@@ -316,7 +316,12 @@ class BlueTeamController extends Controller {
     }
 
     public function filter(request $request){
-        $assets = collect(Asset::getBuyableBlue());
+        $blueAssets = Asset::getBuyableBlue();
+        $tags = Asset::getTags($blueAssets);
+        $assets = collect($blueAssets);
+        $blueteam = Auth::user()->getBlueTeam();
+        $ownedAssets = $blueteam->assets();
+
         if (!empty($request->filter)) {
             $tagFilter = $request->filter;
             $assets = Asset::filterByTag($assets, $tagFilter);
@@ -325,10 +330,6 @@ class BlueTeamController extends Controller {
             $sort = $request->sort;
             $assets = $assets->sortBy($sort);
         }
-        $blueteam = Auth::user()->getBlueTeam();
-        $blueAssets = Asset::getBuyableBlue();
-        $tags = Asset::getTags($blueAssets);
-        $ownedAssets = $blueteam->assets();
         return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags', 'ownedAssets'));
     }
 
