@@ -5,11 +5,13 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Models\Attack;
 use App\Models\Team;
+use App\Models\Inventory;
 use App\Exceptions\AttackNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use App\Models\Attacks\MalvertiseAttack;
 use App\Models\Attacks\SQLInjectionAttack;
 use App\Models\Attacks\SynFloodAttack;
+use App\Models\Assets\AccessTokenAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AttackTest extends TestCase {
@@ -270,5 +272,28 @@ class AttackTest extends TestCase {
         $this->assertEquals(1, $dbAttack->difficulty);
     }
 
-    
+    public function testInternalAttackNoToken(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack->tags = ['Internal'];
+        $attack = Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $this->assertFalse($attack->possible);
+        $this->assertFalse($attack->detected);
+        $this->assertEquals("No access token.", $attack->errormsg);
+    }
+
+    public function testInternalAttackWithToken(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $asset = new AccessTokenAsset();
+        $token = Inventory::factory()->create(['asset_name' => 'AccessToken', 'team_id' => $red->id, 'info' => $blue->name]);
+        $attack = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack->tags = ['Internal'];
+        $attack = Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $this->assertTrue($attack->possible);
+    }
+
 }

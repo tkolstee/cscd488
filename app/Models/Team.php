@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
+use App\Exceptions\InventoryNotFoundException;
 use App\Models\Blueteam;
 
 class Team extends Model
@@ -95,9 +96,43 @@ class Team extends Model
         return collect($assets_arr);
     }
 
-    public function accessTokens(){
+    public function addToken($info, $level){
+        if($this->blue == 1) throw new TeamNotFoundException();
+        $token = Inventory::all()->where('team_id', '=', $this->id)->where('asset_name','=',"AccessToken")->
+            where('info', '=', $info)->where('level','=',$level)->first();
+        if($token == null) {
+            $token = new Inventory();
+            $token->team_id = $this->id;
+            $token->asset_name = "AccessToken";
+            $token->level = $level;
+            $token->info = $info;
+            $token->save();
+        }
+        else{
+            $token->quantity++;
+            $token->update();
+        }
+    }
+
+    public function removeToken($info, $level){
+        if($this->blue == 1) throw new TeamNotFoundException();
+        $token = Inventory::all()->where('team_id', '=', $this->id)->where('asset_name','=',"AccessToken")->
+            where('info', '=', $info)->where('level','=',$level)->first();
+        if($token == null) throw new InventoryNotFoundException();
+        if($token->quantity == 1){
+           Inventory::destroy($token->id);
+        }else{
+            $token->quantity--;
+            $token->update();
+            return $token;
+        }
+        return null;
+    }
+
+    public function getTokens(){
         if($this->blue == 1) throw new TeamNotFoundException();
         $inventories = Inventory::all()->where('team_id', '=', $this->id)->where('asset_name','=',"AccessToken");
+        return $inventories;
     }
 
     public function changeBalance($balChange){

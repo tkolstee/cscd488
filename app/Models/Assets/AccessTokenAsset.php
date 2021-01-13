@@ -13,6 +13,8 @@ class AccessTokenAsset extends Asset
     public $_tags    = [];
     public $_blue = 0;
     public $_buyable = 0;
+    public $_purchase_cost = 0;
+    public $_ownership_cost = 0;
 
     public function onPreAttack($attack)
     {

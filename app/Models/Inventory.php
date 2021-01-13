@@ -27,7 +27,7 @@ class Inventory extends Model
     ];
 
     public function usedToken(){
-        if($this->asset_name != "AccessToken") throw new InventoryNotFoundException();
+        if($this->asset_name != "AccessToken" && $this->asset_name != "Insider") throw new InventoryNotFoundException();
         $rand = rand(1,4);
         if ($rand > 1){
             if($this->quantity == 1){

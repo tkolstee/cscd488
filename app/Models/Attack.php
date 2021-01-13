@@ -286,7 +286,7 @@ class Attack extends Model
         if ( in_array("Internal", $this->tags) ){
             $tokenOwned = false;
             if( in_array("AccessToken", $have) ){
-                $tokens = $redteam->accessTokens();
+                $tokens = $redteam->getTokens();
                 foreach( $tokens as $token){
                     if( $token->info == $blueteam->name && $token->level == 1){
                         $tokenOwned = true;
