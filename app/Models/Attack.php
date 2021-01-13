@@ -42,6 +42,7 @@ class Attack extends Model
         $this->success        = null;
         $this->detected       = null;
         $this->notified       = null;
+        $this->isNews         = null;
         $this->energy_cost    = $this->_initial_energy_cost;
         $this->blue_loss      = $this->_initial_blue_loss;
         $this->red_gain       = $this->_initial_red_gain;
@@ -91,6 +92,7 @@ class Attack extends Model
             $att->success = $attack->success;
             $att->detected = $attack->detected;
             $att->notified = $attack->notified;
+            $att->isNews = $attack->isNews;
             $att->possible = $attack->possible;
             $att->blueteam = $attack->blueteam;
             $att->redteam = $attack->redteam;
@@ -132,6 +134,8 @@ class Attack extends Model
         $att->detection_risk = $attack->detection_risk;
         $att->success = $attack->success;
         $att->detected = $attack->detected;
+        $att->notified = $attack->notified;
+        $att->isNews = $attack->isNews;
         $att->energy_cost = $attack->energy_cost;
         $att->possible = $attack->possible;
         $att->blueteam = $attack->blueteam;
@@ -148,7 +152,7 @@ class Attack extends Model
         $attacks = Attack::all()->where('class_name','=',$attack->class_name)->
             where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam);
         foreach($attacks as $atk){
-            if($atk->success == null || $atk->detected == null || $atk->notified == false){
+            if($atk->success == null || $atk->detected == null || $atk->notified == false || $atk->isNews == false){
                 $att = $atk;
             }
         }
@@ -162,6 +166,7 @@ class Attack extends Model
         $att->success = $attack->success;
         $att->detected = $attack->detected;
         $att->notified = $attack->notified;
+        $att->isNews = $attack->isNews;
         $att->energy_cost = $attack->energy_cost;
         $att->possible = $attack->possible;
         $att->blueteam = $attack->blueteam;
@@ -174,12 +179,16 @@ class Attack extends Model
         return $attack;
     }
 
-    public static function getPreviousAttacks($redId) {
+    public static function getRedPreviousAttacks($redId) {
         return Attack::all()->where('redteam', '=', $redId);
     }
 
-    public static function getDetectedAttacks() {
-        return Attack::all()->where('detected', '=', true);
+    public static function getBluePreviousAttacks($blueId) {
+        return Attack::all()->where('blueteam', '=', $blueId)->where('detected', '=', true);
+    }
+
+    public static function getNews() {
+        return Attack::all()->where('isNews', '=', true);
     }
 
     public static function getUnreadDetectedAttacks($blueID) {
@@ -206,6 +215,11 @@ class Attack extends Model
             $this->detected = true;
             $this->notified = false;
         }
+        Attack::updateAttack($this);
+    }
+
+    public function setNews($newsIn) {
+        $this->isNews = $newsIn;
         Attack::updateAttack($this);
     }
 

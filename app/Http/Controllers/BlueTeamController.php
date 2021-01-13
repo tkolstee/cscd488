@@ -38,8 +38,10 @@ class BlueTeamController extends Controller {
             //logged in with blueteam options
             switch ($page) {
                 case 'home': return $this->home(); break;
+                case 'broadcast': return $this->broadcast($request); break;
                 case 'clearNotifs': return $this->clearNotifs(); break;
                 case 'news': return $this->news(); break;
+                case 'attacks': return $this->attacks(); break;
                 case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
                 case 'status': return view('blueteam.status')->with('blueteam',$blueteam); break;
                 case 'store': return $this->store();
@@ -217,6 +219,14 @@ class BlueTeamController extends Controller {
         return  view('blueteam.home')->with(compact('blueteam','leader','members', 'turn', 'unreadAttacks'));
     }
 
+    public function broadcast(request $request) {
+        $attID = $request->attID;
+        $attack = Attack::find($attID);
+        $attack->setNews(true);
+        $attack->setNotified(true);
+        return $this->home();
+    }
+
     public function clearNotifs() {
         $blueteam = Auth::user()->getBlueTeam();
         $unreadAttacks = Attack::getUnreadDetectedAttacks($blueteam->id);
@@ -233,8 +243,14 @@ class BlueTeamController extends Controller {
         catch (TeamNotFoundException $e) {
             return view('blueteam.home');
         }
-        $detectedAttacks = Attack::getDetectedAttacks()->paginate(5);
-        return view('blueteam.news')->with(compact('blueteam', 'detectedAttacks'));
+        $news = Attack::getNews()->sortByDesc('created_at')->paginate(5);
+        return view('blueteam.news')->with(compact('blueteam', 'news'));
+    }
+
+    public function attacks() {
+        $blueteam = Auth::user()->getBlueTeam();
+        $previousAttacks = Attack::getBluePreviousAttacks($blueteam->id)->sortByDesc('created_at')->paginate(4);
+        return view('blueteam.attacks')->with(compact('blueteam', 'previousAttacks'));
     }
 
     public function upgrade(request $request){

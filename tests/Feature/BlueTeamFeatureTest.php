@@ -169,4 +169,92 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertViewIs('blueteam.home');
         $response->assertDontSee($attack1->name);
     }
+
+    public function testBlueTeamCanBroadcastAttacks()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detected = true;
+        $attack1->setNotified(false);
+        $attack1 = Attack::find(1);
+
+        $response = $this->actingAs($user)->post('/blueteam/broadcast', [
+            'attID' => $attack1->id,
+        ]);
+        $response->assertViewIs('blueteam.home');
+        $response->assertDontSee($attack1->class_name);
+
+        $response = $this->actingAs($user)->get('/blueteam/news');
+        $response->assertSeeInOrder([$red->name, $blue->name]); //Check for 'redname attacked bluename' text basically. Change when we add more to news page?
+    }
+
+    public function testBlueTeamCanSeeBroadcastButtonHomePage()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+        $this->be($user);
+
+        $response = $this->get('blueteam/home');
+        $response->assertDontSee('Broadcast');
+
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detected = true;
+        $attack1->setNotified(false);
+        $attack1 = Attack::find(1);
+
+        $response = $this->get('blueteam/home');
+        $response->assertSee('Broadcast');
+    }
+
+    public function testBlueTeamCanSeeBroadcastButtonAttacksPage()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+        $this->be($user);
+
+        $response = $this->get('blueteam/attacks');
+        $response->assertDontSee('Broadcast');
+
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detected = true;
+        $attack1->setNotified(true);
+        $attack1 = Attack::find(1);
+
+        $response = $this->get('blueteam/attacks');
+        $response->assertSee('Broadcast');
+    }
+
+    public function testBlueTeamCannotSeeBroadcastOldAttacks()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+        $this->be($user);
+
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detected = true;
+        $attack1->setNotified(true);
+        $attack1 = Attack::find(1);
+        $attack1->created_at = $attack1->created_at->subDays(4); //more than 3 days is 'old'
+        $attack1->update();
+        
+        $response = $this->get('blueteam/attacks');
+        $response->assertDontSee('Broadcast');
+    }
 }

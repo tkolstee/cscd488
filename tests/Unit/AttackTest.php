@@ -47,11 +47,11 @@ class AttackTest extends TestCase {
         Attack::get('NotAnAttack', $red->id, $blue->id);
     }
 
-    public function testGetPreviousAttacks() {
+    public function testGetRedTeamPreviousAttacks() {
         $red = Team::factory()->red()->create();
         $diffRed = Team::factory()->red()->create();
         $blue = Team::factory()->create();
-        $this->assertEmpty(Attack::getPreviousAttacks($red));
+        $this->assertEmpty(Attack::getRedPreviousAttacks($red->id));
 
         Attack::create('SynFlood', $red->id, $blue->id);
         $attack1 = Attack::get('SynFlood', $red->id, $blue->id);
@@ -59,7 +59,7 @@ class AttackTest extends TestCase {
         $attack2 = Attack::get('SQLInjection', $red->id, $blue->id);
         Attack::create('SynFlood', $diffRed->id, $blue->id);
 
-        $prevAttacks = Attack::getPreviousAttacks($red->id);
+        $prevAttacks = Attack::getRedPreviousAttacks($red->id);
         $this->assertEquals(2, $prevAttacks->count());
         $prevAttack1 = $prevAttacks[0];
         $this->assertEquals($attack1->class_name, $prevAttack1->class_name);
@@ -69,22 +69,40 @@ class AttackTest extends TestCase {
         $this->assertEquals($red->id, $prevAttack2->redteam);
     }
 
-    public function testGetDetectedAttacks() {
+    public function testGetBlueTeamPreviousAttacks() {
+        $red = Team::factory()->red()->create();
+        $diffBlue = Team::factory()->create();
+        $blue = Team::factory()->create();
+        $this->assertEmpty(Attack::getBluePreviousAttacks($blue->id));
+
+        $attack1 =  Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detected = true;
+        Attack::updateAttack($attack1);
+        $attack2 = Attack::create('SQLInjection', $red->id, $diffBlue->id);
+        $attack2->detected = true;
+        Attack::updateAttack($attack2);
+
+        $prevAttacks = Attack::getBluePreviousAttacks($blue->id);
+        $this->assertEquals(1, $prevAttacks->count());
+        $this->assertEquals($attack1->class_name, $prevAttacks[0]->class_name);
+    }
+
+    public function testGetNews() {
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
-        $this->assertEmpty(Attack::getDetectedAttacks());
+        $this->assertEmpty(Attack::getNews());
 
-        $attackDetected = Attack::create('SynFlood', $red->id, $blue->id);
-        $attackDetected->detected = true;
-        Attack::updateAttack($attackDetected);
-        $attackNotDetected = Attack::create('SQLInjection', $red->id, $blue->id);
-        $attackNotDetected->detected = false;
-        Attack::updateAttack($attackDetected);
-        
-        $attacks = Attack::getDetectedAttacks();
-        $this->assertEquals(1, $attacks->count());
-        $this->assertEquals(true, $attacks[0]->detected);
-        $this->assertEquals('SynFlood', $attacks[0]->class_name);
+        $attackNews = Attack::create('SynFlood', $red->id, $blue->id);
+        $attackNews->isNews = true;
+        Attack::updateAttack($attackNews);
+        $attackNotNews = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attackNotNews->isNews = false;
+        Attack::updateAttack($attackNotNews);
+
+        $news = Attack::getNews();
+        $this->assertEquals(1, $news->count());
+        $this->assertEquals(true, $news[0]->isNews);
+        $this->assertEquals($attackNews->class_name, $news[0]->class_name);
     }
 
     public function testGetUnreadDetectedAttacks() {
@@ -132,6 +150,15 @@ class AttackTest extends TestCase {
         $this->assertNull($attack->notified);
         $attack->setNotified(true);
         $this->assertTrue($attack->notified);
+    }
+
+    public function testSetNews() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
+        $this->assertNull($attack->isNews);
+        $attack->setNews(true);
+        $this->assertTrue($attack->isNews);
     }
 
     public function testSetSuccess() {
