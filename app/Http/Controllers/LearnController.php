@@ -17,23 +17,24 @@ class LearnController extends Controller
     }
 
     public function synFlood(request $request){
-        $step = $request->step;
-        if(empty($step)) $step = 1;
-        else $step += $request->progress;
-        if($step < 1) $step = 1;
-        if($step > 4) $step = 4;
+        $step = $this->getStep($request);
         $result = $request->result;
         return view('redteam.learn.synflood')->with(compact('step'));
     }
 
     public function sqlInjection(Request $request){
-        $step = $request->step;
-        if(empty($step)) $step = 1;
-        else $step += $request->progress;
-        if($step < 1) $step = 1;
-        if($step > 4) $step = 4;
+        $step = $this->getStep($request);
         $result = $request->result;
         return view('redteam.learn.sqlinjection')->with(compact('step'));
+    }
+
+    public static function getStep(request $request){
+        $step = $request->step;
+        if(empty($step)) $step = 1;
+        else $step += $request->stepChange;
+        if($step < 1) $step = 1;
+        if($step > 4) $step = 4;
+        return $step;
     }
 
     public function home(Request $request){

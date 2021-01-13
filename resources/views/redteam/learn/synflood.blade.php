@@ -3,19 +3,17 @@
 @section('title', 'Syn Flood Learning Page')
 
 @section('pagecontent')
+    <form method="POST" action="/learn/synflood">
+    @csrf
+    <input type="hidden" name="step" value="{{ $step }}">
     @if ($step != 1)
-        <form method="POST" action="/learn/synflood">
-        @csrf
-        <input type="hidden" name="progress" value="-1">
-        <input type="hidden" name="step" value="{{ $step }}">
         <div class="form-group row mb-0">
             <div class="col-md-8 offset-md-4">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" name="stepChange" value="-1">
                     Previous
                 </button>
             </div>
         </div>
-        </form>
     @endif
     @if ($step == 1)
         <h2>What is a SYN flood attack?</h2>
@@ -71,18 +69,13 @@
         little information about the TCP connection.</p>
     @endif
     @if ($step != 4)
-        <form method="POST" action="/learn/synflood">
-        @csrf
-        <input type="hidden" name="progress" value="1">
-        <input type="hidden" name="step" value="{{ $step }}">
         <div class="form-group row mb-0">
             <div class="col-md-8 offset-md-4">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" name="stepChange" value="1">
                     Next
                 </button>
             </div>
         </div>
-        </form>
     @endif
-
+    </form>
 @endsection
