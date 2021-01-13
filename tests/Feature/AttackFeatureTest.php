@@ -86,7 +86,7 @@ class AttackFeatureTest extends TestCase
             'blueteam' => $blueteam->name,
             'result' => "Syn Flood",
         ]);
-        $response->assertSee(["Press a correct button", $blueteam->name]);
+        $response->assertSee("Select a rate at which to send SYN packets");
     }
 
     public function testViewPreviousAttacksEmpty() {

@@ -57,7 +57,6 @@ class SynFloodAttackTest extends TestCase {
             'result2' => 1,
         ]);
         $response = $controller->synFlood($request);
-        $this->assertEquals("Success: true", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -74,7 +73,6 @@ class SynFloodAttackTest extends TestCase {
             'result2' => 1,
         ]);
         $response = $controller->synFlood($request);
-        $this->assertEquals("Success: false", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -91,7 +89,6 @@ class SynFloodAttackTest extends TestCase {
             'result2' => 0,
         ]);
         $response = $controller->synFlood($request);
-        $this->assertEquals("Success: false", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
@@ -108,7 +105,6 @@ class SynFloodAttackTest extends TestCase {
             'result2' => 0,
         ]);
         $response = $controller->synFlood($request);
-        $this->assertEquals("Success: false", $response->attMsg);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
         $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
