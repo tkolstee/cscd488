@@ -57,7 +57,8 @@ class SQLInjectionAttackTest extends TestCase {
         $expected->difficulty = 1;
         $attack->onPreAttack();
         $attack = Attack::get($attack->class_name, $attack->redteam, $attack->blueteam);
-        $this->assertEquals($expected, $attack);
+        $this->assertEquals($expected->possible, $attack->possible);
+        $this->assertEquals($expected->difficulty, $attack->difficulty);
     }
 
     public function testMinigameDifficultyOne(){
@@ -69,9 +70,7 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
         $request = Request::create('POST','attack/sqlinjection',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'url' => "",
         ]);
         $response = $controller->sqlInjection($request);
@@ -91,9 +90,7 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
         $request = Request::create('POST','attack/sqlinjection',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'url' => "wrong",
         ]);
         $response = $controller->sqlInjection($request);
@@ -113,9 +110,7 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
         $request = Request::create('POST','attack/sqlinjection',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'url' => "'",
         ]);
         $response = $controller->sqlInjection($request);
@@ -135,9 +130,7 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
         $request = Request::create('POST','attack/sqlinjection',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'url' => "wrong",
         ]);
         $response = $controller->sqlInjection($request);
@@ -157,9 +150,7 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
         $request = Request::create('POST','attack/sqlinjection',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'url' => "'--",
         ]);
         $response = $controller->sqlInjection($request);
@@ -179,9 +170,7 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
         $request = Request::create('POST','attack/sqlinjection',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'url' => "wrong",
         ]);
         $response = $controller->sqlInjection($request);
@@ -201,9 +190,7 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
         $request = Request::create('POST','attack/sqlinjection',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'url' => "' or 1=1--",
         ]);
         $response = $controller->sqlInjection($request);
@@ -223,9 +210,7 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
         $request = Request::create('POST','attack/sqlinjection',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'url' => "wrong",
         ]);
         $response = $controller->sqlInjection($request);
@@ -245,9 +230,7 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $sqldatabase->class_name]);
         $controller = new AttackController;
         $request = Request::create('POST','attack/sqlinjection',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'url' => "",
         ]);
         $response = $controller->sqlInjection($request);

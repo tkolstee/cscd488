@@ -145,6 +145,7 @@ class Attack extends Model
         $att->red_gain = $attack->red_gain;
         $att->reputation_loss = $attack->reputation_loss;
         $att->save();
+        $attack->id = $att->id;
         return $attack;
     }
 
@@ -176,6 +177,7 @@ class Attack extends Model
         $att->red_gain = $attack->red_gain;
         $att->reputation_loss = $attack->reputation_loss;
         $att->update();
+        $attack->id = $att->id;
         return $attack;
     }
 

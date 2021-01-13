@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Attack;
 use App\Models\Team;
 use App\Exceptions\AttackNotFoundException;
+use Exception;
 
 class AttackController extends Controller
 {
@@ -31,7 +32,7 @@ class AttackController extends Controller
 
     public function synFlood(request $request){
         $attack = Attack::find($request->attID);
-        if($attack == null) throw new AttackNotFoundException();
+        if($attack == null) throw new Exception($request->attID);//AttackNotFoundException();
         if($request->result1 == 1 && $request->result2 == 1) $success = true;
         else $success = false;
         $attack->setSuccess($success);

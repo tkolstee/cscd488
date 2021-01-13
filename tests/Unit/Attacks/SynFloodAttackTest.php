@@ -24,8 +24,10 @@ class SynFloodAttackTest extends TestCase {
         Auth::user()->redteam = $red->id;
         Auth::user()->update();
         $blue = Team::factory()->create();
-        $sqlAttack = new SynFloodAttack;
-        return Attack::create($sqlAttack->class_name, $red->id, $blue->id);
+        $synFloodAttack = new SynFloodAttack;
+        $attack = Attack::create($synFloodAttack->class_name, $red->id, $blue->id);
+        $attack = Attack::get($attack->class_name, $attack->redteam, $attack->blueteam);
+        return $attack;
     }
 
     public function testSynFloodNoAssets() {
@@ -50,9 +52,7 @@ class SynFloodAttackTest extends TestCase {
         $attack->onPreAttack();
         $controller = new AttackController();
         $request = Request::create('POST','attack/synflood',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'result1' => 1,
             'result2' => 1,
         ]);
@@ -69,9 +69,7 @@ class SynFloodAttackTest extends TestCase {
         $attack->onPreAttack();
         $controller = new AttackController();
         $request = Request::create('POST','attack/synflood',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'result1' => 0,
             'result2' => 1,
         ]);
@@ -88,9 +86,7 @@ class SynFloodAttackTest extends TestCase {
         $attack->onPreAttack();
         $controller = new AttackController();
         $request = Request::create('POST','attack/synflood',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'result1' => 1,
             'result2' => 0,
         ]);
@@ -107,9 +103,7 @@ class SynFloodAttackTest extends TestCase {
         $attack->onPreAttack();
         $controller = new AttackController();
         $request = Request::create('POST','attack/synflood',[
-            'attackName' => $attack->class_name,
-            'red' => $attack->redteam,
-            'blue' => $attack->blueteam,
+            'attID' => $attack->id,
             'result1' => 0,
             'result2' => 0,
         ]);
