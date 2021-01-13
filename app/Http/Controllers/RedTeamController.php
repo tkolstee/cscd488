@@ -32,6 +32,7 @@ class RedTeamController extends Controller {
         switch ($page) {
             case 'home': return $this->home(); break;
             case 'attacks': return $this->attacks(); break;
+            case 'learn': return (new LearnController)->page($page, $request); break;
             case 'store': return $this->store();break;
             case 'filter': return $this->filter($request);break;
             case 'status': return view('redteam.status')->with('redteam',$redteam); break;
