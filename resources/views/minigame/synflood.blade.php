@@ -8,9 +8,7 @@
 Difficulty: {{$attack->difficulty }}/5 <br>
 <form method="POST" action="/attack/synflood">
         @csrf
-            <input type="hidden" name="attackName" value="{{ $attack->class_name }}">
-            <input type="hidden" name="blue" value="{{ $attack->blueteam }}">
-            <input type="hidden" name="red" value="{{ $attack->redteam }}">
+            <input type="hidden" name="attID" value="{{ $attack->id }}">
             <?php function random($attack){
                 $randInt = rand(1,4);
                 $val = 0;

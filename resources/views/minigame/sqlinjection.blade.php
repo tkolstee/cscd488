@@ -23,9 +23,7 @@
         <label for="url" class="col-md-4 col-form-label text-md-right">
             http://{{ $blueteam->name }}.com/products?type=for_sale</label>
         <input type="text" id="url" name="url" >
-        <input type="hidden" name="attackName" value="{{ $attack->class_name }}">
-        <input type="hidden" name="red" value="{{ $redteam->id }}">
-        <input type="hidden" name="blue" value="{{ $blueteam->id }}">
+        <input type="hidden" name="attID" value="{{ $attack->id }}">
     </div>
 
     <div class="form-group row mb-0">

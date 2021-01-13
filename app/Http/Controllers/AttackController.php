@@ -30,7 +30,7 @@ class AttackController extends Controller
     }
 
     public function synFlood(request $request){
-        $attack = Attack::get($request->attackName, $request->red, $request->blue);
+        $attack = Attack::find($request->attID);
         if($attack == null) throw new AttackNotFoundException();
         if($request->result1 == 1 && $request->result2 == 1) $success = true;
         else $success = false;
@@ -39,7 +39,7 @@ class AttackController extends Controller
     }
 
     public function sqlInjection(request $request){
-        $attack = Attack::get($request->attackName, $request->red, $request->blue);
+        $attack = Attack::find($request->attID);
         if($attack == null) throw new AttackNotFoundException();
         $url = $request->url;
         $success = false;

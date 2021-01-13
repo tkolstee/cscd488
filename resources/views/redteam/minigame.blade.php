@@ -9,9 +9,7 @@
         Each button has a {{ 5 - $attack->difficulty }}/4 chance.
         <form method="POST" action="/redteam/minigamecomplete">
         @csrf
-            <input type="hidden" name="attackName" value="{{ $attack->class_name }}">
-            <input type="hidden" name="blue" value="{{ $attack->blueteam }}">
-            <input type="hidden" name="red" value="{{ $attack->redteam }}">
+            <input type="hidden" name="attID" value="{{ $attack->id }}">
             @for ($i = 0; $i < 10; $i++)
                 <?php 
                     $randInt = rand(1,4);

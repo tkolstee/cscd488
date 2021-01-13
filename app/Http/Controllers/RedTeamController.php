@@ -104,7 +104,7 @@ class RedTeamController extends Controller {
     }
 
     public function minigameComplete(request $request){
-        $attack = Attack::get($request->attackName, $request->red, $request->blue);
+        $attack = Attack::find($request->attID);
         if($attack == null){
             throw new AttackNotFoundException();
         }
