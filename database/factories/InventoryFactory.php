@@ -25,6 +25,8 @@ class InventoryFactory extends Factory
            'quantity' => 1,
            'team_id' => 1,
            'asset_name' => "Firewall",
+           'level' => 1,
+           'info' => null,
        ];
    }
    /**

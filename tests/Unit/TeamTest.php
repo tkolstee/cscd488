@@ -9,6 +9,7 @@ use App\Models\Inventory;
 use App\Exceptions\TeamNotFoundException;
 use App\Models\Assets\FirewallAsset;
 use App\Models\Assets\SQLDatabaseAsset;
+use App\Models\Assets\AccessTokenAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TeamTest extends TestCase {
@@ -161,4 +162,47 @@ class TeamTest extends TestCase {
         $this->assertFalse($team1->setName($team2->name));
         $this->assertNotEquals($team1->name, $team2->name);
     }
+
+    public function testGetAccessTokens(){
+        $team = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $asset = new AccessTokenAsset();
+        $token = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => $asset->class_name, 'info' => $blue->name]);
+        $getTokens = $team->getTokens();
+        $this->assertEquals("AccessToken", $getTokens->first()->asset_name);
+        $this->assertEquals(1, count($getTokens));
+    }
+
+    public function testAddAccessToken(){
+        $team = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $team->addToken($blue->name, 1);
+        $token = Inventory::all()->where('team_id', '=', $team->id)->where('asset_name', '=', 'AccessToken')->
+            where('info', '=', $blue->name)->first();
+        $this->assertNotNull($token);
+        $this->assertEquals(1, $token->level);
+        $this->assertEquals($blue->name, $token->info);
+        $this->assertEquals(1, $token->quantity);
+    }
+
+    public function testRemoveAccessTokenQuantity1(){
+        $team = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $token = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'AccessToken', 'info' => $blue->name]);
+        $team->removeToken($blue->name, 1);
+        $tokenAfter = Inventory::all()->where('team_id', '=', $team->id)->where('asset_name', '=', 'AccessToken')->
+            where('info', '=', $blue->name)->first();
+        $this->assertNull($tokenAfter);
+    }
+
+    public function testRemoveAccessTokenQuantityMany(){
+        $team = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $token = Inventory::factory()->many()->create(['team_id' => $team->id, 'asset_name' => 'AccessToken', 'info' => $blue->name]);
+        $team->removeToken($blue->name, 1);
+        $tokenAfter = Inventory::all()->where('team_id', '=', $team->id)->where('asset_name', '=', 'AccessToken')->
+            where('info', '=', $blue->name)->first();
+        $this->assertEquals($token->quantity - 1, $tokenAfter->quantity);
+    }
+
 }

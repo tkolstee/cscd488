@@ -15,10 +15,11 @@ class CreateInventoriesTable extends Migration
     {
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
-            $table->integer('quantity');
+            $table->integer('quantity')->default(1);
             $table->foreignId('team_id')->constrained('teams')->onDelete('cascade');
             $table->text('asset_name');
             $table->integer('level')->default(1);
+            $table->text('info')->nullable();
             $table->timestamps();
         });
     }
