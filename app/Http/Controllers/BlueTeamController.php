@@ -51,6 +51,7 @@ class BlueTeamController extends Controller {
                 case 'inventory': return $this->inventory(); break;
                 case 'upgrade': return $this->upgrade($request);break;
                 case 'sell': return $this->sell($request); break;
+                case 'leaderboard': return $this->leaderboard(); break;
                 case 'endturn': return $this->endTurn(); break;
                 case 'cancel': return $this->cancel($request); break;
                 
@@ -324,6 +325,12 @@ class BlueTeamController extends Controller {
         $assets = Asset::filterByTag($unfilteredAssets, $tagFilter);
         $ownedAssets = $blueteam->assets();
         return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags', 'ownedAssets'));
+    }
+
+    public function leaderboard() {
+        $blueteam = Auth::user()->getBlueTeam();
+        $teams = Team::getBlueTeams()->sortByDesc('reputation');
+        return view('blueteam.leaderboard')->with(compact('blueteam', 'teams'));
     }
 
     public function joinMembers(request $request){
