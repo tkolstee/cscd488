@@ -1,6 +1,6 @@
 @extends('redteam.base')
 
-@section('title', 'Red Team Home')
+@section('title', 'SQL Injection Learning Page')
 
 @section('pagecontent')
     @if ($step != 1)
