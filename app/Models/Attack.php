@@ -59,6 +59,14 @@ class Attack extends Model
         }
         if ( $this->detected ) {
             $blueteam->changeReputation($this->reputation_loss);
+            if( in_array("Internal", $this->tags)){
+                $tokens = $redteam->getTokens();
+                foreach($tokens as $token){
+                    if($token->info == $blueteam->name && $token->level == 1){
+                        $token->usedToken();
+                    }
+                }
+            }
         }
         $redteam->useEnergy($this->energy_cost);
     }
@@ -274,6 +282,22 @@ class Attack extends Model
             $this->possible = false;
             $this->detected = false;
             $this->errormsg = "Not enough energy available.";
+        }
+        if ( in_array("Internal", $this->tags) ){
+            $tokenOwned = false;
+            if( in_array("AccessToken", $have) ){
+                $tokens = $redteam->accessTokens();
+                foreach( $tokens as $token){
+                    if( $token->info == $blueteam->name && $token->level == 1){
+                        $tokenOwned = true;
+                    }
+                }
+            }
+            if( !$tokenOwned ){
+                $this->possible = false;
+                $this->detected = false;
+                $this->errormsg = "No access token.";
+            }
         }
         Attack::updateAttack($this);
         return $this;

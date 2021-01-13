@@ -95,6 +95,11 @@ class Team extends Model
         return collect($assets_arr);
     }
 
+    public function accessTokens(){
+        if($this->blue == 1) throw new TeamNotFoundException();
+        $inventories = Inventory::all()->where('team_id', '=', $this->id)->where('asset_name','=',"AccessToken");
+    }
+
     public function changeBalance($balChange){
         $this->balance += $balChange;
         if ($this->balance < 0){

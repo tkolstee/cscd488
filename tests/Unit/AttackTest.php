@@ -269,4 +269,6 @@ class AttackTest extends TestCase {
         $dbAttack = Attack::find(1);
         $this->assertEquals(1, $dbAttack->difficulty);
     }
+
+    
 }

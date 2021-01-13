@@ -23,7 +23,21 @@ class Inventory extends Model
         'team_id',
         'asset_name',
         'level',
+        'info',
     ];
+
+    public function usedToken(){
+        if($this->asset_name != "AccessToken") throw new InventoryNotFoundException();
+        $rand = rand(1,4);
+        if ($rand > 1){
+            if($this->quantity == 1){
+                $this->destroy($this->id);
+            }else{
+                $this->quantity--;
+                $this->update();
+            }
+        }
+    }
 
     public function getUpgradeCost(){
         $asset = Asset::get($this->asset_name);
