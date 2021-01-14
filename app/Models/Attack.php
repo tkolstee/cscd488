@@ -55,10 +55,10 @@ class Attack extends Model
 
         if ( $this->success ) {
             $blueteam->changeBalance($this->blue_loss);
+            $blueteam->changeReputation($this->reputation_loss);
             $redteam->changeBalance($this->red_gain);
         }
         if ( $this->detected ) {
-            $blueteam->changeReputation($this->reputation_loss);
             if( in_array("Internal", $this->tags)){
                 $tokens = $redteam->getTokens();
                 foreach($tokens as $token){
