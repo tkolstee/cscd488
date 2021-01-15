@@ -741,3 +741,14 @@ h2{
   border-bottom: 2px solid #00CC99;
   border-top: 2px solid #00CC99;
 }
+.joinTd{
+    width:10%;
+    text-align: left;
+}
+#joinTdButton{
+    width:10%;
+}
+#joinTable{
+    width: 61%;
+    margin-left:31%;
+}

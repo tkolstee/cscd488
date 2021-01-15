@@ -10,11 +10,11 @@
     @else
         <form class="blueTeamJoinForm" method="POST" action="/blueteam/join">
         @csrf
-        <table>
+        <table id="joinTable">
             @foreach ($blueteams as $blueteam)
-            <tr>
-            <td><input type="radio" name="result" id="{{ $blueteam->name }}" value="{{ $blueteam->name }}"></td>
-            <td><label class="chooseTeamRadioButtons for="{{ $blueteam->name }}">{{ $blueteam->name }}</label></td>
+            <tr >
+            <td id="joinTdButton"><input type="radio" name="result" id="{{ $blueteam->name }}" value="{{ $blueteam->name }}"></td>
+            <td class="joinTd"><label class="chooseTeamRadioButtons for="{{ $blueteam->name }}">{{ $blueteam->name }}</label></td>
             @if(($viewMembers ?? null) != $blueteam->name)
                 <td><button type="submit" formaction="/blueteam/joinmembers" 
                                 class="btn btn-primary" 
