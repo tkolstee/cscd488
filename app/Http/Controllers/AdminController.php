@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Game;
+use App\Models\User;
 use Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 
 class AdminController extends Controller {
@@ -36,13 +37,25 @@ class AdminController extends Controller {
     }
 
     public function userSignUp(request $request) {
-        Validator::make($request->all(), [
+        if (empty($request->name)) {
+            return view('admin.userSignUp');
+        }
+        
+        $this->validate($request, [
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:users'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
-        return view('admin.userSignUp');
+        User::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request['password']),
+            'is_admin' => 0
+        ]);
+        $message = "User created successfully!";
+        return view('admin.userSignUp')->with(compact('message'));
     }
 }
 
