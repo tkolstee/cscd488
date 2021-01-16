@@ -1,11 +1,11 @@
 @extends('admin.base')
-@section('title', 'admin user signup page')
+@section('title', 'Player Registration Page')
 @section('content')
     @if (!empty($message))
         <p>{{$message}}</p>
     @endif
     <p>Enter new user credentials</p>
-    <form method="POST" action="/admin/userSignUp">
+    <form method="POST" action="/admin/playerRegistration">
         @csrf
         <div class="form-group row">
             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>

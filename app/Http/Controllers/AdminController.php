@@ -17,7 +17,7 @@ class AdminController extends Controller {
                 default:
                     return view('admin.home');
                     break;
-                case 'userSignUp': return $this->userSignUp($request); break;
+                case 'playerRegistration': return $this->playerRegistration($request); break;
             }
         }
         else {
@@ -36,9 +36,9 @@ class AdminController extends Controller {
         }
     }
 
-    public function userSignUp(request $request) {
+    public function playerRegistration(request $request) {
         if (empty($request->name)) {
-            return view('admin.userSignUp');
+            return view('admin.playerRegistration');
         }
         
         $this->validate($request, [
@@ -55,7 +55,7 @@ class AdminController extends Controller {
             'is_admin' => 0
         ]);
         $message = "User created successfully!";
-        return view('admin.userSignUp')->with(compact('message'));
+        return view('admin.playerRegistration')->with(compact('message'));
     }
 }
 
