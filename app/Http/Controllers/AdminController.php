@@ -12,16 +12,11 @@ class AdminController extends Controller {
 
     public function page(Request $request, $page) {
         $this->process_form_data($request);
-        if (Auth::user()->isAdmin()) {
-            switch ($page) {
-                default:
-                    return view('admin.home');
-                    break;
-                case 'playerRegistration': return $this->playerRegistration($request); break;
-            }
-        }
-        else {
-            abort(404);
+        switch ($page) {
+            default:
+                return view('admin.home');
+                break;
+            case 'playerRegistration': return $this->playerRegistration($request); break;
         }
     }
 

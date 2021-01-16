@@ -37,6 +37,15 @@ class AdminFeatureTest extends TestCase
         $response->assertDontSee('Admin Home');
     }
 
+    public function testAdminCannotVisitTeamPages() {
+        $admin = User::factory()->admin()->create();
+        $this->be($admin);
+        $response = $this->get('/blueteam/home');
+        $response->assertStatus(404);
+        $response = $this->get('/redteam/home');
+        $response->assertStatus(404);
+    }
+
     public function testAdminCanSignUpUsers() {
         $admin = User::factory()->admin()->create();
         $this->be($admin);

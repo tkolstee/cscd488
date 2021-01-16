@@ -25,22 +25,24 @@ Auth::routes();
 
 Route::group(['middleware' => ['auth']], function() {
 
-    Route::any('/blueteam/{page}', [App\Http\Controllers\BlueTeamController::class, 'page'])->name('blueteam');
+    Route::group(['middleware' => ['admin']], function() {
 
-    Route::any('/redteam/{page}', [App\Http\Controllers\RedTeamController::class, 'page'])->name('redteam');
+        Route::any('admin/{page}', [App\Http\Controllers\AdminController::class, 'page'])->name('admin');
+    });
 
-    Route::any('/attack/{page}', [App\Http\Controllers\AttackController::class, 'page'])->name('attack');
+    Route::group(['middleware' => ['not.admin']], function() {
 
-    Route::any('/learn/{page}', [App\Http\Controllers\LearnController::class, 'page'])->name('learn');
+        Route::any('/blueteam/{page}', [App\Http\Controllers\BlueTeamController::class, 'page'])->name('blueteam');
 
-   
+        Route::any('/redteam/{page}', [App\Http\Controllers\RedTeamController::class, 'page'])->name('redteam');
+    
+        Route::any('/attack/{page}', [App\Http\Controllers\AttackController::class, 'page'])->name('attack');
+    
+        Route::any('/learn/{page}', [App\Http\Controllers\LearnController::class, 'page'])->name('learn');
+    });
 });
-
-
 
 //TestFill Assets
 Route::any('/asset/prefillTest', [App\Http\Controllers\AssetController::class, 'prefillTest'])->name('prefillAssets');
-
-Route::any('/admin/{page}', [App\Http\Controllers\AdminController::class, 'page'])->name('admin');
 
 Route::any('/setup', [App\Http\Controllers\SetupController::class, 'page'])->name('setup');
