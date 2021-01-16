@@ -73,7 +73,7 @@
     @endif
     @if (!$leaveTeam ?? false)
 
-        <form method="POST" action="/blueteam/settings">
+        <form class="blueSettingForm"method="POST" action="/blueteam/settings">
         @csrf
             <input type="hidden" name="leaveTeamBtn" value="1">
             <div class="form-group row mb-0">

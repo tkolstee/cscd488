@@ -3,7 +3,9 @@
 @section('title', 'Blue Team Inventory')
 
 @section('pagecontent')
+<h4>Blue Team Inventory Store</h4>
     @if($inventory->isEmpty())
+
         <p>You have no assets.</p>
     @else
         <form method="POST" action="/blueteam/sell">

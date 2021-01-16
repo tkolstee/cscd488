@@ -4,7 +4,7 @@
 
 @section('pagecontent')
 
-<h3>Create New Blue Team</h3>
+<h3 id="h3BlueCreate">Create New Blue Team</h3>
 <form method="POST" action="/blueteam/create">
 
     @csrf

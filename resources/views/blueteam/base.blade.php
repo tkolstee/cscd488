@@ -57,18 +57,18 @@
         <div class="blueMiddleContainer" >   
             @yield('pagecontent')
             @if (!empty(session('buyCart')))
-                <p>Shopping Cart: </p>
+                <h3 class="shoppingCart">Shopping Cart: </h3>
                 <?php $cart = session('buyCart'); ?>
-                <table>
-                <tbody>
+                <table class="storeFormCancel">
+                <tbody >
                 @foreach ($cart as $item)
                 <tr>
                     <td>{{ $item }} </td>
-                   <form method="POST" action="/blueteam/cancel">
+                   <form  method="POST" action="/blueteam/cancel">
                         @csrf
                         <input type="hidden" name="cart" value="buy">
                         <td><button type="submit" formaction="/blueteam/cancel" 
-                            class="btn btn-primary" 
+                            class="btn btn-primary4" 
                             name="{{"cancel[" . $item . "]"}}">
                             Cancel</button></td>
                     </form>
@@ -85,10 +85,10 @@
                 @foreach ($cart as $item)
                 <tr>
                     <td>{{ $item }} </td> 
-                    <form method="POST" action="/blueteam/cancel">
+                    <form  method="POST" action="/blueteam/cancel">
                         @csrf
                         <input type="hidden" name="cart" value="sell">
-                        <td><button type="submit" formaction="/blueteam/cancel" 
+                        <td > <button  type="submit" formaction="/blueteam/cancel" 
                             class="btn btn-primary" 
                             name="{{"cancel[" . $item . "]"}}">
                             Cancel</button></td>

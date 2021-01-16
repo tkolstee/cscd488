@@ -4,9 +4,9 @@
 
 @section('pagecontent')
     <h4>Blue Team Store</h4>
-    <form method="POST" action="/blueteam/filter">
+    <form class="blueStoreForm" method="POST" action="/blueteam/filter">
         @csrf
-        Tag Filter: 
+        <p id="tagFilter">Tag Filter: </p>
         <select name="filter" onchange="this.form.submit();">
             <option disabled selected value> -- select an option -- </option>
             @foreach ($tags as $tag)
@@ -14,7 +14,7 @@
             @endforeach
         </select>
     </form>
-    <form  action="/blueteam/store">
+    <form  class="blueStoreForm" action="/blueteam/store">
         <button>Clear Filter</button>
     </form>
     

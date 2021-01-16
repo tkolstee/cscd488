@@ -9,6 +9,14 @@
 h4{
     margin-bottom:3%;
     margin-top:3%;
+    
+}
+#h4BlueHomePage{
+    
+}
+#h3BlueCreate{
+    margin-bottom:3%;
+    margin-top:3%;
 }
 .body_home{
     background-color:black;
@@ -527,12 +535,61 @@ h2{
 }
 .storeForm{
     color:white;
+    width:33%;
+}
+.storeFormCancel{
+    color:white;
+    width:33%;
+    margin-left:36%;
+}
+#tagFilter{
+    color:white;
+}
+#shoppingCart{
+    padding-top:3%;
+}
+.shoppingCart{
+    border-top:1px solid #00CC99;
+    padding-top:3%;
+    padding-bottom:3%;
+}
+.btn.btn-primary4 {
+    background-color:#00CC99;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 23px 8px;
+    cursor: pointer;
+    width:85%;
+    min-width: 85%;
+    max-height: 56%;
+}
+.blueStoreForm{
+    width: 33%;
 }
 .userName{
     color:#00CC99;
     font-size: 14pt;
     font-weight: bold;
     
+}
+.bordered thead .table-bordered thead td, .table-bordered thead th{
+    vertical-align: middle;
+}
+input[type="checkbox"], input[type="radio"]{
+    transform: scale(1.7);
+    margin-top:2%;
+    vertical-align: middle;
+}
+.table td, .table th{
+    vertical-align: middle;
+}
+.blueSettingForm{
+
 }
 .loggedName{
     color:#00CC99;
@@ -556,7 +613,7 @@ h2{
 }
 .loggedIn{
     float:left;
-    width:25%;
+    width:31%;
     margin-left:25%;
     
 }
@@ -724,8 +781,9 @@ h2{
 }
 .loggedIn{
     float:left;
-    width:25%;
+    width:29%;
     margin-left:25%;
+    text-align: center;
     
 }
 .statsNameRed{
@@ -752,3 +810,20 @@ h2{
     width: 61%;
     margin-left:31%;
 }
+.table {
+    color:white;
+}
+.table th{
+color:#00CC99;
+}
+.table td:hover{
+    color:#00FFCC;
+}
+.table tr:hover {
+    color:#00CC99;
+}
+.blueStoreTd{
+    width:25%;
+}
+
+
