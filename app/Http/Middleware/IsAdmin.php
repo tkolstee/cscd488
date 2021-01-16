@@ -20,6 +20,6 @@ class IsAdmin
         if(Auth::user()->isAdmin()){
             return $next($request);
         }
-        return abort(404);
+        return abort(403);
     }
 }

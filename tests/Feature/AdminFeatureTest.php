@@ -30,9 +30,9 @@ class AdminFeatureTest extends TestCase
         $nonAdmin = User::factory()->create(['is_admin' => 0]);
         $this->be($nonAdmin);
         $response = $this->get('/admin/home');
-        $response->assertStatus(404);
+        $response->assertStatus(403);
         $response = $this->get('/admin/playerRegistration');
-        $response->assertStatus(404);
+        $response->assertStatus(403);
         $response = $this->get('/home/chooseteam');
         $response->assertDontSee('Admin Home');
     }
@@ -41,9 +41,9 @@ class AdminFeatureTest extends TestCase
         $admin = User::factory()->admin()->create();
         $this->be($admin);
         $response = $this->get('/blueteam/home');
-        $response->assertStatus(404);
+        $response->assertStatus(403);
         $response = $this->get('/redteam/home');
-        $response->assertStatus(404);
+        $response->assertStatus(403);
     }
 
     public function testAdminCanSignUpUsers() {
