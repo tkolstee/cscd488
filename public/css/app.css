@@ -380,6 +380,17 @@ h4{
 }
 .container_form{
     width:100%;
+    color:white;
+    
+}
+.aboutPage{
+    margin-top:3%;
+    padding-left:16%;
+    padding-top:4%;
+}
+.aboutJanus{
+    color:#00CC99;
+    
 }
 
 .rLogin a{
