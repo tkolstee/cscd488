@@ -23,7 +23,7 @@ class User extends Authenticatable
         'email',
         'username',
         'password',
-        'isAdmin',
+        'is_admin',
         'blueteam',
         'leader',
         'redteam',
