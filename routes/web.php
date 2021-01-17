@@ -19,7 +19,7 @@ Route::get('/', function () {
 
 Route::any('/home/{page}', [App\Http\Controllers\HomeController::class, 'page'])->name('home');
 
-Auth::routes();
+Auth::routes(['register' => false]);
 
 
 
