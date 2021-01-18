@@ -329,9 +329,9 @@ h4{
 
 .dropdown-menu{
     width:8%;
-    margin-left:4%;
+    margin-left:-13%;
     max-width: 8%;
-    transform: translate3d(1291px, 79px, 0px)!important;
+    
 }
 
 .redButton{
@@ -545,7 +545,7 @@ h2{
 }
 .storeForm{
     color:white;
-    width:38%;
+    width:34%;
 }
 .storeFormCancel{
     color:white;
@@ -579,7 +579,7 @@ h2{
     max-height: 56%;
 }
 .blueStoreForm{
-    width: 38%;
+    width: 34%;
 }
 .userName{
     color:#00CC99;
