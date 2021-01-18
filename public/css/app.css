@@ -479,7 +479,7 @@ h4{
 .blueTeamMenuSelection ul{
     list-style-type: none;
     padding-top:1%;
-    padding-left: 15%;
+    padding-left: 3%;
     padding-bottom:1%;
     float:left;    
     background-color: rgb(3, 3, 148);      
@@ -545,7 +545,7 @@ h2{
 }
 .storeForm{
     color:white;
-    width:33%;
+    width:38%;
 }
 .storeFormCancel{
     color:white;
@@ -579,7 +579,7 @@ h2{
     max-height: 56%;
 }
 .blueStoreForm{
-    width: 33%;
+    width: 38%;
 }
 .userName{
     color:#00CC99;
