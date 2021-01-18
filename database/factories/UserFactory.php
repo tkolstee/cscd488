@@ -31,4 +31,17 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
         ];
     }
+
+    /**
+     * Indicate that the user is Admin
+     * 
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function admin(){
+        return $this->state(function (){
+            return [
+                'is_admin' => 1,
+            ];
+        });
+    }
 }

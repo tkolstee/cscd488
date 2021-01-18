@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'username',
         'password',
+        'is_admin',
         'blueteam',
         'leader',
         'redteam',
@@ -46,6 +47,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isAdmin() {
+        return $this->is_admin == 1;
+    }
 
     public static function getByUsername($username){
         $user = User::all()->where('username','=',$username)->first();
