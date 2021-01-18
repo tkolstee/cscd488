@@ -33,6 +33,7 @@ class Game extends Model
         $blueteams = Blueteam::all();
         foreach ($blueteams as $blueteam){
             $blueteam->setTurnTaken(0);
+            $blueteam->useTurnConsumables();
         }
         $redteams = Redteam::all();
         foreach($redteams as $redteam){

@@ -26,16 +26,21 @@ class Inventory extends Model
         'info',
     ];
 
+    public function reduce(){
+        if($this == null) throw new InventoryNotFoundException();
+        if($this->quantity == 1){
+           Inventory::destroy($this->id);
+        }else{
+            $this->quantity--;
+            $this->update();
+        }
+    }
+
     public function usedToken(){
         if($this->asset_name != "AccessToken" && $this->asset_name != "Insider") throw new InventoryNotFoundException();
         $rand = rand(1,4);
         if ($rand > 1){
-            if($this->quantity == 1){
-                $this->destroy($this->id);
-            }else{
-                $this->quantity--;
-                $this->update();
-            }
+            $this->reduce();
         }
     }
 
