@@ -101,7 +101,7 @@ class Team extends Model
         $inventories = $this->inventories();
         foreach($inventories as $inv){
             $asset = Asset::get($inv->asset_name);
-            if(in_array($asset->tags, 'TurnConsumable')){
+            if(in_array("TurnConsumable", $asset->tags)){
                 $inv->reduce();
             }
         }
