@@ -24,7 +24,7 @@ class CreateAttacksTable extends Migration
             $table->integer('difficulty'); // 1 - 5. 1 always succeeds, 5 always fails.
             $table->integer('detection_risk');    // 1 - 5. 1 is never detected, 5 is always detected
             $table->boolean('success')->nullable();
-            $table->boolean('detected')->nullable();
+            $table->integer('detection_level')->nullable();
             $table->boolean('notified')->nullable();
             $table->boolean('isNews')->nullable();
             $table->integer('energy_cost');

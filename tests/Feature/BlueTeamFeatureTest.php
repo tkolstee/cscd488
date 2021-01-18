@@ -143,10 +143,10 @@ class BlueTeamFeatureTest extends TestCase
         ]);
         $red = Team::factory()->red()->create();
         $attack1 = Attack::create('SQLInjection', $red->id, $blue->id);
-        $attack1->detected = true;
+        $attack1->detection_level = 1;
         $attack1->setNotified(false);
         $attack2 = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack2->detected = true;
+        $attack2->detection_level = 1;
         $attack2->setNotified(false);
 
         $response = $this->actingAs($user)->get('/blueteam/home');
@@ -162,7 +162,7 @@ class BlueTeamFeatureTest extends TestCase
         ]);
         $red = Team::factory()->red()->create();
         $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack1->detected = true;
+        $attack1->detection_level = 1;
         $attack1->setNotified(false);
 
         $response = $this->actingAs($user)->get('/blueteam/clearNotifs');
@@ -179,7 +179,7 @@ class BlueTeamFeatureTest extends TestCase
         ]);
         $red = Team::factory()->red()->create();
         $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack1->detected = true;
+        $attack1->detection_level = 1;
         $attack1->setNotified(false);
         $attack1 = Attack::find(1);
 
@@ -207,7 +207,7 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertDontSee('Broadcast');
 
         $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack1->detected = true;
+        $attack1->detection_level = 1;
         $attack1->setNotified(false);
         $attack1 = Attack::find(1);
 
@@ -229,7 +229,7 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertDontSee('Broadcast');
 
         $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack1->detected = true;
+        $attack1->detection_level = 1;
         $attack1->setNotified(true);
         $attack1 = Attack::find(1);
 
@@ -248,7 +248,7 @@ class BlueTeamFeatureTest extends TestCase
         $this->be($user);
 
         $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack1->detected = true;
+        $attack1->detection_level = 1;
         $attack1->setNotified(true);
         $attack1 = Attack::find(1);
         $attack1->created_at = $attack1->created_at->subDays(4); //more than 3 days is 'old'

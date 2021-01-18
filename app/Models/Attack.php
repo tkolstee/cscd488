@@ -16,7 +16,7 @@ class Attack extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk','success','detected','blueteam','redteam'];
+    protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk','success','detection_level','blueteam','redteam'];
     protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', ]; // casts "json" database column to array and back
 
     public $_name    = "Abstract class - do not use";
@@ -25,6 +25,7 @@ class Attack extends Model
     public $_prereqs = [];
     public $_initial_difficulty = 3;
     public $_initial_detection_risk = 3;
+    public $_initial_detection = 0;
     public $_initial_energy_cost = 100;
     public $_initial_blue_loss = 0;
     public $_initial_red_gain = 0;
@@ -40,7 +41,7 @@ class Attack extends Model
         $this->tags           = $this->_tags;
         $this->prereqs        = $this->_prereqs;
         $this->success        = null;
-        $this->detected       = null;
+        $this->detection_level = $this->initial_detection;
         $this->notified       = null;
         $this->isNews         = null;
         $this->energy_cost    = $this->_initial_energy_cost;
@@ -57,7 +58,7 @@ class Attack extends Model
             $blueteam->changeBalance($this->blue_loss);
             $redteam->changeBalance($this->red_gain);
         }
-        if ( $this->detected ) {
+        if ( $this->detection_level > 0 ) {
             $blueteam->changeReputation($this->reputation_loss);
             if( in_array("Internal", $this->tags)){
                 $tokens = $redteam->getTokens();
@@ -98,7 +99,7 @@ class Attack extends Model
             $att->difficulty = $attack->difficulty;
             $att->detection_risk = $attack->detection_risk;
             $att->success = $attack->success;
-            $att->detected = $attack->detected;
+            $att->detection_level = $attack->detection_level;
             $att->notified = $attack->notified;
             $att->isNews = $attack->isNews;
             $att->possible = $attack->possible;
@@ -141,7 +142,7 @@ class Attack extends Model
         $att->difficulty = $attack->difficulty;
         $att->detection_risk = $attack->detection_risk;
         $att->success = $attack->success;
-        $att->detected = $attack->detected;
+        $att->detection_level = $attack->detection_level;
         $att->notified = $attack->notified;
         $att->isNews = $attack->isNews;
         $att->energy_cost = $attack->energy_cost;
@@ -161,7 +162,7 @@ class Attack extends Model
         $attacks = Attack::all()->where('class_name','=',$attack->class_name)->
             where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam);
         foreach($attacks as $atk){
-            if($atk->success == null || $atk->detected == null || $atk->notified == false || $atk->isNews == false){
+            if($atk->success == null || $atk->detection_level == 0 || $atk->notified == false || $atk->isNews == false){
                 $att = $atk;
             }
         }
@@ -173,7 +174,7 @@ class Attack extends Model
         $att->difficulty = $attack->difficulty;
         $att->detection_risk = $attack->detection_risk;
         $att->success = $attack->success;
-        $att->detected = $attack->detected;
+        $att->detection_level = $attack->detection_level;
         $att->notified = $attack->notified;
         $att->isNews = $attack->isNews;
         $att->energy_cost = $attack->energy_cost;
@@ -194,7 +195,7 @@ class Attack extends Model
     }
 
     public static function getBluePreviousAttacks($blueId) {
-        return Attack::all()->where('blueteam', '=', $blueId)->where('detected', '=', true);
+        return Attack::all()->where('blueteam', '=', $blueId)->where('detection_level', '>', 0);
     }
 
     public static function getNews() {
@@ -202,7 +203,7 @@ class Attack extends Model
     }
 
     public static function getUnreadDetectedAttacks($blueID) {
-        return Attack::all()->where('detected', '=', true)->where('notified', '=', false)->where('blueteam', '=', $blueID);
+        return Attack::all()->where('detection_level', '>', 0)->where('notified', '=', false)->where('blueteam', '=', $blueID);
     }
 
     public function setNotified($notifiedIn) {
@@ -219,10 +220,10 @@ class Attack extends Model
     public function calculateDetected() {
         $rand = rand(1, 4);
         if ($rand >= $this->detection_risk) {
-            $this->detected = false;
+            $this->detection_level = 0;
         }
         else {
-            $this->detected = true;
+            $this->detection_level = 1;
             $this->notified = false;
         }
         Attack::updateAttack($this);
@@ -275,12 +276,12 @@ class Attack extends Model
         $unmet_prereqs = array_diff($this->prereqs, $have);
         if ( count($unmet_prereqs) > 0 ) {
             $this->possible = false;
-            $this->detected = false;
+            $this->detection_level = 0;
             $this->errormsg = "Unsatisfied prereqs for this attack";
         }
         if ( $redteam->getEnergy() < $this->energy_cost ) {
             $this->possible = false;
-            $this->detected = false;
+            $this->detection_level = 0;
             $this->errormsg = "Not enough energy available.";
         }
         if ( in_array("Internal", $this->tags) ){
@@ -295,7 +296,7 @@ class Attack extends Model
             }
             if( !$tokenOwned ){
                 $this->possible = false;
-                $this->detected = false;
+                $this->detection_level = 0;
                 $this->errormsg = "No access token.";
             }
         }
