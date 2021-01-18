@@ -296,4 +296,15 @@ class AttackTest extends TestCase {
         $this->assertTrue($attack->possible);
     }
 
+    public function testAnalystDetectsAttacks(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Inventory::factory()->create(['asset_name' => 'SecurityAnalyst', 'team_id' => $blue->id]);
+        $attack = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack->detection_risk = 5;
+        $attack->calculateDetected();
+
+        $this->assertEquals(2, $attack->detection_level);
+    }
+
 }
