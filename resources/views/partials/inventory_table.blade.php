@@ -1,4 +1,4 @@
-<table class="table table-bordered table-hover">
+<table class="table table-bordered">
     <thead>
         <th></th>
         <th>Name</th>
@@ -9,14 +9,14 @@
         @foreach ($inventory ?? [] as $inv)
         <?php $invAsset = App\Models\Asset::get($inv->asset_name); ?>
             <tr>
-                <td><input type="checkbox" name="results[]" value="{{ $inv->asset_name . $inv->level }}"></td>
-                <td>{{ $invAsset->name }}</td>
+                <td ><input type="checkbox" name="results[]" value="{{ $inv->asset_name . $inv->level }}"></td>
+                <td >{{ $invAsset->name }}</td>
                 <td>{{$inv->quantity }}</td>
                 <td>{{$inv->level }}</td>
                 @if($inv->level < 3)
                     @if($invAsset->blue == 1)    
                         <td><button type="submit" formaction="/blueteam/upgrade" 
-                            class="btn btn-primary" 
+                            class="btn btn-primaryInventory" 
                             name="submit" value="{{$invAsset->class_name . $inv->level }}">
                             Upgrade Cost: {{ $inv->getUpgradeCost() }}</button>
                         </td>
