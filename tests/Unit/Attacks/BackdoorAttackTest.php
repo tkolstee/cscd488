@@ -108,11 +108,24 @@ class BackdoorAttackTest extends TestCase {
     }
 
     public function testBackdoorPrivilegedPreLevel1And2Tokens() {
-        $attack = $this->createAttackAndTeams("Basic");
+        $attack = $this->createAttackAndTeams("Privileged");
         $blueteam = Team::find($attack->blueteam);
         $token = new AccessTokenAsset;
         Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name]);
         Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
+        $initial_energy_cost = $attack->energy_cost;
+        $attack->onPreAttack();
+        $this->assertEquals(true, $attack->possible);
+        $this->assertEquals($initial_energy_cost * 2, $attack->energy_cost);
+    }
+
+    public function testBackdoorPrivilegedPreAllTokens() {
+        $attack = $this->createAttackAndTeams("Privileged");
+        $blueteam = Team::find($attack->blueteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 3]);
         $initial_energy_cost = $attack->energy_cost;
         $attack->onPreAttack();
         $this->assertEquals(true, $attack->possible);
