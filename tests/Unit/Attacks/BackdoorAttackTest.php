@@ -6,6 +6,7 @@ use Auth;
 use Illuminate\Http\Request;
 use App\Models\Assets\AccessTokenAsset;
 use App\Models\Attacks\BackdoorPrivilegedAttack;
+use App\Models\Attacks\BackdoorPwnedAttack;
 use App\Models\Attacks\BackdoorBasicAttack;
 use App\Http\Controllers\AttackController;
 use App\Models\Team;
@@ -28,6 +29,7 @@ class BackdoorAttackTest extends TestCase {
         switch($level){
             case("Basic"): $backdoor = new BackdoorBasicAttack(); break;
             case("Privileged"): $backdoor = new BackdoorPrivilegedAttack(); break;
+            case("Pwned"): $backdoor = new BackdoorPwnedAttack(); break;
             default: $backdoor = new BackdoorBasicAttack(); break;
         }
         $attack = Attack::create($backdoor->class_name, $red->id, $blue->id);
@@ -107,6 +109,15 @@ class BackdoorAttackTest extends TestCase {
         $this->assertEquals(false, $attack->possible);
     }
 
+    public function testBackdoorPrivilegedPreLevel2Token() {
+        $attack = $this->createAttackAndTeams("Privileged");
+        $blueteam = Team::find($attack->blueteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
+        $attack->onPreAttack();
+        $this->assertEquals(false, $attack->possible);
+    }
+
     public function testBackdoorPrivilegedPreLevel1And2Tokens() {
         $attack = $this->createAttackAndTeams("Privileged");
         $blueteam = Team::find($attack->blueteam);
@@ -130,6 +141,118 @@ class BackdoorAttackTest extends TestCase {
         $attack->onPreAttack();
         $this->assertEquals(true, $attack->possible);
         $this->assertEquals($initial_energy_cost, $attack->energy_cost);
+    }
+
+    public function testBackdoorPrivilegedCompleteFail() {
+        $attack = $this->createAttackAndTeams("Privileged");
+        $blueteam = Team::find($attack->blueteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
+        $attack->success = false;
+        $attack->detected = false;
+        $attack->onAttackComplete();
+        $this->assertEquals(true, $attack->detected);
+    }
+
+    public function testBackdoorPrivilegedCompleteSuccess() {
+        $attack = $this->createAttackAndTeams("Privileged");
+        $blueteam = Team::find($attack->blueteam);
+        $redteam = Team::find($attack->redteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
+        $attack->success = true;
+        $attack->detected = false;
+        $attack->onAttackComplete();
+        $tokens = $redteam->getTokens()->where('level','=',2);
+        $this->assertEquals(2, $tokens->first()->quantity);
+    }
+
+    public function testBackdoorPwnedNoAssets() {
+        $attack = $this->createAttackAndTeams("Pwned");
+        $expectedAttack = $attack;
+        $attack->onPreAttack();
+        $this->assertEquals($expectedAttack, $attack);
+        $this->assertEquals(false, $attack->possible);
+    }
+
+    public function testBackdoorPwnedPreLevel1Token() {
+        $attack = $this->createAttackAndTeams("Pwned");
+        $blueteam = Team::find($attack->blueteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name]);
+        $attack->onPreAttack();
+        $this->assertEquals(false, $attack->possible);
+    }
+
+    public function testBackdoorPwnedPreLevel1And2Tokens() {
+        $attack = $this->createAttackAndTeams("Pwned");
+        $blueteam = Team::find($attack->blueteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
+        $attack->onPreAttack();
+        $this->assertEquals(false, $attack->possible);
+    }
+
+    public function testBackdoorPwnedPreLevel1And3Tokens() {
+        $attack = $this->createAttackAndTeams("Pwned");
+        $blueteam = Team::find($attack->blueteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 3]);
+        $attack->onPreAttack();
+        $this->assertEquals(false, $attack->possible);
+    }
+
+    public function testBackdoorPwnedPreLevel2And3Tokens() {
+        $attack = $this->createAttackAndTeams("Pwned");
+        $blueteam = Team::find($attack->blueteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 3]);
+        $attack->onPreAttack();
+        $this->assertEquals(false, $attack->possible);
+    }
+
+    public function testBackdoorPwnedPreAllTokens() {
+        $attack = $this->createAttackAndTeams("Pwned");
+        $blueteam = Team::find($attack->blueteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 3]);
+        $attack->onPreAttack();
+        $this->assertEquals(true, $attack->possible);
+    }
+
+    public function testBackdoorPwnedCompleteFail() {
+        $attack = $this->createAttackAndTeams("Pwned");
+        $blueteam = Team::find($attack->blueteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 3]);
+        $attack->success = false;
+        $attack->detected = false;
+        $attack->onAttackComplete();
+        $this->assertEquals(true, $attack->detected);
+    }
+
+    public function testBackdoorPwnedCompleteSuccess() {
+        $attack = $this->createAttackAndTeams("Pwned");
+        $blueteam = Team::find($attack->blueteam);
+        $redteam = Team::find($attack->redteam);
+        $token = new AccessTokenAsset;
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
+        Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 3]);
+        $attack->success = true;
+        $attack->detected = false;
+        $attack->onAttackComplete();
+        $tokens = $redteam->getTokens()->where('level','=',3);
+        $this->assertEquals(2, $tokens->first()->quantity);
     }
 
 }
