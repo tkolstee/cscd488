@@ -55,10 +55,10 @@ class Attack extends Model
 
         if ( $this->success ) {
             $blueteam->changeBalance($this->blue_loss);
+            $blueteam->changeReputation($this->reputation_loss);
             $redteam->changeBalance($this->red_gain);
         }
         if ( $this->detected ) {
-            $blueteam->changeReputation($this->reputation_loss);
             if( in_array("Internal", $this->tags)){
                 $tokens = $redteam->getTokens();
                 foreach($tokens as $token){
@@ -283,14 +283,23 @@ class Attack extends Model
             $this->detected = false;
             $this->errormsg = "Not enough energy available.";
         }
+        $this->checkTokens();
+        Attack::updateAttack($this);
+        return $this;
+    }
+
+    public function checkTokens(){
         if ( in_array("Internal", $this->tags) ){
+            $redteam = Team::find($this->redteam);
+            $blueteam = Team::find($this->blueteam);
+            $tokenLevel = 1;
+            if(in_array("PrivilegedAccess", $this->tags)) $tokenLevel = 2;
+            if(in_array("PwnedAccess", $this->tags)) $tokenLevel = 3;
             $tokenOwned = false;
-            if( in_array("AccessToken", $have) ){
-                $tokens = $redteam->getTokens();
-                foreach( $tokens as $token){
-                    if( $token->info == $blueteam->name && $token->level == 1){
-                        $tokenOwned = true;
-                    }
+            $tokens = $redteam->getTokens();
+            foreach( $tokens as $token){
+                if( $token->info == $blueteam->name && $token->level == $tokenLevel){
+                    $tokenOwned = true;
                 }
             }
             if( !$tokenOwned ){
@@ -299,8 +308,6 @@ class Attack extends Model
                 $this->errormsg = "No access token.";
             }
         }
-        Attack::updateAttack($this);
-        return $this;
     }
 
 }
