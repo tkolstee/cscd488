@@ -96,6 +96,17 @@ class Team extends Model
         return collect($assets_arr);
     }
 
+    public function useTurnConsumables(){
+        if($this->blue != 1) throw new TeamNotFoundException();
+        $inventories = $this->inventories();
+        foreach($inventories as $inv){
+            $asset = Asset::get($inv->asset_name);
+            if(in_array($asset->tags, 'TurnConsumable')){
+                $inv->reduce();
+            }
+        }
+    }
+
     public function addToken($info, $level){
         if($this->blue == 1) throw new TeamNotFoundException();
         $token = Inventory::all()->where('team_id', '=', $this->id)->where('asset_name','=',"AccessToken")->
@@ -118,15 +129,7 @@ class Team extends Model
         if($this->blue == 1) throw new TeamNotFoundException();
         $token = Inventory::all()->where('team_id', '=', $this->id)->where('asset_name','=',"AccessToken")->
             where('info', '=', $info)->where('level','=',$level)->first();
-        if($token == null) throw new InventoryNotFoundException();
-        if($token->quantity == 1){
-           Inventory::destroy($token->id);
-        }else{
-            $token->quantity--;
-            $token->update();
-            return $token;
-        }
-        return null;
+        $token->reduce();
     }
 
     public function getTokens(){
@@ -158,13 +161,7 @@ class Team extends Model
         $inv->level--;
         $lastUpCost = $inv->getUpgradeCost();
         $inv->level++;
-        if ($inv->quantity == 1){
-            Inventory::destroy($inv->id);
-        }
-        else{
-            $inv->quantity--;
-            $inv->update();
-        }
+        $inv->reduce();
         $this->balance += $asset->purchase_cost + $lastUpCost;
         return $this->update();
     }
