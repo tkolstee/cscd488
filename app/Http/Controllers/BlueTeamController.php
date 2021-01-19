@@ -300,6 +300,7 @@ class BlueTeamController extends Controller {
         }
         $blueteam->balance = 1000; $blueteam->update(); //DELETE THIS IS FOR TESTING PURPOSES
         $buyCart = session('buyCart');
+        $actions = [];
         foreach($assetNames as $asset){
             $actAsset = Asset::get($asset);
             $buyCart[] = $actAsset->name;

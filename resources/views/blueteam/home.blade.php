@@ -13,6 +13,9 @@
         <a href="/blueteam/join"><button class="btn btn-primary2">Join Blue Team</button></a>
     </div>
      @else
+        @if (!empty($actionMsg))
+        {{ $actionMsg }}
+        @endif
         <h3>Team Members:</h3>
         <p class="userName">{{ $leader->username }}</p<br>
         

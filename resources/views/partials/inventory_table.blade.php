@@ -20,10 +20,17 @@
                             name="submit" value="{{$invAsset->class_name . $inv->level }}">
                             Upgrade Cost: {{ $inv->getUpgradeCost() }}</button>
                         </td>
+                        @if(in_array("Action",$invAsset->tags))
+                        <td><button type="submit" formaction="/asset" 
+                            class="btn btn-primaryInventory" 
+                            name="submit" value="{{$invAsset->class_name }}">
+                            Use</button>
+                        </td>
+                        @endif
                     @endif
                     @if($invAsset->blue == 0)
                         <td><button type="submit" formaction="/redteam/upgrade" 
-                            class="btn btn-primary" 
+                            class="btn btn-primaryInventory" 
                             name="submit" value="{{$invAsset->class_name . $inv->level }}">
                             Upgrade Cost: {{ $inv->getUpgradeCost() }}</button>
                         </td>
