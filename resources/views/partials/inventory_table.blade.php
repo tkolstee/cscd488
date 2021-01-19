@@ -13,8 +13,9 @@
                 <td ><input type="checkbox" name="results[]" value="{{ $inv->asset_name . $inv->level }}"></td>
                 <td >{{ $invAsset->name }}</td>
                 <td>{{$inv->quantity }}</td>
+                @if(!$inArray)
                 <td>{{$inv->level }}</td>
-                @if($inv->level < 3 && (!$inArray))
+                @if($inv->level < 3)
                     @if($invAsset->blue == 1)    
                         <td><button type="submit" formaction="/blueteam/upgrade" 
                             class="btn btn-primaryInventory" 
@@ -29,6 +30,7 @@
                             Upgrade Cost: {{ $inv->getUpgradeCost() }}</button>
                         </td>
                     @endif
+                @endif
                 @endif
                 @if($inArray)
                     <td><button type="submit" formaction="/asset" 
