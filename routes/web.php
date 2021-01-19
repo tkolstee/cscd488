@@ -34,6 +34,8 @@ Route::group(['middleware' => ['auth']], function() {
 
         Route::any('/blueteam/{page}', [App\Http\Controllers\BlueTeamController::class, 'page'])->name('blueteam');
 
+        Route::any('/asset', [App\Http\Controllers\AssetController::class, 'useAction'])->name('asset');
+
         Route::any('/redteam/{page}', [App\Http\Controllers\RedTeamController::class, 'page'])->name('redteam');
     
         Route::any('/attack/{page}', [App\Http\Controllers\AttackController::class, 'page'])->name('attack');
