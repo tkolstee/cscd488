@@ -135,22 +135,40 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertSeeInOrder([$asset->name, "5"]);
     }
 
-    public function testBlueTeamCanViewAttackNotifications()
+    public function testBlueTeamCanViewAttackNotificationsLevel2()
     {
         $blue = Team::factory()->create();
         $user = User::factory()->create([
             'blueteam' => $blue->id,
         ]);
         $red = Team::factory()->red()->create();
+        Inventory::factory()->create(['team_id' => $blue->id, 'asset_name' => 'Security Analyst']);
         $attack1 = Attack::create('SQLInjection', $red->id, $blue->id);
-        $attack1->detection_level = 1;
+        $attack1->detection_level = 2;
         $attack1->setNotified(false);
         $attack2 = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack2->detection_level = 1;
+        $attack2->detection_level = 2;
         $attack2->setNotified(false);
 
         $response = $this->actingAs($user)->get('/blueteam/home');
         $response->assertSeeInOrder([$attack1->name, $attack2->name]);
+    }
+
+    public function testBlueTeamAttackNotificationsLevel1()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+        $attack1 = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack1->detection_level = 1;
+        $attack1->setNotified(false);
+
+        $response = $this->actingAs($user)->get('/blueteam/home');
+        $response->assertSee("Your team was attacked while you were away!");
+        $response->assertDontSee($attack1->name);
     }
 
     public function testBlueTeamCanClearAttackNotifications()
