@@ -8,7 +8,7 @@
     <tbody>
         @foreach ($inventory ?? [] as $inv)
         <?php $invAsset = App\Models\Asset::get($inv->asset_name); ?>
-            <tr>
+            <tr class="test222">
                 <td ><input type="checkbox" name="results[]" value="{{ $inv->asset_name . $inv->level }}"></td>
                 <td >{{ $invAsset->name }}</td>
                 <td>{{$inv->quantity }}</td>
