@@ -18,7 +18,7 @@
                     <tr>
                         <td>{{$attack->name}}</td>
                         <td>{{$attack->success ? 'true' : 'false'}}</td>
-                        <td>{{$attack->detected ? 'true' : 'false'}}</td>
+                        <td>{{($attack->detection_level > 0) ? 'true' : 'false'}}</td>
                         <td>{{$attack->created_at->diffForHumans()}}</td>
                     </tr>
                 @endforeach
