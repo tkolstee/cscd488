@@ -28,6 +28,7 @@ class BlueTeamController extends Controller {
             if($page == 'settings') return $this->settings($request);
             if($page == 'changename') return $this->changeName($request); 
             if($page == 'leaveteam') return $this->leaveTeam($request);
+            if($page == 'picktarget') return $this->pickTarget($request);
             if($page == 'changeleader') return $this->changeLeader($request);
             $team_id = Auth::user()->blueteam;
             $turn = Auth::user()->getTurnTaken();
@@ -183,6 +184,7 @@ class BlueTeamController extends Controller {
         session(['sellCart' => null]);
 
         $buyCart = session('buyCart');
+        $targeted = [];
         if (!empty($buyCart)){
             foreach($buyCart as $assetName){
                 $asset = Asset::getByName($assetName);
@@ -194,6 +196,10 @@ class BlueTeamController extends Controller {
                     session(['buyCart' => $buyCart]);
                     return $this->store()->with(compact('error'));
                 }
+                if(in_array("Targeted", $asset->tags)){
+                    $inv = $blueteam->inventory($asset, 1);
+                    $targeted[] = $inv;
+                }
                 $key = array_search($assetName, $buyCart);
                 unset($buyCart[$key]);
             }
@@ -201,6 +207,22 @@ class BlueTeamController extends Controller {
         session(['buyCart' => null]);
         //update turn stuff
         Auth::user()->setTurnTaken(1);
+        if(count($targeted) > 0){
+            $redteams = Team::getRedTeams();
+            return view('blueteam.target')->with(compact('blueteam', 'targeted', 'redteams'));
+        }
+        $turn = 1;
+        $endTime = Setting::get('turn_end_time');
+        return $this->home()->with(compact('turn', 'endTime'));
+    }
+
+    public function pickTarget(Request $request){
+        $invs = $request->invs;
+        for($i = 1; $i < count($invs) + 1; $i++){
+            $result = "result".$i;
+            $redteam = Team::get($request->$result);
+            $invs[$i-1]->setInfo($redteam->name);
+        }
         $turn = 1;
         $endTime = Setting::get('turn_end_time');
         return $this->home()->with(compact('turn', 'endTime'));

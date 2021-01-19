@@ -9,6 +9,7 @@ use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use App\Exceptions\InventoryNotFoundException;
 use App\Models\Blueteam;
+use App\Models\Asset;
 
 class Team extends Model
 {
@@ -84,7 +85,12 @@ class Team extends Model
     }
 
     public function inventory($asset, $level) {
-        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->where('level', '=', $level)->first();
+        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->where('level', '=', $level)->where('info','=',null)->first();
+    }
+
+    public function inventoryWithInfo($asset, $level, $info){
+        $asset = Asset::get($asset->class_name);
+        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->where('level', '=', $level)->where('info' ,'=', $info)->first();
     }
 
     public function assets() {

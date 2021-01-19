@@ -44,6 +44,34 @@ class Inventory extends Model
         }
     }
 
+    public function setInfo($string){
+        $team = Team::find($this->team_id);
+        $inv = $team->inventoryWithInfo($this->asset_name,$this->level,$string);
+        if($inv == null){
+            if($this->quantity == 1){
+                $this->info = $string;
+                $this->update();
+            }else{
+                $inv = new Inventory();
+                $inv->class_name = $this->class_name;
+                $inv->team_id = $this->team_id;
+                $inv->level = $this->level;
+                $inv->info = $string;
+                $inv->save();
+            }
+        }else{
+            $inv->quantity++;
+            $inv->update();
+            if($this->quantity == 1)
+                $this->destroy($this->id);
+            else{
+                $this->quantity--;
+                $this->update();
+            }
+        }
+        $this->update();
+    }
+
     public function getUpgradeCost(){
         $asset = Asset::get($this->asset_name);
         if($asset == null) throw new AssetNotFoundException();

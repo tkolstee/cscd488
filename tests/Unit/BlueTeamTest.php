@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\Inventory;
 use App\Models\Asset;
+use App\Models\Assets\HeightenedAwarenessAsset;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
@@ -655,6 +656,52 @@ class BlueTeamTest extends TestCase
         $this->assertEquals($team->name, $response->viewMembers);
         $this->assertEquals($user1->id, $response->viewTeamLeader->id);
         $this->assertEquals($user2->id, $response->viewTeamMembers->first()->id);
+    }
+
+    //PickTarget Test
+    //Should return home with turn ended
+    
+    public function testPickTargetInvalidTeam(){
+        $controller = new BlueTeamController();
+        $team = Team::factory()->create();
+        $user1 = User::factory()->create(['blueteam' => $team->id, 'leader' => 1]);
+        $asset = new HeightenedAwarenessAsset();
+        $inv = Inventory::factory()->create(['asset_name' => $asset->class_name, 'team_id' => $team->id]);
+        $invs = [$inv];
+        $request = Request::create('/picktarget','POST',['invs' => $invs, 'result1' => "InvalidName"]);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->pickTarget($request);
+    }
+    
+    public function testPickTarget1AssetValid(){
+        $controller = new BlueTeamController();
+        $team = Team::factory()->create();
+        $redteam = Team::factory()->red()->create();
+        $user1 = User::factory()->create(['blueteam' => $team->id, 'leader' => 1]);
+        $user2 = User::factory()->create(['redteam' => $redteam->id]);
+        $asset = Asset::get("HeightenedAwareness");
+        $inv = Inventory::factory()->create(['asset_name' => $asset->class_name, 'team_id' => $team->id]);
+        $invs = [$inv];
+        $request = Request::create('/picktarget','POST',['invs' => $invs, 'result1' => $redteam->name]);
+        $controller->pickTarget($request);
+        $invAfter = $team->inventoryWithInfo( $asset , 1, $redteam->name);
+        $this->assertEquals($redteam->name, $invAfter->info);
+    }
+
+    public function testPickTarget2AssetValid(){
+        $controller = new BlueTeamController();
+        $team = Team::factory()->create();
+        $redteam = Team::factory()->red()->create();
+        $user1 = User::factory()->create(['blueteam' => $team->id, 'leader' => 1]);
+        $user2 = User::factory()->create(['redteam' => $redteam->id]);
+        $asset = new HeightenedAwarenessAsset();
+        $inv = Inventory::factory()->create(['asset_name' => $asset->class_name, 'team_id' => $team->id]);
+        $invs = [$inv];
+        $request = Request::create('/picktarget','POST',['invs' => $invs, 'result1' => $redteam->name]);
+        $response = $controller->pickTarget($request);
+        $asset = new HeightenedAwarenessAsset();
+        $invAfter = $team->inventoryWithInfo($asset, 1, $redteam->name);
+        $this->assertEquals($redteam->name, $invAfter->info);
     }
 
 }
