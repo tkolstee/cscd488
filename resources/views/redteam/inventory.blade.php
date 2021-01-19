@@ -4,6 +4,7 @@
 
 @section('pagecontent')
     @if($inventory->isEmpty())
+    <h4>Red Team Inventory Page.</h4>
         <p>You have no assets.</p>
     @else
         <form method="POST" action="/redteam/sell">

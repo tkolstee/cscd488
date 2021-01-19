@@ -3,17 +3,17 @@
 @section('title', 'Red Team Store')
 
 @section('pagecontent')
-    <p>This is the red team store.</p>
-    <form method="POST" action="/redteam/filter">
+    <h4>Red Team Store.</h4>
+    <form class="blueStoreForm" method="POST" action="/redteam/filter">
         @csrf
-        Tag Filter: 
+        <p id="tagFilter">Tag Filter: </p>
         <select name="filter">
             <option disabled selected value> -- select an option -- </option>
             @foreach ($tags as $tag)
                 <option>{{$tag}}</option>
             @endforeach
         </select>
-        Sort:
+         <p id="tagFilter">Sort: </p>
         <select name="sort">
             <option disabled selected value> -- select an option -- </option>
             <option value="name">Name</option>
@@ -23,14 +23,14 @@
             Submit
         </button>
     </form>
-    <form  action="/redteam/store">
+    <form  class="blueStoreForm" action="/redteam/store">
         <button>Clear Sort/Filter</button>
     </form>
 
     @if(count($assets ??[]) == 0)
         <p>No items are available for purchase right now.</p>
     @else
-        <form method="POST" action="/redteam/buy">
+        <form class="storeForm" method="POST" action="/redteam/buy">
             @csrf
             @include('partials.store_assets_table', ['assets' => $assets, 'ownedAssets' => $ownedAssets])
             <button type="submit" class="btn btn-primary">

@@ -2,6 +2,11 @@
 
 @section('title', 'Blue Team Store')
 
+
 @section('pagecontent')
-    <p>This is the blue team training page.</p>
+
+<h4>Blue Team Training Page</h4>
+
+    <p>This is the blue team training page. test</p>
+    
 @endsection

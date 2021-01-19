@@ -1,7 +1,10 @@
+
+
 @extends('blueteam.base')
 
 @section('title', 'Blue Team Store')
 
 @section('pagecontent')
-    <p>This is the blue team status page.</p>
+<h4>Blue Team Status Page</h4>
+    <p>This is the blue team status page.testetsast</p>
 @endsection

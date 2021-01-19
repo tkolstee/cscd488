@@ -3,12 +3,12 @@
 @section('title', 'Red Team Home')
 
 @section('pagecontent')
-    <p>This is the red team learning page. Much Wow.</p>
+    <h4>Red Team Learning Page.</h4>
     @if (empty($attacks))
     <h2>There are no attacks available to learn about </h2>
     @else
         @foreach ($attacks as $attack)
-            <a href={{ "/learn/".strtolower($attack->class_name) }}>{{$attack->name}}</a>
+            <a class="sqlInjections" href={{ "/learn/".strtolower($attack->class_name) }}>{{$attack->name}}</a>
             <br>
         @endforeach
     @endif

@@ -9,7 +9,7 @@
     @csrf
     @foreach ($possibleAttacks ?? [] as $attack)
         <input type="radio" name="result" id="{{ $attack->class_name }}" value="{{ $attack->class_name }}">
-        <label for="{{ $attack->class_name }}">{{ $attack->name }}</label>
+        <label class="chooseTeamRadioButtons" for="{{ $attack->class_name }}">{{ $attack->name }}</label>
         <br>
     @endforeach
     <input type="hidden" name="blueteam" value="{{ $blueteam->name }}">

@@ -6,13 +6,25 @@
     width:100%;
     	
 }
+h4{
+    margin-bottom:3%;
+    margin-top:3%;
+    
+}
+#h4BlueHomePage{
+    
+}
+#h3BlueCreate{
+    margin-bottom:3%;
+    margin-top:3%;
+}
 .body_home{
     background-color:black;
 }
 .button {
     background-color: #00CC99;
     border: none;
-    color: white;
+    color: rgba(255, 255, 255, 0.76);
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
@@ -68,6 +80,7 @@
 }
 .logo{
     width: 50%;
+    
     height: 100%;
     float:left;
     
@@ -145,7 +158,7 @@
     background-color: white;
 }
 .footer {
-       height: 100%;
+       
         background-color: black;
         text-align: center;
 }
@@ -186,6 +199,11 @@
     width:110%;
     margin-top:15%;
 }
+.card2{ 
+    width:50%;
+    margin-top:15%;
+}
+
   
   form {
     margin:auto;/* nice thing of auto margin if display:flex; it center both horizontal and vertical :) */
@@ -252,8 +270,8 @@
     padding:0;
 }
 .container{
-    height:100%;
-    background: white;   
+    
+    width:73%;   
 }
 .lContainer{
     width:51%;
@@ -271,6 +289,9 @@
     padding-top:15px;
     width:116%;
 }
+.form-blueTeamJoinForm{
+    padding-top:35%;
+}
 .offset-md-4{
     margin-left:10%;
 }
@@ -287,4 +308,548 @@
 }
 .img-fluid{
     height: 100%;
+      
 }
+.img-fluid2{
+    height: 100%;   
+}
+
+/*******************************************BASE.BLADE and HOME.BLADE PAGES *************************/
+.lLogin{
+    float:left;
+    width:50%;
+}
+#navbarDropdown{
+    padding-bottom:10%;
+}
+#loggedinas{
+    color:white !important;
+    padding-top:5%;
+}
+
+.dropdown-menu{
+    width:8%;
+    margin-left:-13%;
+    max-width: 8%;
+    
+}
+
+.redButton{
+    width:100%;
+    background-color:rgb(129, 3, 3); border: none; color: white; padding: 15px 32px; text-align: center;
+    
+}
+.redButton:hover{
+   
+    background-color: red;
+    
+}
+.blueButton{
+    width:100%;
+    background-color:rgb(3, 3, 148); border: none; color: white; padding: 15px 32px; text-align: center;
+    
+}
+
+.blueButton:hover{
+   background-color: blue;
+}
+.lBlueteamChoice{
+    
+    float:left;
+    width:50%;
+   
+}
+.chooseTeam{
+    color: black;
+    padding-top:5%;
+    padding-left:9%;
+}
+.chooseTeam p{
+    font-size: 16pt;
+    width: 90%;
+    background-color: #ffffff;
+    text-align: center;
+    padding-top:.5%;
+    height: 7%;
+}
+
+.rRedteamChoice{
+  
+    float:right;
+    width:50%;
+}
+.container_form{
+    width:100%;
+    color:white;
+    
+}
+.aboutPage{
+    margin-top:3%;
+    padding-left:16%;
+    padding-top:4%;
+}
+.aboutJanus{
+    color:#00CC99;
+    
+}
+.sqlInjections{
+    color:#00CC99;
+}
+
+.rLogin a{
+    color:#00CC99;
+    padding-right:5%;
+    padding-left: 34%;
+}
+.rLogin a:hover{
+    color:#00FFCC;
+}
+#filler{
+   
+    background-color: #000000;
+}
+#lForm_container{
+    float:left;
+    height: 350px;
+    width: 50%;
+    
+}
+#rForm_container{
+    float:right;
+    height: 350px;
+    width: 50%;
+    
+}
+.text-sm{
+    color:#00CC99;
+}
+.text-sm:hover{
+    color:#00FFCC;
+}
+.homeContainer{
+    width:100%;
+    height: 65%;
+}
+.card-header:first-child{
+    color:black;
+    background-color: white;
+    
+}
+.BteamChoice{
+    height: 65%;
+    background-color: blue;
+    float: left;
+    margin-left: 22%;
+    padding-top:10%;
+}
+.Bcontainer{
+   width:40%;  
+   float:left;
+}
+.RedContainer{
+    width:40%;  
+    float:right;
+ }
+
+.blueButtonChoice{
+    float:left;
+    margin-left:22%;
+}
+.redButtonChoice{
+    float:right;
+    margin-right:22%;
+}
+.RteamChoice a{
+    position: relative;
+}
+.RteamChoice{
+    height: 65%;
+    background-color: red;
+    float: right;
+    margin-right: 22%;
+    padding-top:10%;
+}
+.containerHome{
+    width:73%;
+}
+
+
+/*******************************************BLUE TEAM HOME and Other pages Below *************************/
+
+.blueTeamMenuSelection ul{
+    list-style-type: none;
+    padding-top:1%;
+    padding-left: 3%;
+    padding-bottom:1%;
+    float:left;    
+    background-color: rgb(3, 3, 148);      
+}
+.blueTeamMenuSelection li{
+    display: inline;
+   
+}
+.blueTeamMenuSelection li a{
+    color:white;
+    font-size: 12pt;
+    padding-left:3.8%;
+    padding-top:1.2%;
+    padding-bottom:1.2%;
+    
+}
+
+.blueTeamMenuSelection a {
+    
+    padding-right:4%;
+    padding-left: 34%;
+    text-decoration: none;
+    background-color: rgb(3, 3, 148);
+    
+    
+}
+.blueTeamMenuSelection a:hover{
+    background-color:blue;
+    padding-top:1.2%;
+    padding-bottom:1.2%;
+}
+.buttons{
+    float:left;
+}
+.blueTeamContainer{
+    padding-top:2%;
+    color:white;
+    padding-bottom:2%;
+}
+.blueMiddleContainer{
+    background-color: rgb(3, 3, 148); 
+    padding-left: 10%; 
+    padding-right: 10%; 
+    padding-top: 6%; 
+    padding-bottom: 6%;
+    text-align: center; 
+    vertical-align: center;
+    color:white;
+    
+}
+h2{
+    padding-left:1.3%;
+    padding-top:1.3%;
+    margin-bottom:2%;
+}
+
+.startTurn a{
+    border-left:1px solid white;
+}
+.startTurn2 a{
+    border-right:1px solid white;
+    border-left:1px solid white;
+}
+.storeForm{
+    color:white;
+    width:36%;
+}
+.storeFormCancel{
+    color:white;
+    width:33%;
+    margin-left:36%;
+}
+#tagFilter{
+    color:white;
+}
+#shoppingCart{
+    padding-top:3%;
+}
+.shoppingCart{
+    border-top:1px solid #00CC99;
+    padding-top:3%;
+    padding-bottom:3%;
+}
+.btn.btn-primary4 {
+    background-color:#00CC99;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 23px 8px;
+    cursor: pointer;
+    width:85%;
+    min-width: 85%;
+    max-height: 56%;
+}
+.blueStoreForm{
+    width: 36%;
+}
+.userName{
+    color:#00CC99;
+    font-size: 14pt;
+    font-weight: bold;
+    
+}
+.bordered thead .table-bordered thead td, .table-bordered thead th{
+    vertical-align: middle;
+}
+input[type="checkbox"], input[type="radio"]{
+    transform: scale(1.7);
+    margin-top:2%;
+    vertical-align: middle;
+}
+.table td, .table th{
+    vertical-align: middle;
+}
+.blueSettingForm{
+
+}
+.loggedName{
+    color:#00CC99;
+    font-size: 13pt;   
+}
+.loggedInName{
+    font-size: 12pt;  
+    color:#00CC99;
+}
+.stats{
+    text-align: center;
+    float:left;
+    width:33%;
+    padding-top:1%;
+    background-color:#00154d;
+    margin-right:.1%;
+    margin-left:.2%;
+    height: 7%;
+    border-bottom: 2px solid #00CC99;
+    border-top: 2px solid #00CC99;
+}
+.loggedIn{
+    float:left;
+    width:31%;
+    margin-left:25%;
+    
+}
+.statsName{
+  text-align: left;
+  float:left;
+  width:33%;
+  padding-top:1%;
+  padding-left:2%;
+  background-color:#00154d;
+  margin-right:.1%;
+  margin-left:.2%;
+  height: 7%;
+  border-bottom: 2px solid #00CC99;
+  border-top: 2px solid #00CC99;
+}
+
+.blueLogo{
+    width:75px;
+    float:left;
+}
+.h2Container{
+    float:left;
+    width: 80%;
+    background-color: black;
+    
+}
+.blueTeamImage{
+   
+}
+.blueLogoContainer{
+    background-color: black;
+    height: 8%;
+}
+
+
+/*******************************************RED TEAM HOME and Other pages Below *************************/
+
+
+.redTeamContainer{
+    padding-top:2%;
+    color:white;
+    padding-bottom:2%;
+}
+
+.redTeamMenuSelection ul{
+    list-style-type: none;
+    padding-top:1%;
+    padding-left: 20.8%;
+    padding-bottom:1%;
+    float:left;    
+    background-color: rgb(148, 3, 3);      
+}
+.redTeamMenuSelection li{
+    display: inline; 
+}
+.redTeamMenuSelection li a{
+    color:white;
+    font-size: 12pt;
+    padding-left:3.8%;
+    padding-top:1.2%;
+    padding-bottom:1.2%;  
+}
+
+.redTeamMenuSelection a {
+    padding-right:5%;
+    padding-left: 34%;
+    text-decoration: none;
+    background-color: rgb(148, 3, 3); 
+}
+.redTeamMenuSelection a:hover{
+    background-color:red;
+    padding-top:1.2%;
+    padding-bottom:1.2%;
+}
+.redLogoContainer{
+    background-color: black;
+    height: 8%;
+}
+.redLogo{
+    width:75px;
+    float:left;
+}
+.statsContainer{
+    width: 100%;
+    margin-top:.5%;
+}
+.leaveAndStayOnTeam{
+    color:white;
+}
+#name{
+    /*
+    width:25%;
+    margin-left:37%;
+    */
+    width:55%
+    
+
+   
+}
+.testP p{
+    margin-top:20%;
+    color:#ffffff;
+    background-color: #00FFCC;
+}
+.createBlueTeam{
+
+}
+.text-md-right{
+    
+}
+#name2{
+    width:30.5%;
+    margin-left:34%;
+}
+.blueNameLabel{
+    width:29%;
+    color:white;
+    text-align: right;
+}
+.chooseTeamRadioButtons{
+    color:white;
+}
+.redTeamImage{
+
+}
+.redMiddleContainer{
+    background-color: rgb(100, 2, 2); 
+    padding-left: 10%; 
+    padding-right: 10%; 
+    padding-top: 6%; 
+    padding-bottom: 6%;
+    text-align: center; 
+    vertical-align: center;
+    color:white;
+}
+.redTeamRadio{
+    color:white;
+}
+.userName{
+    color:#00CC99;
+    font-size: 14pt;
+    font-weight: bold;
+    
+}
+.loggedName{
+    color:#00CC99;
+    font-size: 13pt;   
+}
+.loggedInName{
+    font-size: 12pt;  
+    color:#00CC99;
+}
+.statsRed{
+    text-align: center;
+    float:left;
+    width:33%;
+    padding-top:1%;
+    background-color:#4d0000;
+    margin-right:.1%;
+    margin-left:.2%;
+    height: 7%;
+    border-bottom: 2px solid #00CC99;
+    border-top: 2px solid #00CC99;
+}
+.loggedIn{
+    float:left;
+    width:29%;
+    margin-left:25%;
+    text-align: center;
+    
+}
+.statsNameRed{
+  text-align: left;
+  float:left;
+  width:33%;
+  padding-top:1%;
+  padding-left:2%;
+  background-color:#4d0000;;
+  margin-right:.1%;
+  margin-left:.2%;
+  height: 7%;
+  border-bottom: 2px solid #00CC99;
+  border-top: 2px solid #00CC99;
+}
+.joinTd{
+    width:10%;
+    text-align: left;
+}
+#joinTdButton{
+    width:10%;
+}
+#joinTable{
+    width: 61%;
+    margin-left:31%;
+}
+.table {
+    color:white;
+}
+.table th{
+color:#00CC99;
+}
+.table td:hover{
+    color:#00FFCC;
+}
+.table tr:hover {
+    color:#00CC99;
+}
+.blueStoreTd{
+    width:25%;
+}
+.btn.btn-primaryInventory {
+    background-color: #00CC99;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 23px 8px;
+    cursor: pointer;
+}
+
+.btn.btn-primaryInventory:hover {
+    background-color: #00FFCC;
+    
+}
+

@@ -4,12 +4,13 @@
 
 @section('pagecontent')
     @if (Auth::user()->redteam == "")
-        <a href="/redteam/create"><button>Create Red Team</button></a>
+        <a href="/redteam/create"><button class="btn btn-primary">Create Red Team</button></a>
      @else
      @if (!empty($attMsg))
     {{ $attMsg }}
      @endif
-    <p>This is the red team home page. Much Wow.</p>
-    <a href="/redteam/startattack"><button>Start Attack</button></a>
+     <h4>Red Team Home Page</h4>
+    <p>You are now on the red team home page. Much Wow.</p>
+    <a href="/redteam/startattack"><button class="btn btn-primary" >Start Attack</button></a>
     @endif
 @endsection

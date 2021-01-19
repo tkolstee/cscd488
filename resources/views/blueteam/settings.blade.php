@@ -3,14 +3,14 @@
 @section('title', 'Blue Team Settings')
 
 @section('pagecontent')
-    <h2>Team Settings<br>
-    {{ $blueteam->name }}</h2>
+    <h3>Blue Team Settings<br></h3>
+        <p class="userName">{{ $blueteam->name }}</p>
     <h3>Team Members:</h3>
-    <strong>Leader: {{ $leader->username }}</strong><br>
+    <p class="userName">Leader: {{ $leader->username }}</p><br>
     @foreach ($members ?? [] as $member)
         {{ $member->username }}<br>
     @endforeach
-    <h2>Stats</h2>
+    <h3>Stats</h3>
     <strong>Balance: </strong>{{ $blueteam->balance }}<br>
     <strong>Reputation: </strong>{{ $blueteam->reputation }}<br><br>
     @if (Auth::user()->leader == 1)
@@ -29,7 +29,7 @@
         @elseif ($changeName ?? false)
             <form method="POST" action="/blueteam/changename">
             @csrf
-            <input id="name" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+            <input id="name2" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
                 <div class="form-group row mb-0">
                     <div class="col-md-8 offset-md-4">
                         <button type="submit" name="changeNameSubmit" class="btn btn-primary">
@@ -73,7 +73,7 @@
     @endif
     @if (!$leaveTeam ?? false)
 
-        <form method="POST" action="/blueteam/settings">
+        <form class="blueSettingForm"method="POST" action="/blueteam/settings">
         @csrf
             <input type="hidden" name="leaveTeamBtn" value="1">
             <div class="form-group row mb-0">
@@ -88,10 +88,10 @@
         <form method="POST" action="/blueteam/leaveteam">
         @csrf
             <input type="radio" name="result" id="leave" value="leave">
-            <label for="leave">Leave Team</label>
+            <label class="leaveAndStayOnTeam" for="leave">Leave Team</label>
             <br>
             <input type="radio" name="result" id="stay" value="stay">
-            <label for="stay">Stay on Team</label>
+            <label class="leaveAndStayOnTeam" for="stay">Stay on Team</label>
             <br>
             <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">
@@ -100,6 +100,7 @@
                     </button>
                 </div>
             </div>
+            
         </form>
     @endif
     
