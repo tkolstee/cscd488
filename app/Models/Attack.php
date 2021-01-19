@@ -223,7 +223,13 @@ class Attack extends Model
             $this->detection_level = 0;
         }
         else {
-            $this->detection_level = 1;
+            $blueteam = Team::find($this->blueteam);
+            if ($blueteam->hasAnalyst()) {
+                $this->detection_level = 2;
+            }
+            else {
+                $this->detection_level = 1;
+            }
             $this->notified = false;
         }
         Attack::updateAttack($this);

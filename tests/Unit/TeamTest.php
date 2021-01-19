@@ -205,4 +205,11 @@ class TeamTest extends TestCase {
         $this->assertEquals($token->quantity - 1, $tokenAfter->quantity);
     }
 
+    public function testTeamHasAnalyst(){
+        $team = Team::factory()->create();
+        $this->assertFalse($team->hasAnalyst());
+        Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'SecurityAnalyst']);
+        $this->assertTrue($team->hasAnalyst());
+    }
+
 }
