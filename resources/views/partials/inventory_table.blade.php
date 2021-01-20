@@ -1,6 +1,6 @@
 <table class="table table-bordered">
     <thead>
-        <th></th>
+        <th class="blueInvTd"></th>
         <th>Name</th>
         <th>Quantity</th>
     </thead>
@@ -8,9 +8,9 @@
         @foreach ($inventory ?? [] as $inv)
         <?php $invAsset = App\Models\Asset::get($inv->asset_name); 
         $inArray = in_array("Action",$invAsset->tags)?>
-            <tr class="test222">
-                <td ><input type="checkbox" name="results[]" value="{{ $inv->id }}"></td>
-                <td >{{ $invAsset->name }}</td>
+            <tr>
+                <td class="blueInvTd"><input type="checkbox" name="results[]" value="{{ $inv->id }}"></td>
+                <td>{{ $invAsset->name }}</td>
                 <td>{{$inv->quantity }}</td>
                 @if(in_array("Targeted", $invAsset->tags)) 
                     @if($inv->info != null)

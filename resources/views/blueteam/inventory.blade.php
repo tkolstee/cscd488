@@ -8,7 +8,7 @@
 
         <p>You have no assets.</p>
     @else
-    <div class="inventoryFormContainer">
+    <div >
         <form class="storeFormInventory" method="POST" action="/blueteam/sell">
             @csrf
             @include('partials.inventory_table', ['inventory' => $inventory])
@@ -16,6 +16,6 @@
                 Sell
             </button>
         </form>
-</div>
+    </div>
     @endif
 @endsection

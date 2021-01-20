@@ -549,6 +549,7 @@ h2{
 }
 .storeFormInventory{
     color:white;
+    width:85%;
     
 }
 .test222{
@@ -843,8 +844,11 @@ color:#00CC99;
 .blueStoreTd{
     width:25%;
 }
+.blueInvTd{
+    width:14%;
+}
 .inventoryFormContainer{
-    width:58%;
+    width:48%;
     margin: 0 auto;
 
 }
