@@ -123,7 +123,7 @@ class TeamTest extends TestCase {
         $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'SQLDatabase']);
         $asset = new SQLDatabaseAsset;
         $oldBalance = $team->balance;
-        $this->assertTrue($team->sellAsset($asset, 1));
+        $this->assertTrue($team->sellInventory($inv));
         $this->assertEquals($oldBalance + $asset->purchase_cost, $team->balance);
         $inv = $team->inventory($asset, 1);
         $this->assertNull($inv);
@@ -131,8 +131,10 @@ class TeamTest extends TestCase {
 
     public function testSellAssetNotOwned() {
         $team = Team::factory()->create();
+        $team2 = Team::factory()->create();
         $asset = new SQLDatabaseAsset;
-        $this->assertFalse($team->sellAsset($asset, 1));
+        $inv = Inventory::factory()->create(['team_id' => $team2->id, 'asset_name' => 'SQLDatabase']);
+        $this->assertFalse($team->sellInventory($inv));
     }
 
     public function testBuyAsset() {

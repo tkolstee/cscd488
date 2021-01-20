@@ -162,7 +162,7 @@ class RedTeamTest extends TestCase
         ]);
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset->class_name]
+            'results' => [$inventory->id]
         ]);
         $balBefore = $redteam->balance;
         $response = $controller->sell($request);
@@ -181,7 +181,7 @@ class RedTeamTest extends TestCase
         ]);
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset->class_name]
+            'results' => [$inventory->id]
         ]);
         $balBefore = $redteam->balance;
         $quantBefore = $inventory->quantity;
@@ -201,7 +201,7 @@ class RedTeamTest extends TestCase
         ]);
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset1->class_name, $asset1->class_name]
+            'results' => [$inventory1->id, $inventory1->id]
         ]);
         $balanceBefore = $redteam->balance;
         $qtyBefore1 = $inventory1->quantity;
@@ -214,14 +214,13 @@ class RedTeamTest extends TestCase
     }
 
     public function testSellItemNotOwned(){
-        $asset = Asset::getBuyableRed()[0];
         $this->assignTeam();
         $controller = new RedTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => [$asset->class_name]
+            'results' => ["Invalid"]
         ]);
         $response = $controller->sell($request);
-        $this->assertEquals("not-enough-owned-".$asset->class_name, $response->error);
+        $this->assertEquals("not-enough-owned", $response->error);
     }
 
     public function testSellNoItem(){
@@ -240,8 +239,8 @@ class RedTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => ["invalidName"]
         ]);
-        $this->expectException(AssetNotFoundException::class);
-        $controller->sell($request);
+        $response = $controller->sell($request);
+        $this->assertEquals("not-enough-owned", $response->error);
     }
 
     public function testSellInvalidTeam(){

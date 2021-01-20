@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\Inventory;
 use App\Models\Asset;
+use App\Models\Assets\HeightenedAwarenessAsset;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
@@ -199,12 +200,12 @@ class BlueTeamTest extends TestCase
         ]);
         $controller = new BlueTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => ["Firewall"]
+            'results' => [$inventory->id]
         ]);
         $response = $controller->sell($request);
         $sellCart = session('sellCart');
         $this->assertEquals(1, count($sellCart));
-        $this->assertEquals("Firewall1", $sellCart[0]);
+        $this->assertEquals($inventory->id, $sellCart[0]);
     }
 
     public function testSellNoItem(){
@@ -223,7 +224,7 @@ class BlueTeamTest extends TestCase
         $request = Request::create('/sell','POST',[
             'results' => ["Invalid"]
         ]);
-        $this->expectException(AssetNotFoundException::class);
+        $this->expectException(InventoryNotFoundException::class);
         $controller->sell($request);
     }
 
@@ -231,12 +232,12 @@ class BlueTeamTest extends TestCase
         $blueteam = Team::factory()->create();
         $inventory = Inventory::factory()->create([
             'asset_name' => "Firewall",
-            'team_id' => 1,
+            'team_id' => $blueteam->id,
             'quantity' => 1,
         ]);
         $controller = new BlueTeamController();
         $request = Request::create('/sell','POST',[
-            'results' => ["Firewall"]
+            'results' => [$inventory->id]
         ]);
         $this->expectException(TeamNotFoundException::class);
         $controller->sell($request);
@@ -258,8 +259,10 @@ class BlueTeamTest extends TestCase
         $this->assignTeam();
         $sellCart[] = 'invalid';
         session(['sellCart' => $sellCart]);
-        $this->expectException(AssetNotFoundException::class);
         $response = $controller->endTurn();
+        $this->assertEquals('not-enough-owned', $response->error);
+        $newSellCart = session('sellCart');
+        $this->assertEquals(0, count($newSellCart));
     }
 
     public function testEndTurnInvalidAssetInBuyCart(){
@@ -274,10 +277,10 @@ class BlueTeamTest extends TestCase
     public function testEndTurnNoItemOwnedError(){
         $controller = new BlueTeamController();
         $this->assignTeam();
-        $sellCart[] = "Firewall";
+        $sellCart[] = "1";
         session(['sellCart' => $sellCart]);
         $response = $controller->endTurn();
-        $this->assertEquals('not-enough-owned-Firewall', $response->error);
+        $this->assertEquals('not-enough-owned', $response->error);
         $newSellCart = session('sellCart');
         $this->assertEquals(0, count($newSellCart));
     }
@@ -343,7 +346,7 @@ class BlueTeamTest extends TestCase
         $team = $this->assignTeam();
         $balBefore = $team->balance;
         $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 1]);
-        $sellCart[] = "Firewall";
+        $sellCart[] = $inventory->id;
         session(['sellCart' => $sellCart]);
         $response = $controller->endTurn();
         $newSellCart = session('sellCart');
@@ -362,8 +365,8 @@ class BlueTeamTest extends TestCase
         $team->update();
         $balBefore = $team->balance;
         $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2]);
-        $sellCart[] = "Firewall";
-        $sellCart[] = "Firewall";
+        $sellCart[] = $inventory->id;
+        $sellCart[] = $inventory->id;
         session(['sellCart' => $sellCart]);
         $response = $controller->endTurn();
         $newSellCart = session('sellCart');
@@ -382,8 +385,8 @@ class BlueTeamTest extends TestCase
         $team->update();
         $balBefore = $team->balance;
         $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2]);
-        $sellCart[] = "Firewall";
-        $sellCart[] = "Firewall";
+        $sellCart[] = $inventory->id;
+        $sellCart[] = $inventory->id;
         $buyCart[] = "SQL Database";
         $buyCart[] = "SQL Database";
         session(['sellCart' => $sellCart]);
@@ -563,7 +566,7 @@ class BlueTeamTest extends TestCase
         $controller = new BlueTeamController();
         $team = $this->assignTeam();
         $request = Request::create('/upgrade', 'POST', ['submit' => "SQLDatabase1"]);
-        $this->expectException(AssetNotFoundException::class);
+        $this->expectException(InventoryNotFoundException::class);
         $response = $controller->upgrade($request);
     }
 
@@ -573,7 +576,7 @@ class BlueTeamTest extends TestCase
         $team->balance = 0;
         $team->update();
         $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 1]);
-        $request = Request::create('/upgrade', 'POST', ['submit' => "Firewall1"]);
+        $request = Request::create('/upgrade', 'POST', ['submit' => $inventory->id]);
         $response = $controller->upgrade($request);
         $this->assertEquals("unsuccessful", $response->error);
     }
@@ -582,7 +585,7 @@ class BlueTeamTest extends TestCase
         $controller = new BlueTeamController();
         $team = $this->assignTeam();
         $inventory = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 1, 'level' => 3]);
-        $request = Request::create('/upgrade', 'POST', ['submit' => "Firewall3"]);
+        $request = Request::create('/upgrade', 'POST', ['submit' => $inventory->id]);
         $response = $controller->upgrade($request);
         $this->assertEquals("unsuccessful", $response->error);
     }
@@ -592,7 +595,7 @@ class BlueTeamTest extends TestCase
         $team = $this->assignTeam();
         $inventory2 = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2, 'level' => 2]);
         $inventory1 = Inventory::factory()->create(['asset_name' => "Firewall", 'team_id' => $team->id, 'quantity' => 2, 'level' => 1]);
-        $request = Request::create('/upgrade', 'POST', ['submit' => "Firewall1"]);
+        $request = Request::create('/upgrade', 'POST', ['submit' => $inventory1->id]);
         $response = $controller->upgrade($request);
         $inventory1After = $team->inventory(Asset::get($inventory1->asset_name), $inventory1->level);        
         $inventory2After = $team->inventory(Asset::get($inventory2->asset_name), $inventory2->level);
@@ -655,6 +658,58 @@ class BlueTeamTest extends TestCase
         $this->assertEquals($team->name, $response->viewMembers);
         $this->assertEquals($user1->id, $response->viewTeamLeader->id);
         $this->assertEquals($user2->id, $response->viewTeamMembers->first()->id);
+    }
+
+    //PickTarget Test
+    //Should return home with turn ended
+    
+    public function testPickTargetInvalidTeam(){
+        $controller = new BlueTeamController();
+        $team = Team::factory()->create();
+        $user1 = User::factory()->create(['blueteam' => $team->id, 'leader' => 1]);
+        $asset = new HeightenedAwarenessAsset();
+        $inv = Inventory::factory()->create(['asset_name' => $asset->class_name, 'team_id' => $team->id]);
+        $invs = [$inv];
+        $request = Request::create('/picktarget','POST',['invs' => $invs, 'result1' => "InvalidName"]);
+        $this->expectException(TeamNotFoundException::class);
+        $response = $controller->pickTarget($request);
+    }
+    
+    public function testPickTarget1AssetValid(){
+        $controller = new BlueTeamController();
+        $team = Team::factory()->create();
+        $redteam = Team::factory()->red()->create();
+        $user1 = User::factory()->create(['blueteam' => $team->id, 'leader' => 1]);
+        $this->be($user1);
+        $user2 = User::factory()->create(['redteam' => $redteam->id]);
+        $asset = Asset::get("HeightenedAwareness");
+        $inv = Inventory::factory()->create(['asset_name' => $asset->class_name, 'team_id' => $team->id]);
+        $invs = [$inv];
+        $request = Request::create('/picktarget','POST',['invCount' => 1, 'result1' => $redteam->name, 'name1' => $asset->class_name]);
+        $controller->pickTarget($request);
+        $invAfter = $team->inventoryWithInfo( $asset->class_name , 1, $redteam->name);
+        $this->assertEquals($redteam->name, $invAfter->info);
+    }
+
+    public function testPickTarget2AssetValid(){
+        $controller = new BlueTeamController();
+        $team = Team::factory()->create();
+        $redteam = Team::factory()->red()->create();
+        $redteam2 = Team::factory()->red()->create();
+        $user1 = User::factory()->create(['blueteam' => $team->id, 'leader' => 1]);
+        $this->be($user1);
+        $user2 = User::factory()->create(['redteam' => $redteam->id]);
+        $asset = new HeightenedAwarenessAsset();
+        $inv = Inventory::factory()->create(['asset_name' => $asset->class_name, 'team_id' => $team->id]);
+        $inv = Inventory::factory()->create(['asset_name' => $asset->class_name, 'team_id' => $team->id]);
+        $request = Request::create('/picktarget','POST',['invCount' => 2, 
+            'result1' => $redteam->name, 'name1' => $asset->class_name,
+            'result2' => $redteam2->name, 'name2' => $asset->class_name]);
+        $response = $controller->pickTarget($request);
+        $invAfter = $team->inventoryWithInfo($asset->class_name, 1, $redteam->name);
+        $this->assertEquals($redteam->name, $invAfter->info);
+        $invAfter = $team->inventoryWithInfo($asset->class_name, 1, $redteam2->name);
+        $this->assertEquals($redteam2->name, $invAfter->info);
     }
 
 }

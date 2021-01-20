@@ -78,18 +78,18 @@
                 </table>
             @endif
             @if (!empty(session('sellCart')))
-                <p>Sell Cart</p>
+                <h3 class="shoppingCart">Sell Cart</h3>
                 <?php $cart = session('sellCart'); ?>
-                <table>
+                <table class="storeFormCancel">
                 <tbody>
                 @foreach ($cart as $item)
                 <tr>
-                    <td>{{ $item }} </td> 
+                    <td>{{ App\Models\Asset::get(App\Models\Inventory::find($item)->asset_name)->name }} </td> 
                     <form  method="POST" action="/blueteam/cancel">
                         @csrf
                         <input type="hidden" name="cart" value="sell">
                         <td > <button  type="submit" formaction="/blueteam/cancel" 
-                            class="btn btn-primary" 
+                            class="btn btn-primary4" 
                             name="{{"cancel[" . $item . "]"}}">
                             Cancel</button></td>
                     </form>
