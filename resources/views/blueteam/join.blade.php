@@ -21,7 +21,7 @@
                                 name="submit" value="{{$blueteam->name }}">
                                 View Members</button><td>
             @else
-                <td>Leader: {{$viewTeamLeader->username }}</td>
+                <td class="userNameBlue">Leader: {{$viewTeamLeader->username }}</td>
                 @if(count($viewTeamMembers) > 0)
                     </tr><tr><td></td><td>Members: </td>
                     @foreach($viewTeamMembers as $member)
