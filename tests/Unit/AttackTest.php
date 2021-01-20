@@ -300,7 +300,6 @@ class AttackTest extends TestCase {
         $attack = Attack::create('SynFlood', $red->id, $blue->id);
         $attack->detection_risk = 5;
         $attack->calculateDetected();
-
         $this->assertEquals(2, $attack->detection_level);
     }
 
@@ -314,5 +313,29 @@ class AttackTest extends TestCase {
         $attack->detection_level = 2;
         Attack::updateAttack($attack);
         $this->assertEquals($attack->name, $attack->getName());
+    }
+
+    //Test AddToken tag
+
+    public function testAddTokenTag1Token(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $asset = new AccessTokenAsset();
+        $token = Inventory::factory()->create(['asset_name' => 'AccessToken', 'team_id' => $red->id, 'info' => $blue->name]);
+        $seg = Inventory::factory()->create(['asset_name' => 'SegregateDuties', 'team_id' => $blue->id]);
+        $attack = Attack::create('BackdoorBasic', $red->id, $blue->id);
+        $attack->onPreAttack();
+        $this->assertFalse($attack->possible);
+    }
+
+    public function testAddTokenTag2Token(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $asset = new AccessTokenAsset();
+        $token = Inventory::factory()->create(['asset_name' => 'AccessToken', 'team_id' => $red->id, 'info' => $blue->name, 'quantity' => 2]);
+        $seg = Inventory::factory()->create(['asset_name' => 'SegregateDuties', 'team_id' => $blue->id]);
+        $attack = Attack::create('BackdoorBasic', $red->id, $blue->id);
+        $attack->onPreAttack();
+        $this->assertTrue($attack->possible);
     }
 }
