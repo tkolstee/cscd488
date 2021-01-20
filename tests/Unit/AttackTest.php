@@ -307,4 +307,15 @@ class AttackTest extends TestCase {
         $this->assertEquals(2, $attack->detection_level);
     }
 
+    public function testGetName(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack->detection_level = 1;
+        Attack::updateAttack($attack);
+        $this->assertNotEquals($attack->name, $attack->getName());
+        $attack->detection_level = 2;
+        Attack::updateAttack($attack);
+        $this->assertEquals($attack->name, $attack->getName());
+    }
 }

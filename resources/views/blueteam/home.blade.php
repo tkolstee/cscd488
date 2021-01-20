@@ -27,12 +27,7 @@
             <h4>Your team was attacked while you were away!</h4>
             @foreach ($unreadAttacks as $attack)
                 <p>
-                @if ($attack->detection_level == 2)
-                    {{$attack->name}} 
-                @elseif ($attack->detection_level == 1)
-                    Attack
-                @endif
-                {{$attack->created_at->diffForHumans()}}. 
+                {{$attack->getName()}} attack {{$attack->created_at->diffForHumans()}}. 
                 You lost ${{$attack->blue_loss*-1}} and {{$attack->reputation_loss*-1}} reputation
                     <form action="/blueteam/broadcast" method="post">
                         @csrf

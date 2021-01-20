@@ -254,6 +254,13 @@ class Attack extends Model
         Attack::updateAttack($this);
     }
 
+    public function getName(){ //Restrict information given based on detection level
+        if ($this->detection_level >= 2) {
+            return $this->name;
+        }
+        return "?";
+    }
+
     public function onPreAttack() {
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
