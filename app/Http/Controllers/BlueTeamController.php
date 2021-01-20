@@ -6,10 +6,12 @@ use App\Models\Team;
 use App\Models\Asset;
 use App\Models\Blueteam;
 use App\Models\Setting;
+use App\Models\Inventory;
 use App\Models\Game;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\TeamNotFoundException;
+use App\Exceptions\InventoryNotFoundException;
 use Exception;
 use App\Models\Attack;
 
@@ -160,18 +162,10 @@ class BlueTeamController extends Controller {
         $sellCart = session('sellCart');
         if (!empty($sellCart)){
             foreach($sellCart as $sellItem){
-                if(!is_numeric(substr($sellItem,-1))){
-                    $assetName = $sellItem;
-                    $level = 1;
-                }
-                else{
-                    $assetName = substr($sellItem, 0, strlen($sellItem)-1);
-                    $level = substr($sellItem, -1);
-                }
-                $asset = Asset::getByName($assetName);
-                $success = $blueteam->sellAsset($asset, $level);
+                $inv = Inventory::find($sellItem);
+                $success = $blueteam->sellInventory($inv);
                 if (!$success) {
-                    $error = "not-enough-owned-".$assetName;
+                    $error = "not-enough-owned";
                     $key = array_search($sellItem, $sellCart);
                     unset($sellCart[$key]);
                     session(['sellCart' => $sellCart]);
@@ -208,8 +202,10 @@ class BlueTeamController extends Controller {
         //update turn stuff
         Auth::user()->setTurnTaken(1);
         if(count($targeted) > 0){
-            $redteams = Team::getRedTeams();
-            return view('blueteam.target')->with(compact('blueteam', 'targeted', 'redteams'));
+            try{
+                $redteams = Team::getRedTeams();
+                return view('blueteam.target')->with(compact('blueteam', 'targeted', 'redteams'));
+            }catch(TeamNotFoundException $e){}
         }
         $turn = 1;
         $endTime = Setting::get('turn_end_time');
@@ -217,11 +213,24 @@ class BlueTeamController extends Controller {
     }
 
     public function pickTarget(Request $request){
-        $invs = $request->invs;
-        for($i = 1; $i < count($invs) + 1; $i++){
+        $blueteam = Auth::user()->getBlueTeam();
+        if(empty($request->invCount)){
+            $inv = Inventory::find($request->submit);
+            if($inv == null) throw new InventoryNotFoundException();
+            $targeted = [$inv];
+            try{
+                $redteams = Team::getRedTeams();
+            }catch(TeamNotFoundException $e){}
+            return view('blueteam.target')->with(compact('blueteam', 'targeted', 'redteams'));
+        }
+        $count = $request->invCount;
+        for($i = 1; $i < $count + 1; $i++){
             $result = "result".$i;
             $redteam = Team::get($request->$result);
-            $invs[$i-1]->setInfo($redteam->name);
+            $name = "name" . $count;
+            $asset = Asset::get($request->$name);
+            $inv = $blueteam->inventory($asset, 1);
+            $inv->setInfo($redteam->name);
         }
         $turn = 1;
         $endTime = Setting::get('turn_end_time');
@@ -278,10 +287,8 @@ class BlueTeamController extends Controller {
 
     public function upgrade(request $request){
         $result = $request->submit;
-        $asset = Asset::get(substr($result, 0, strlen($result)-1));
-        $level = substr($result, -1);
-        $inv = Auth::user()->getBlueTeam()->inventory($asset, $level);
-        if($inv == null) throw new AssetNotFoundException();
+        $inv = Inventory::find($result);
+        if($inv == null) throw new InventoryNotFoundException();
         $success = $inv->upgrade();
         if($success == false) $error = "unsuccessful";
         else $error = null;
@@ -289,19 +296,17 @@ class BlueTeamController extends Controller {
     }
 
     public function sell(request $request){
-        $assetNames = $request->input('results');
-        if($assetNames == null){
+        $invIds = $request->input('results');
+        if($invIds == null){
             $error = "no-asset-selected";
             return $this->inventory()->with(compact('error'));
         }
         $sellCart = session('sellCart');
-        foreach($assetNames as $asset){
-            if(!is_numeric(substr($asset, -1))){
-                $sellCart[] = Asset::get($asset)->name . 1;
-            }else{
-                $actAsset = Asset::get(substr($asset, 0, strlen($asset)-1));
-                $sellCart[] = $actAsset->name . substr($asset, -1);
+        foreach($invIds as $inv){
+            if(Inventory::find($inv) == null) {
+                throw new InventoryNotFoundException();
             }
+            $sellCart[] = $inv;
         }
         session(['sellCart' => $sellCart]);
         return $this->inventory();
@@ -322,7 +327,6 @@ class BlueTeamController extends Controller {
         }
         $blueteam->balance = 1000; $blueteam->update(); //DELETE THIS IS FOR TESTING PURPOSES
         $buyCart = session('buyCart');
-        $actions = [];
         foreach($assetNames as $asset){
             $actAsset = Asset::get($asset);
             $buyCart[] = $actAsset->name;

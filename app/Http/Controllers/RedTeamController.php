@@ -188,25 +188,17 @@ class RedTeamController extends Controller {
     }
 
     public function sell(request $request){
-        //change this to proportion sell rate
-        $sellRate = 1;
-        $assetNames = $request->input('results');
-        if($assetNames == null){
+        $invIds = $request->input('results');
+        if($invIds == null){
             $error = "no-asset-selected";
             return $this->inventory()->with(compact('error'));
         }
         $redteam = Auth::user()->getRedTeam();
-        foreach($assetNames as $asset){
-            if(!is_numeric(substr($asset, -1))){
-                $asset = Asset::get($asset);
-                $level = 1;
-            }else{
-                $level = substr($asset, -1);
-                $asset = Asset::get(substr($asset, 0, strlen($asset)-1));
-            }
-            $success = $redteam->sellAsset($asset, $level);
+        foreach($invIds as $invId){
+            $inv = Inventory::find($invId);
+            $success = $redteam->sellInventory($inv);
             if (!$success) {
-                $error = "not-enough-owned-".$asset->class_name;
+                $error = "not-enough-owned";
                 return $this->inventory()->with(compact('error'));
             }
         }

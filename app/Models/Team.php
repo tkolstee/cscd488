@@ -88,9 +88,8 @@ class Team extends Model
         return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->where('level', '=', $level)->where('info','=',null)->first();
     }
 
-    public function inventoryWithInfo($asset, $level, $info){
-        $asset = Asset::get($asset->class_name);
-        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $asset->class_name)->where('level', '=', $level)->where('info' ,'=', $info)->first();
+    public function inventoryWithInfo($assetName, $level, $info){
+        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $assetName)->where('level', '=', $level)->where('info' ,'=', $info)->first();
     }
 
     public function assets() {
@@ -166,9 +165,10 @@ class Team extends Model
         $this->update();
     }
 
-    public function sellAsset($asset, $level) {
-        $inv = $this->inventory($asset, $level);
+    public function sellInventory($inv) {
         if ($inv == null) { return false;}
+        if ($inv->team_id != $this->id) { return false; }
+        $asset = Asset::get($inv->asset_name);
         //get last upgrade cost
         $inv->level--;
         $lastUpCost = $inv->getUpgradeCost();

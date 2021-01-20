@@ -53,7 +53,7 @@ class Inventory extends Model
                 $this->update();
             }else{
                 $inv = new Inventory();
-                $inv->class_name = $this->class_name;
+                $inv->asset_name = $this->asset_name;
                 $inv->team_id = $this->team_id;
                 $inv->level = $this->level;
                 $inv->info = $string;
