@@ -3,8 +3,9 @@
 @section('title', 'Leaderboard')
 
 @section('pagecontent')
-    <table class="table table-bordered table-hover">
-        <thead>
+<div class="leaderBoardContainer">
+    <table class="table table-bordered">
+        <thead >
             <th>Rank</th>
             <th>Name</th>
             <th>Reputation</th>
@@ -19,4 +20,5 @@
             @endforeach
         </tbody>
     </table>
+</div>
 @endsection

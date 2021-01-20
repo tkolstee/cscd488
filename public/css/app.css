@@ -491,7 +491,7 @@ h4{
 .blueTeamMenuSelection li a{
     color:white;
     font-size: 12pt;
-    padding-left:3.8%;
+    padding-left:2.0%;
     padding-top:1.2%;
     padding-bottom:1.2%;
     
@@ -499,7 +499,7 @@ h4{
 
 .blueTeamMenuSelection a {
     
-    padding-right:4%;
+    padding-right:2.3%;
     padding-left: 34%;
     text-decoration: none;
     background-color: rgb(3, 3, 148);
@@ -545,7 +545,7 @@ h2{
 }
 .storeForm{
     color:white;
-    width:36%;
+    width:38%;
 }
 .storeFormInventory{
     color:white;
@@ -586,7 +586,7 @@ h2{
     max-height: 56%;
 }
 .blueStoreForm{
-    width: 36%;
+    width: 38%;
 }
 .userName{
     color:#00CC99;
@@ -798,11 +798,12 @@ input[type="checkbox"], input[type="radio"]{
 }
 .loggedIn{
     float:left;
-    width:29%;
+    width:31%;
     margin-left:25%;
     text-align: center;
     
 }
+
 .statsNameRed{
   text-align: left;
   float:left;
@@ -859,4 +860,14 @@ color:#00CC99;
     background-color: #00FFCC;
     
 }
+.userNameBlue{
+    color:white;
+    padding-bottom:1%;
+}
 
+.leaderBoardContainer{
+    width:20%;
+    margin: 0 auto;
+    padding-top:3%;
+    text-align: center;
+}
