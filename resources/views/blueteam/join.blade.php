@@ -23,9 +23,9 @@
             @else
                 <td class="userNameBlue">Leader: {{$viewTeamLeader->username }}</td>
                 @if(count($viewTeamMembers) > 0)
-                    </tr><tr><td></td><td>Members: </td>
+                    </tr><tr><td></td><td class="userNameBlue"> Members: </td>
                     @foreach($viewTeamMembers as $member)
-                        <td>{{$member->username }}</td>
+                        <td class="userNameBlue">{{$member->username }}</td>
                     @endforeach
                 @endif
             @endif

@@ -387,6 +387,8 @@ h4{
     margin-top:3%;
     padding-left:16%;
     padding-top:4%;
+    padding-bottom:4%;
+    margin-bottom:3%;
 }
 .aboutJanus{
     color:#00CC99;
@@ -890,6 +892,8 @@ color:#00CC99;
 .userNameBlue{
     color:white;
     padding-bottom:1%;
+    padding-left:1%;
+    padding-right:1%;
 }
 
 .leaderBoardContainer{
