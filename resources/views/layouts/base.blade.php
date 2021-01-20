@@ -21,7 +21,7 @@
             <div class="header"> 
                 <div class="headerContainer">
                     <div class="logo">
-                        <a href="{{ url('http://localhost:8000/') }}"><img src="../images/LOGOcscd488.png" class="img-fluid" alt="Responsive image"/></a>
+                        <a href="/home/home"><img src="../images/LOGOcscd488.png" class="img-fluid" alt="Responsive image"/></a>
                     </div><!-- end logo class-->
                     <div class=loginAndRegister>
                     @if(Auth::check())
@@ -57,7 +57,7 @@
                 <div class="navbar">
                     <div class="navbarSelection">
                         <ul>
-                            <li><a href="/home/home">Home</a></li>
+                            <li><a href="/home/chooseteam">Home</a></li>
                             <li><a href="/home/about">About</a></li>
                             <li><a href="gamePlay.php">Rules</a></li>
                             <li><a href="contact.php">Contact</a></li>

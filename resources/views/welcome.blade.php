@@ -45,7 +45,7 @@
             <div class="navbar">
                 <div class="navbarSelection">
                     <ul>
-                        <li><a href="/home/home">Home</a></li>
+                        <li><a href="/home/chooseteam">Home</a></li>
                         <li><a href="/home/about">About</a></li>
                         <li><a href="gamePlay.php">Rules</a></li>
                         <li><a href="contact.php">Contact</a></li>
