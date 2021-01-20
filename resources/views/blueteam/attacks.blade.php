@@ -16,7 +16,7 @@
             <tbody>
                 @foreach ($previousAttacks as $attack)
                     <tr>
-                        <td>{{$attack->name}}</td>
+                        <td>{{$attack->getName()}}</td>
                         <td>{{App\Models\Team::find($attack->redteam)->name}}</td>
                         <td>{{$attack->success ? 'true' : 'false'}}</td>
                         <td>{{$attack->created_at->diffForHumans()}}</td>

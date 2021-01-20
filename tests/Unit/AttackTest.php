@@ -75,10 +75,10 @@ class AttackTest extends TestCase {
         $this->assertEmpty(Attack::getBluePreviousAttacks($blue->id));
 
         $attack1 =  Attack::create('SynFlood', $red->id, $blue->id);
-        $attack1->detected = true;
+        $attack1->detection_level = 1;
         Attack::updateAttack($attack1);
         $attack2 = Attack::create('SQLInjection', $red->id, $diffBlue->id);
-        $attack2->detected = true;
+        $attack2->detection_level = 1;
         Attack::updateAttack($attack2);
 
         $prevAttacks = Attack::getBluePreviousAttacks($blue->id);
@@ -110,11 +110,11 @@ class AttackTest extends TestCase {
         $this->assertEmpty(Attack::getUnreadDetectedAttacks($blue->id));
 
         $attackNotNotified = Attack::create('SynFlood', $red->id, $blue->id);
-        $attackNotNotified->detected = true;
+        $attackNotNotified->detection_level = 1;
         $attackNotNotified->notified = false;
         Attack::updateAttack($attackNotNotified);
         $attackNotified = Attack::create('SQLInjection', $red->id, $blue->id);
-        $attackNotified->detected = true;
+        $attackNotified->detection_level = 1;
         $attackNotified->notified = true;
         Attack::updateAttack($attackNotified);
 
@@ -129,11 +129,11 @@ class AttackTest extends TestCase {
         $blue2 = Team::factory()->create();
 
         $correctAttack = Attack::create('SQLInjection', $red->id, $blue->id);
-        $correctAttack->detected = true;
+        $correctAttack->detection_level = 1;
         $correctAttack->notified = false;
         Attack::updateAttack($correctAttack);
         $wrongAttack = Attack::create('SynFlood', $red->id, $blue2->id);
-        $wrongAttack->detected = true;
+        $wrongAttack->detection_level = 1;
         $wrongAttack->notified = false;
 
         $attacks = Attack::getUnreadDetectedAttacks($blue->id);
@@ -178,7 +178,7 @@ class AttackTest extends TestCase {
         $attack->detection_risk = 5;
         $attack->update();
         $attack->calculateDetected();
-        $this->assertTrue($attack->detected);
+        $this->assertEquals(1, $attack->detection_level);
     }
 
     public function testCalculateDetectedFalse() {
@@ -189,7 +189,7 @@ class AttackTest extends TestCase {
         $attack->detection_risk = 1;
         $attack->update();
         $attack->calculateDetected();
-        $this->assertFalse($attack->detected);
+        $this->assertEquals(0, $attack->detection_level);
     }
 
     public function testCalculateDetectedAfterSetSuccess() {
@@ -201,7 +201,7 @@ class AttackTest extends TestCase {
         $attack->update();
 
         $attack->calculateDetected();
-        $this->assertNotNull($attack->detected);
+        $this->assertNotEquals(0, $attack->detection_level);
     }
 
     public function testChangeDifficulty() {
@@ -277,7 +277,7 @@ class AttackTest extends TestCase {
         $attack = Attack::updateAttack($attack);
         $attack->onPreAttack();
         $this->assertFalse($attack->possible);
-        $this->assertFalse($attack->detected);
+        $this->assertEquals(0, $attack->detection_level);
         $this->assertEquals("No access token.", $attack->errormsg);
     }
 
@@ -293,4 +293,26 @@ class AttackTest extends TestCase {
         $this->assertTrue($attack->possible);
     }
 
+    public function testAnalystDetectsAttacks(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        Inventory::factory()->create(['asset_name' => 'SecurityAnalyst', 'team_id' => $blue->id]);
+        $attack = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack->detection_risk = 5;
+        $attack->calculateDetected();
+
+        $this->assertEquals(2, $attack->detection_level);
+    }
+
+    public function testGetName(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack->detection_level = 1;
+        Attack::updateAttack($attack);
+        $this->assertNotEquals($attack->name, $attack->getName());
+        $attack->detection_level = 2;
+        Attack::updateAttack($attack);
+        $this->assertEquals($attack->name, $attack->getName());
+    }
 }

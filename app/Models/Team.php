@@ -250,4 +250,12 @@ class Team extends Model
         }
         return false;
     }
+
+    public function hasAnalyst() {
+        $assets = $this->assets();
+        foreach ($assets as $asset) {
+            if (in_array('Analysis', $asset->tags)) { return true;}
+        }
+        return false;
+    }
 }
