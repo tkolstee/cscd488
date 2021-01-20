@@ -311,8 +311,9 @@ class Attack extends Model
             if(in_array("PwnedAccess", $this->tags)) $tokenLevel = 3;
             $tokenOwned = false;
             $tokens = $redteam->getTokens();
+            $tokensRequired = $this->tokensRequired();
             foreach( $tokens as $token){
-                if( $token->info == $blueteam->name && $token->level == $tokenLevel){
+                if( $token->info == $blueteam->name && $token->level == $tokenLevel && $token->quantity >= $tokensRequired){
                     $tokenOwned = true;
                 }
             }
@@ -322,6 +323,18 @@ class Attack extends Model
                 $this->errormsg = "No access token.";
             }
         }
+    }
+
+    public function tokensRequired(){
+        $blueteam = Team::find($this->blueteam);
+        $invs = $blueteam->inventories();
+        $tokensRequired = 1;
+        foreach($invs as $inv){
+            $asset = Asset::get($inv->asset_name);
+            if(in_array("AddToken", $asset->tags))
+                $tokensRequired++;
+        }
+        return $tokensRequired;
     }
 
 }
