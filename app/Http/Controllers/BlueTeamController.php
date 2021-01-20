@@ -218,6 +218,7 @@ class BlueTeamController extends Controller {
             $inv = Inventory::find($request->submit);
             if($inv == null) throw new InventoryNotFoundException();
             $targeted = [$inv];
+            $redteams = null;
             try{
                 $redteams = Team::getRedTeams();
             }catch(TeamNotFoundException $e){}

@@ -35,7 +35,11 @@
             @foreach ($unreadAttacks as $attack)
                 <p>
                 {{$attack->getName()}} attack {{$attack->created_at->diffForHumans()}}. 
-                You lost ${{$attack->blue_loss*-1}} and {{$attack->reputation_loss*-1}} reputation
+                @if($attack->success)
+                    You lost ${{$attack->blue_loss*-1}} and {{$attack->reputation_loss*-1}} reputation
+                @else
+                    The attack failed
+                @endif
                     <form action="/blueteam/broadcast" method="post">
                         @csrf
                         <input type="hidden" name="attID" value={{$attack->id}}>

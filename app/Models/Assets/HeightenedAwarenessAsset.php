@@ -4,6 +4,7 @@ namespace App\Models\Assets;
 
 use App\Models\Asset;
 use App\Models\Attack;
+use App\Models\Team;
 
 class HeightenedAwarenessAsset extends Asset 
 {
