@@ -292,4 +292,24 @@ class BlueTeamFeatureTest extends TestCase
                                     $blue2->name, $blue2->reputation,
                                     $blue3->name, $blue3->reputation]);
     }
+
+    public function testAttacksPageDisplaysCorrectInfo()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detection_level = 1;
+        Attack::updateAttack($attack1);
+        $attack2 = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack2->detection_level = 2;
+        Attack::updateAttack($attack2);
+        $response = $this->actingAs($user)->get('blueteam/attacks');
+        $response->assertDontSee($attack1->name);
+        $response->assertSee($attack2->name);
+    }
 }
