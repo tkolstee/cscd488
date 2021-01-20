@@ -18,6 +18,10 @@ class HeightenedAwarenessAsset extends Asset
 
     public function onPreAttack($attack)
     {
-        
+        $redteam = Team::find($attack->redteam);
+        if($redteam->name == $attack->info){
+            $attack->changeDifficulty(1);
+            $attack->changeDetectionRisk(2);
+        }
     }
 }
