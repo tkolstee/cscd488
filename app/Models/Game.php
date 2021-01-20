@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Blueteam;
+use App\Models\Team;
 use App\Http\Controllers\SetupController;
 
 class Game extends Model
@@ -33,7 +34,7 @@ class Game extends Model
         $blueteams = Blueteam::all();
         foreach ($blueteams as $blueteam){
             $blueteam->setTurnTaken(0);
-            $blueteam->useTurnConsumables();
+            Team::find($blueteam->team_id)->useTurnConsumables();
         }
         $redteams = Redteam::all();
         foreach($redteams as $redteam){
