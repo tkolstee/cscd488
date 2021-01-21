@@ -11,6 +11,7 @@ class SecurityAnalystAsset extends Asset
     public $_tags    = ['Analysis', 'TurnConsumable'];
     public $_blue = 1;
     public $_buyable = 1;
+    public $_purchase_cost = 300;
 
     public function onPreAttack($attack)
     {
