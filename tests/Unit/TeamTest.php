@@ -165,6 +165,8 @@ class TeamTest extends TestCase {
         $this->assertNotEquals($team1->name, $team2->name);
     }
 
+    //Access Token Tests
+
     public function testGetAccessTokens(){
         $team = Team::factory()->red()->create();
         $blue = Team::factory()->create();
@@ -212,6 +214,52 @@ class TeamTest extends TestCase {
         $this->assertFalse($team->hasAnalyst());
         Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'SecurityAnalyst']);
         $this->assertTrue($team->hasAnalyst());
+    }
+
+    //Foothold Tests
+
+    public function testAddFoothold(){
+        $team = Team::factory()->red()->create();
+        $team->addFoothold("BlueName","SQLInjection",2);
+        $inv = Inventory::all()->where('team_id', '=', $team->id)->where('asset_name','=',"Foothold")->first();
+        $this->assertNotNull($inv);
+        $this->assertEquals("BlueName`SQLInjection`2", $inv->info);
+    }
+
+    public function testAddSecondFoothold(){
+        $team = Team::factory()->red()->create();
+        $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => "Foothold", 'info' => "Blue`Attack`1"]);
+        $team->addFoothold("Blue","Attack",1);
+        $inv = Inventory::all()->where('team_id', '=', $team->id)->where('asset_name','=',"Foothold")->where('info','=','Blue`Attack`1')->first();
+        $this->assertEquals(2, $inv->quantity);
+    }
+
+    public function testGetFootholdAttributes(){
+        $team = Team::factory()->red()->create();
+        $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => "Foothold", 'info' => "Blue`Attack`1"]);
+        $this->assertEquals("Blue", $inv->getFootholdBlueTeam());
+        $this->assertEquals("Attack", $inv->getFootholdAttackName());
+        $this->assertEquals(1, $inv->getFootholdDiffChange());
+    }
+
+    public function testRemoveFoothold(){
+        $team = Team::factory()->red()->create();
+        $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => "Foothold", 'info' => "Blue`Attack`1"]);
+        $footholdBefore = $team->getFootholds()->first();
+        $this->assertEquals(1, $footholdBefore->quantity);
+        $team->removeFoothold("Blue","Attack");
+        $footholdAfter = $team->getFootholds()->first();
+        $this->assertNull($footholdAfter);
+    }
+
+    public function testRemoveSecondFoothold(){
+        $team = Team::factory()->red()->create();
+        $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => "Foothold", 'info' => "Blue`Attack`1", 'quantity' => 2]);
+        $footholdBefore = $team->getFootholds()->first();
+        $this->assertEquals(2, $footholdBefore->quantity);
+        $team->removeFoothold("Blue","Attack");
+        $footholdAfter = $team->getFootholds()->first();
+        $this->assertEquals(1, $footholdAfter->quantity);
     }
 
 }

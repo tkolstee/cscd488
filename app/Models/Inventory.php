@@ -36,6 +36,32 @@ class Inventory extends Model
         }
     }
 
+    public function getFootholdBlueTeam(){
+        if($this->asset_name != "Foothold") throw new InventoryNotFoundException();
+        $count1 = 1;
+        while(substr($this->info, $count1, 1) != "`"){
+            $count1++;
+        }
+        $team = substr($this->info, 0, $count1);
+        return $team;
+    }
+
+    public function getFootholdAttackName(){
+        if($this->asset_name != "Foothold") throw new InventoryNotFoundException();
+        $count1 = strlen($this->getFootholdBlueTeam());
+        $count2 = $count1++;
+        while(substr($this->info, $count2, 1) != "`"){
+            $count2++;
+        }
+        $attack = substr($this->info, $count1, $count2 - $count1 - 1);
+        return $attack;
+    }
+
+    public function getFootholdDiffChange(){
+        if($this->asset_name != "Foothold") throw new InventoryNotFoundException();
+        return substr($this->info, -1);
+    }
+
     public function usedToken(){
         if($this->asset_name != "AccessToken" && $this->asset_name != "Insider") throw new InventoryNotFoundException();
         $rand = rand(1,4);

@@ -112,6 +112,53 @@ class Team extends Model
         }
     }
 
+    public function addFoothold($blueteamName, $attackName, $diffChange){
+        if($this->blue == 1) throw new TeamNotFoundException();
+        $info = $blueteamName . "`" . $attackName . "`" . $diffChange;
+        $foothold = Inventory::all()->where('team_id', '=', $this->id)->where('asset_name','=',"Foothold")->
+            where('info', '=', $info)->first();
+        if($foothold == null) {
+            $foothold = new Inventory();
+            $foothold->team_id = $this->id;
+            $foothold->asset_name = "Foothold";
+            $foothold->level = 1;
+            $foothold->info = $info;
+            $foothold->save();
+        }
+        else{
+            $foothold->quantity++;
+            $foothold->update();
+        }
+    }
+
+    public function removeFoothold($blueteam, $attackName){
+        $possibleFootholds = $this->getFootholds();
+        $foothold = null;
+        $string = $blueteam . "`" . $attackName;
+        foreach($possibleFootholds as $possible){
+            if($string == substr($possible->info, 0, strlen($string))){
+                $possible->reduce();
+                return;
+            }
+        }
+    }
+
+    public function getFoothold($blueteam, $attackName){
+        $possibleFootholds = $this->getFootholds();
+        $foothold = null;
+        $string = $blueteam . "`" . $attackName;
+        foreach($possibleFootholds as $possible){
+            if($string == substr($possible->info, 0, strlen($string))){
+               return $possible;
+            }
+        }
+        throw new InventoryNotFoundException();
+    }
+
+    public function getFootholds(){
+        return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name','=',"Foothold");
+    }
+
     public function addToken($info, $level){
         if($this->blue == 1) throw new TeamNotFoundException();
         $token = Inventory::all()->where('team_id', '=', $this->id)->where('asset_name','=',"AccessToken")->
