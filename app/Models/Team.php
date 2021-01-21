@@ -165,6 +165,28 @@ class Team extends Model
         $this->update();
     }
 
+    public function addBonusReputation() {
+        $dayStreak = $this->daysSinceLastAttack();
+        if ($dayStreak <= 0) {
+            return;
+        }
+        elseif ($dayStreak >= 7) {
+            $this->changeReputation(3200);
+        }
+        else {
+            $rep = 50*pow(2, $dayStreak-1);
+            $this->changeReputation($rep);
+        }
+    }
+
+    public function daysSinceLastAttack() {
+        $recentAttack = Attack::all()->where('blueteam', '=', $this->id)->where('success','=', true)->sortBy('created_at')->first();
+        if ($recentAttack == null) {
+            return $this->created_at->diffInDays();
+        }
+        return $recentAttack->created_at->diffInDays();
+    }
+
     public function sellInventory($inv) {
         if ($inv == null) { return false;}
         if ($inv->team_id != $this->id) { return false; }

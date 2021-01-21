@@ -312,4 +312,26 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertDontSee($attack1->name);
         $response->assertSee($attack2->name);
     }
+
+    public function testReputationGain()
+    {
+        $team = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $team->id,
+            'leader' => 1,
+        ]);
+        $game = Game::find(1);
+        $this->be($user);
+        $this->get('blueteam/home')->assertSee("Reputation: 0");
+        
+        $team->created_at = $team->created_at->subDays(1);
+        $team->update();
+        $game->endTurn();
+        $this->get('blueteam/home')->assertSee("Reputation: 50");//+50
+
+        $team->created_at = $team->created_at->subDays(1);
+        $team->update();
+        $game->endTurn();
+        $this->get('blueteam/home')->assertSee("Reputation: 150");//+100
+    }
 }
