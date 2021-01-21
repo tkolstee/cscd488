@@ -276,6 +276,82 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertDontSee('Broadcast');
     }
 
+    public function testTeamCanSeeAnalyzeButtonLvl1()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+        $this->be($user);
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detection_level = 1;
+        Attack::updateAttack($attack1);
+
+        $this->get('blueteam/home')->assertSeeInOrder(['?', 'Analyze']);
+        $this->get('blueteam/attacks')->assertSeeInOrder(['?', 'Analyze']);
+    }
+
+    public function testTeamCannotSeeAnalyzeButtonLvl2()
+    {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+        $this->be($user);
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detection_level = 2;
+        Attack::updateAttack($attack1);
+
+        $response = $this->get('blueteam/home');
+        $response->assertSee($attack1->name);
+        $response->assertDontSee('Analyze');
+        $response = $this->get('blueteam/attacks');
+        $response->assertSee($attack1->name);
+        $response->assertDontSee('Analyze');
+    }
+
+    public function testTeamCanPayToAnalyze()
+    {
+        $blue = Team::factory()->create(['balance' => 1000,]);
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $expectedBalance = $blue->balance - 500; //500 to analyze
+        $red = Team::factory()->red()->create();
+        $this->be($user);
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detection_level = 1;
+        Attack::updateAttack($attack1);
+
+        $response = $this->post('blueteam/analyzeAttack', ['attID' => $attack1->id,]);
+        $response->assertViewIs('blueteam.attacks');
+        $response->assertSee($attack1->name);
+        $response->assertSee('Revenue: '.$expectedBalance);
+    }
+
+    public function testTeamCannotAnalyzeWithoutMoney()
+    {
+        $blue = Team::factory()->create(['balance' => 0,]);
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $red = Team::factory()->red()->create();
+        $this->be($user);
+        $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack1->detection_level = 1;
+        Attack::updateAttack($attack1);
+
+        $response = $this->post('blueteam/analyzeAttack', ['attID' => $attack1->id,]);
+        $response->assertViewIs('blueteam.attacks');
+        $response->assertDontSee($attack1->name);
+    }
+
     public function testLeaderboardDisplaysInfo()
     {
         $blue1 = Team::factory()->create(['reputation' => 10000]);
