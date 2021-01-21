@@ -289,8 +289,7 @@ class BlueTeamFeatureTest extends TestCase
         $attack1->detection_level = 1;
         Attack::updateAttack($attack1);
 
-        $this->get('blueteam/home')->assertSeeInOrder(['?', 'Analyze']);
-        $this->get('blueteam/attacks')->assertSeeInOrder(['?', 'Analyze']);
+        $this->get('blueteam/attacks')->assertSee('Analyze');
     }
 
     public function testTeamCannotSeeAnalyzeButtonLvl2()
@@ -306,9 +305,6 @@ class BlueTeamFeatureTest extends TestCase
         $attack1->detection_level = 2;
         Attack::updateAttack($attack1);
 
-        $response = $this->get('blueteam/home');
-        $response->assertSee($attack1->name);
-        $response->assertDontSee('Analyze');
         $response = $this->get('blueteam/attacks');
         $response->assertSee($attack1->name);
         $response->assertDontSee('Analyze');

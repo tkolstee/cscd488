@@ -240,6 +240,17 @@ class Attack extends Model
         Attack::updateAttack($this);
     }
 
+    public function analyze() {
+        $blue = Team::find($this->blueteam);
+        if ($blue->balance < 500) {
+            return false;
+        }
+        $blue->changeBalance(-500);
+        $this->detection_level = 2;
+        Attack::updateAttack($this);
+        return true;
+    }
+
     public function changeDifficulty($val){
         $this->difficulty += $val;
         if($this->difficulty > 5) $this->difficulty = 5;
