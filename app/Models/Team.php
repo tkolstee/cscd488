@@ -165,8 +165,18 @@ class Team extends Model
         $this->update();
     }
 
-    public function calculateBonusReputation() {
-        
+    public function addBonusReputation() {
+        $dayStreak = $this->daysSinceLastAttack();
+        if ($dayStreak <= 0) {
+            return;
+        }
+        elseif ($dayStreak >= 7) {
+            $this->changeReputation(3200);
+        }
+        else {
+            $rep = 50*pow(2, $dayStreak-1);
+            $this->changeReputation($rep);
+        }
     }
 
     public function daysSinceLastAttack() {
