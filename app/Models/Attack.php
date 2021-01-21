@@ -285,6 +285,11 @@ class Attack extends Model
             $asset->onPreAttack($this);
             $have[] = $asset->class_name;
             foreach ( $asset->tags as $tag ) { $have[] = $tag; }
+            if($asset->class_name == "Foothold"){
+                if($inv->getFootholdBlueTeam() == $blueteam->name && $inv->getFootholdAttackName() == $this->class_name){
+                    $this->changeDifficulty($inv->getFootholdDiffChange() * $inv->quantity);
+                }
+            }
         }
         $unmet_prereqs = array_diff($this->prereqs, $have);
         if ( count($unmet_prereqs) > 0 ) {

@@ -7,6 +7,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Inventory;
 use App\Exceptions\TeamNotFoundException;
+use App\Exceptions\InventoryNotFoundException;
 use App\Models\Assets\FirewallAsset;
 use App\Models\Assets\SQLDatabaseAsset;
 use App\Models\Assets\AccessTokenAsset;
@@ -260,6 +261,22 @@ class TeamTest extends TestCase {
         $team->removeFoothold("Blue","Attack");
         $footholdAfter = $team->getFootholds()->first();
         $this->assertEquals(1, $footholdAfter->quantity);
+    }
+
+    public function testGetFoothold(){
+        $team = Team::factory()->red()->create();
+        $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => "Foothold", 'info' => "Blue`Attack`1", 'quantity' => 2]);
+        $foothold = $team->getFoothold("Blue", "Attack");
+        $this->assertEquals("Foothold", $foothold->asset_name);
+        $this->assertEquals("Blue`Attack`1", $foothold->info);
+        $this->assertEquals(2, $foothold->quantity);
+    }
+
+    public function testGetFootholdInvalid(){
+        $team = Team::factory()->red()->create();
+        $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => "Foothold", 'info' => "Blue`Attack`1", 'quantity' => 2]);
+        $this->expectException(InventoryNotFoundException::class);
+        $foothold = $team->getFoothold("Blu", "Atta");
     }
 
 }

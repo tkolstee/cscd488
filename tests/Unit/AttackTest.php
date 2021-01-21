@@ -338,4 +338,29 @@ class AttackTest extends TestCase {
         $attack->onPreAttack();
         $this->assertTrue($attack->possible);
     }
+
+    //Test Foothold
+
+    public function testFoothold1OnPre(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SynFlood', $red->id, $blue->id);
+        $diffBefore = $attack->difficulty;
+        $info = $blue->name . "`" . $attack->class_name . "`" . 1;
+        $token = Inventory::factory()->create(['asset_name' => 'Foothold', 'team_id' => $red->id, 'info' => $info, 'quantity' => 1]);
+        $attack->onPreAttack();
+        $this->assertEquals($diffBefore + 1, $attack->difficulty);
+    }
+
+    public function testFoothold2OnPre(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SynFlood', $red->id, $blue->id);
+        $diffBefore = $attack->difficulty;
+        $info = $blue->name . "`" . $attack->class_name . "`" . 1;
+        $token = Inventory::factory()->create(['asset_name' => 'Foothold', 'team_id' => $red->id, 'info' => $info, 'quantity' => 2]);
+        $attack->onPreAttack();
+        $this->assertEquals($diffBefore + 2, $attack->difficulty);
+    }
+
 }
