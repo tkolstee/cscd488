@@ -165,6 +165,18 @@ class Team extends Model
         $this->update();
     }
 
+    public function calculateBonusReputation() {
+        
+    }
+
+    public function daysSinceLastAttack() {
+        $recentAttack = Attack::all()->where('blueteam', '=', $this->id)->where('success','=', true)->sortBy('created_at')->first();
+        if ($recentAttack == null) {
+            return $this->created_at->diffInDays();
+        }
+        return $recentAttack->created_at->diffInDays();
+    }
+
     public function sellInventory($inv) {
         if ($inv == null) { return false;}
         if ($inv->team_id != $this->id) { return false; }

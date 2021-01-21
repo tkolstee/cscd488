@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Models\Team;
 use App\Models\User;
+use App\Models\Attack;
 use App\Models\Inventory;
 use App\Exceptions\TeamNotFoundException;
 use App\Models\Assets\FirewallAsset;
@@ -214,4 +215,27 @@ class TeamTest extends TestCase {
         $this->assertTrue($team->hasAnalyst());
     }
 
+
+    public function testDaysSinceLastAttackNoAttacks(){
+        $team = Team::factory()->create();
+        $this->assertEquals(0, $team->daysSinceLastAttack());
+        $team = Team::find(1);
+        $team->created_at = $team->created_at->subDays(4);
+        $team->update();
+        $this->assertEquals(4, $team->daysSinceLastAttack());
+    }
+
+    public function testDaysSinceLastAttack(){
+        $blue = Team::factory()->create();
+        $red = Team::factory()->red()->create();
+        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack->success = true;
+        Attack::updateAttack($attack);
+        $this->assertEquals(0, $blue->daysSinceLastAttack());
+
+        $attack = Attack::find(1);
+        $attack->created_at = $attack->created_at->subDays(4);
+        $attack->update();
+        $this->assertEquals(4, $blue->daysSinceLastAttack());
+    }
 }
