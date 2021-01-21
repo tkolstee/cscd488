@@ -42,6 +42,7 @@ class BlueTeamController extends Controller {
             switch ($page) {
                 case 'home': return $this->home(); break;
                 case 'broadcast': return $this->broadcast($request); break;
+                case 'analyzeAttack': return $this->analyzeAttack($request); break;
                 case 'clearNotifs': return $this->clearNotifs(); break;
                 case 'news': return $this->news(); break;
                 case 'attacks': return $this->attacks(); break;
@@ -258,6 +259,13 @@ class BlueTeamController extends Controller {
         $attack->setNews(true);
         $attack->setNotified(true);
         return $this->home();
+    }
+
+    public function analyzeAttack(request $request) {
+        $attID = $request->attID;
+        $attack = Attack::find($attID);
+        $attack->analyze();
+        return $this->attacks();
     }
 
     public function clearNotifs() {
