@@ -162,7 +162,7 @@ class Attack extends Model
         $attacks = Attack::all()->where('class_name','=',$attack->class_name)->
             where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam);
         foreach($attacks as $atk){
-            if($atk->success == null || $atk->detection_level == 0 || $atk->notified == false || $atk->isNews == false){
+            if($atk->success == null || $atk->detection_level < 2 || $atk->notified == false || $atk->isNews == false){
                 $att = $atk;
             }
         }
