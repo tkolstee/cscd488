@@ -30,7 +30,7 @@
                         <td>{{App\Models\Team::find($attack->redteam)->name}}</td>
                         <td>{{$attack->success ? 'true' : 'false'}}</td>
                         <td>{{$attack->created_at->diffForHumans()}}</td>
-                        @if (!$attack->isNews && $attack->created_at->diffInDays() <= 3)
+                        @if (attack_broadcastable($attack))
                             <td>
                                 <form action="/blueteam/broadcast" method="post">
                                     @csrf

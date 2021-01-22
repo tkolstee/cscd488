@@ -40,11 +40,14 @@
                 @else
                     The attack failed
                 @endif
+
+                @if (attack_broadcastable($attack))
                     <form action="/blueteam/broadcast" method="post">
                         @csrf
                         <input type="hidden" name="attID" value={{$attack->id}}>
                         <input type="submit" name="broadcast" value="Broadcast"/>
                     </form>
+                @endif
                 </p>
             @endforeach
             <form  action="/blueteam/clearNotifs" method="post">
