@@ -45,14 +45,14 @@
                     <form action="/blueteam/broadcast" method="post">
                         @csrf
                         <input type="hidden" name="attID" value={{$attack->id}}>
-                        <input type="submit" name="broadcast" value="Broadcast"/>
+                        <input class="btn btn-primary5" type="submit" name="broadcast" value="Broadcast"/>
                     </form>
                 @endif
                 </p>
             @endforeach
             <form  action="/blueteam/clearNotifs" method="post">
                 @csrf
-                <button>Clear Attack Notifications</button>
+                <button class="btn btn-primary5">Clear Attack Notifications</button>
             </form>
         @endif
     @endif

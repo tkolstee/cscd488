@@ -29,7 +29,32 @@
                         <div class=loginAndRegister>
                             <div class="login">
                                 @auth
-                                <a href="{{ url('/home/chooseteam') }}" class="text-sm text-gray-700 underline">Home</a>
+                                <div class="login">
+                            <div class="lLogin" style="font-size:.85vw; ">
+                                <p id="loggedinas" >You are logged in as :</p>
+                            </div>
+                            <div class="rLogin">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="/home/chooseteam" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                     {{ Auth::user()->name }}
+                                </a> 
+                                @if (Auth::user()->isAdmin())
+                                    <br>
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="/admin/home" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        Admin Home
+                                    </a>
+                                @endif
+                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault();
+                                        document.getElementById('logout-form').submit();">
+                                        {{ __('Logout') }}
+                                    </a>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
+                                </div>
+                            </div>                   
+                        </div>
                                  @else
                                 <a href="{{ route('login') }}"><input type="button" class="btn btn-primary" value="Login"></a>
                                 @if (Route::has('register'))
