@@ -19,6 +19,19 @@ class AttackController extends Controller
         }
     }
 
+    public function choosePayload($attack, $attMsg) {
+        $payloads = $attack->payloads;
+        if (empty($payloads)) {
+            return $this->attackComplete($attack, $attMsg);
+        }
+        $redteam = Auth::user()->getRedTeam();
+        return view('redteam.choosePayload')->with(compact('redteam','attack', 'attMsg'));
+    }
+
+    public function executePayload() {
+
+    }
+
     public static function attackComplete($attack, $attMsg){
         $redteam = Team::find($attack->redteam);
         $attack->onAttackComplete();
@@ -56,7 +69,12 @@ class AttackController extends Controller
             }
         }
         $attack->setSuccess($success);
-        return $this->attackComplete($attack, $attMsg);
+        
+        if ($success) {
+            return $this->choosePayload($attack, $attMsg);
+        }else {
+            return $this->attackComplete($attack, $attMsg);
+        }
     }
 
     public function synFlood(request $request){
@@ -72,7 +90,12 @@ class AttackController extends Controller
             $attMsg = "You have failed in your attempt to SYN flood ".$blueteam->name;
         }
         $attack->setSuccess($success);
-        return $this->attackComplete($attack, $attMsg);
+        
+        if ($success) {
+            return $this->choosePayload($attack, $attMsg);
+        }else {
+            return $this->attackComplete($attack, $attMsg);
+        }
     }
 
     public function sqlInjection(request $request){
@@ -94,7 +117,12 @@ class AttackController extends Controller
             default: break;
         }
         $attack->setSuccess($success);
-        return $this->attackComplete($attack, $attMsg);
+
+        if ($success) {
+            return $this->choosePayload($attack, $attMsg);
+        }else {
+            return $this->attackComplete($attack, $attMsg);
+        }
     }
     
 }
