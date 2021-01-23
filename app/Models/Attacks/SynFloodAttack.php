@@ -10,6 +10,7 @@ class SynFloodAttack extends Attack {
     public $_class_name             = "SynFlood";
     public $_tags                   = ['ExternalNetworkProtocol', 'DenialOfService'];
     public $_prereqs                = [];
+    public $_payloads               = [];
     public $_initial_difficulty     = 2;
     public $_initial_detection_risk = 5;
     public $_initial_energy_cost    = 100;
