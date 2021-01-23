@@ -7,6 +7,7 @@ use App\Models\Attack;
 use App\Models\Team;
 use App\Exceptions\AttackNotFoundException;
 use Exception;
+use Auth;
 
 class AttackController extends Controller
 {
@@ -28,8 +29,11 @@ class AttackController extends Controller
         return view('redteam.choosePayload')->with(compact('redteam','attack', 'attMsg'));
     }
 
-    public function executePayload() {
-
+    public function executePayload($request) {
+        $attack = Attack::find($request->attID);
+        $payload = $request->result;
+        //Put the stuff for payload handling here? For now, just pass stuff to complete...
+        return $this->attackComplete($attack, $request->attMsg);
     }
 
     public static function attackComplete($attack, $attMsg){
