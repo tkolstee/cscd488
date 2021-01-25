@@ -18,8 +18,8 @@ class SecurityMonitorAsset extends Asset
 
     public function onPreAttack($attack)
     {
-        if($attack->detection_risk > 3){
-            $attack->changeDetectionRisk(5);
+        if($attack->calculated_detection_risk > 3){
+            $attack->changeDetectionRisk(1);
         }
     }
 }
