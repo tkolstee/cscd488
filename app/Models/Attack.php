@@ -17,12 +17,13 @@ class Attack extends Model
      * @var array
      */
     protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk','success','detection_level','blueteam','redteam'];
-    protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', ]; // casts "json" database column to array and back
+    protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', 'payloads' => 'array']; // casts "json" database column to array and back
 
     public $_name    = "Abstract class - do not use";
     public $_class_name = "";
     public $_tags    = [];
     public $_prereqs = [];
+    public $_payloads = [];
     public $_initial_difficulty = 3;
     public $_initial_detection_risk = 3;
     public $_initial_detection = 0;
@@ -40,6 +41,7 @@ class Attack extends Model
         $this->detection_risk = $this->_initial_detection_risk;
         $this->tags           = $this->_tags;
         $this->prereqs        = $this->_prereqs;
+        $this->payloads       = $this->_payloads;
         $this->success        = null;
         $this->detection_level = $this->initial_detection;
         $this->notified       = null;
@@ -97,6 +99,7 @@ class Attack extends Model
             $att->energy_cost = $attack->energy_cost;
             $att->tags = $attack->tags;
             $att->prereqs = $attack->prereqs;
+            $att->payloads = $attack->payloads;
             $att->difficulty = $attack->difficulty;
             $att->detection_risk = $attack->detection_risk;
             $att->success = $attack->success;
@@ -140,6 +143,7 @@ class Attack extends Model
         $att->class_name = $attack->class_name;
         $att->tags = $attack->tags;
         $att->prereqs = $attack->prereqs;
+        $att->payloads = $attack->payloads;
         $att->difficulty = $attack->difficulty;
         $att->detection_risk = $attack->detection_risk;
         $att->success = $attack->success;
@@ -168,6 +172,7 @@ class Attack extends Model
         $att->class_name = $attack->class_name;
         $att->tags = $attack->tags;
         $att->prereqs = $attack->prereqs;
+        $att->payloads = $attack->payloads;
         $att->difficulty = $attack->difficulty;
         $att->detection_risk = $attack->detection_risk;
         $att->success = $attack->success;

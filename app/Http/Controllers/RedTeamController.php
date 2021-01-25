@@ -48,6 +48,7 @@ class RedTeamController extends Controller {
             case 'changename': return $this->changeName($request); break;
             case 'leaveteam': return $this->leaveTeam($request); break;
             case 'minigamecomplete': return $this->minigameComplete($request); break;
+            case 'executePayload': return (new AttackController)->executePayload($request); break;
             default: return $this->home(); break;
         }
     }

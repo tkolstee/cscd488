@@ -89,6 +89,23 @@ class AttackFeatureTest extends TestCase
         $response->assertSee("Select a rate at which to send SYN packets");
     }
 
+    public function testUserCanViewPayloadChoices() {
+        $blueteam = Team::factory()->create();
+        $redteam = Auth::user()->getRedTeam();
+        $attack = Attack::create('SynFlood', $redteam->id, $blueteam->id);
+        $testPayloads = ['Test1', 'Test2', 'Test3'];
+        $attack->payloads = $testPayloads;
+        Attack::updateAttack($attack);
+
+        $response = $this->post('attack/synflood', [
+            'attID' => $attack->id,
+            'result1' => 1,
+            'result2' => 1,
+        ]);
+        $response->assertViewIs('redteam.choosePayload');
+        $response->assertSeeInOrder([$testPayloads[0], $testPayloads[1], $testPayloads[2]]);
+    }
+
     public function testViewPreviousAttacksEmpty() {
         $response = $this->get('redteam/attacks');
         $response->assertViewIs('redteam.attacks');

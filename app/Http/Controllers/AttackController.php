@@ -7,6 +7,7 @@ use App\Models\Attack;
 use App\Models\Team;
 use App\Exceptions\AttackNotFoundException;
 use Exception;
+use Auth;
 
 class AttackController extends Controller
 {
@@ -17,6 +18,22 @@ class AttackController extends Controller
             case 'malvertise': return $this->malvertise($request); break;
             default: return (new RedTeamController)->home(); break;
         }
+    }
+
+    public function choosePayload($attack, $attMsg) {
+        $payloads = $attack->payloads;
+        if (empty($payloads)) {
+            return $this->attackComplete($attack, $attMsg);
+        }
+        $redteam = Auth::user()->getRedTeam();
+        return view('redteam.choosePayload')->with(compact('redteam','attack', 'attMsg'));
+    }
+
+    public function executePayload($request) {
+        $attack = Attack::find($request->attID);
+        $payload = $request->result;
+        //Put the stuff for payload handling here? For now, just pass stuff to complete...
+        return $this->attackComplete($attack, $request->attMsg);
     }
 
     public static function attackComplete($attack, $attMsg){
@@ -56,7 +73,12 @@ class AttackController extends Controller
             }
         }
         $attack->setSuccess($success);
-        return $this->attackComplete($attack, $attMsg);
+        
+        if ($success) {
+            return $this->choosePayload($attack, $attMsg);
+        }else {
+            return $this->attackComplete($attack, $attMsg);
+        }
     }
 
     public function synFlood(request $request){
@@ -72,7 +94,12 @@ class AttackController extends Controller
             $attMsg = "You have failed in your attempt to SYN flood ".$blueteam->name;
         }
         $attack->setSuccess($success);
-        return $this->attackComplete($attack, $attMsg);
+        
+        if ($success) {
+            return $this->choosePayload($attack, $attMsg);
+        }else {
+            return $this->attackComplete($attack, $attMsg);
+        }
     }
 
     public function sqlInjection(request $request){
@@ -94,7 +121,12 @@ class AttackController extends Controller
             default: break;
         }
         $attack->setSuccess($success);
-        return $this->attackComplete($attack, $attMsg);
+
+        if ($success) {
+            return $this->choosePayload($attack, $attMsg);
+        }else {
+            return $this->attackComplete($attack, $attMsg);
+        }
     }
     
 }
