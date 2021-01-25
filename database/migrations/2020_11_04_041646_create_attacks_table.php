@@ -19,7 +19,7 @@ class CreateAttacksTable extends Migration
             $table->text('class_name');
             $table->json('tags');
             $table->json('prereqs');
-            $table->json('payloads');
+            $table->text('payload_tag')->nullable();
             $table->foreignId('blueteam')->constrained('teams')->onDelete('cascade');
             $table->foreignId('redteam')->constrained('teams')->onDelete('cascade');
             $table->integer('difficulty'); // 1 - 5. 1 always succeeds, 5 always fails.

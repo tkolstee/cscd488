@@ -17,13 +17,13 @@ class Attack extends Model
      * @var array
      */
     protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk','success','detection_level','blueteam','redteam'];
-    protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', 'payloads' => 'array']; // casts "json" database column to array and back
+    protected $casts = [ 'tags' => 'array', 'prereqs' => 'array']; // casts "json" database column to array and back
 
     public $_name    = "Abstract class - do not use";
     public $_class_name = "";
     public $_tags    = [];
     public $_prereqs = [];
-    public $_payloads = [];
+    public $_payload_tag = null;
     public $_initial_difficulty = 3;
     public $_initial_detection_risk = 3;
     public $_initial_detection = 0;
@@ -41,7 +41,7 @@ class Attack extends Model
         $this->detection_risk = $this->_initial_detection_risk;
         $this->tags           = $this->_tags;
         $this->prereqs        = $this->_prereqs;
-        $this->payloads       = $this->_payloads;
+        $this->payload_tag    = $this->_payload_tag;
         $this->success        = null;
         $this->detection_level = $this->initial_detection;
         $this->notified       = null;
@@ -144,7 +144,7 @@ class Attack extends Model
         $this->energy_cost = $attack->energy_cost;
         $this->tags = $attack->tags;
         $this->prereqs = $attack->prereqs;
-        $this->payloads = $attack->payloads;
+        $this->payload_tag = $attack->payload_tag;
         $this->difficulty = $attack->difficulty;
         $this->detection_risk = $attack->detection_risk;
         $this->success = $attack->success;
