@@ -7,7 +7,9 @@
     <h4>Red Team Attack Page.</h4>
         <p>You havent done any attacks yet!</p>
     @else
-        <table class="table table-bordered table-hover">
+    <h4>Red Team Attack Page.</h4>
+       
+        <table class="table table-bordered">
                 <thead>
                     <th>Attack Type</th>
                     <th>Success</th>
