@@ -21,13 +21,17 @@ class Asset //extends Model
     protected $casts = [ 'rewards' => 'array', ];
 
     public $_name    = "Abstract class - do not use";
-    public $_rewards = [];
+    public $_tags = [];
 
     function __construct() {
         $this->name           = $this->_name;
-        $this->rewards        = $this->_rewards;
+        $this->tags        = $this->_tags;
     }
     
+    public function onAttackComplete($attack){
+
+    }
+
     public static function getAll(){
         $dir = opendir(dirname(__FILE__)."/Payloads");
         while(($payload = readdir($dir)) !== false){
