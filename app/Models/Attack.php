@@ -91,6 +91,7 @@ class Attack extends Model
         try {
             $class = "\\App\\Models\\Attacks\\" . $attack->class_name . "Attack";
             $att = new $class();
+            $att->id = $attack->id;
             $att->name = $attack->name;
             $att->class_name = $attack->class_name;
             $att->energy_cost = $attack->energy_cost;
@@ -125,7 +126,7 @@ class Attack extends Model
             $attack = new $class();
             $attack->blueteam = $blueID;
             $attack->redteam = $redID;
-            Attack::store($attack);
+            $attack = Attack::store($attack);
             return $attack;
         }
         catch(Error $e) {
@@ -161,11 +162,7 @@ class Attack extends Model
     public static function updateAttack($attack){
         $attacks = Attack::all()->where('class_name','=',$attack->class_name)->
             where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam);
-        foreach($attacks as $atk){
-            if($atk->success == null || $atk->detection_level == 0 || $atk->notified == false || $atk->isNews == false){
-                $att = $atk;
-            }
-        }
+        $att = Attack::find($attack->id);
         if($att == null) throw new AttackNotFoundException;
         $att->name = $attack->name;
         $att->class_name = $attack->class_name;
@@ -238,6 +235,17 @@ class Attack extends Model
     public function setNews($newsIn) {
         $this->isNews = $newsIn;
         Attack::updateAttack($this);
+    }
+
+    public function analyze() {
+        $blue = Team::find($this->blueteam);
+        if ($blue->balance < 500) {
+            return false;
+        }
+        $blue->changeBalance(-500);
+        $this->detection_level = 2;
+        Attack::updateAttack($this);
+        return true;
     }
 
     public function changeDifficulty($val){
