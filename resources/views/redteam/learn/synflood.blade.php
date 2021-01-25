@@ -3,6 +3,7 @@
 @section('title', 'Syn Flood Learning Page')
 
 @section('pagecontent')
+<div class="redSynFlood">
     <form method="POST" action="/learn/synflood">
     @csrf
     <input type="hidden" name="step" value="{{ $step }}">
@@ -16,19 +17,24 @@
         </div>
     @endif
     @if ($step == 1)
-        <h2>What is a SYN flood attack?</h2>
+        <h4>What is a SYN flood attack?</h4>
         <p>A SYN flood is a Denial-of-Service attack, also called a DDos attack, <br>
         that attempts to exhaust all of the servers resources in order to prevent <br>
         new legitimate connections.</p>
-        <h2>TCP Protocol</h2>
+
+
+        <h4>TCP Protocol</h4>
         <p>Every connection using the TCP protocol uses a three-way handshake in order to <br>
         initiate communication.</p>
-        <ol type="1">
-        <li>The client sends a SYN packet to the server to request a new connection</li>
-        <li>The server acknowledges this request by sending a SYN-ACK package back to the client</li>
-        <li>Once the client has received the SYN-ACK package it finally responds with an ACK package</li></ol>
+        <ul>
+            <li>The client sends a SYN packet to the server to request a new connection</li>
+            <li>The server acknowledges this request by sending a SYN-ACK package back to the client</li>
+            <li>Once the client has received the SYN-ACK package it finally responds with an ACK package</li>
+        </ul>
     @elseif ($step == 2)
-        <h2>How does a SYN flood attack work?</h2>
+
+
+        <h4>How does a SYN flood attack work?</h4>
         <p>A SYN flood attack works by exploiting the process of TCP Protocol's <br>
         three-way handshake. This denial-of-service attack exploits the fact that <br>
         the server sends a SYN-ACK package and then waits for an ACK package.</p>
@@ -38,7 +44,9 @@
         packets. The connections are then unavailable until the attacker <br>
         replies with the final ACK packets or the server wait times out.</p>
     @elseif ($step == 3)
-        <h2>Ways to improve a SYN flood attack</h2>
+
+
+        <h4>Ways to improve a SYN flood attack</h4>
         <p>A big problem with the process of a SYN flood attack is <br>
         that, after the attacker floods the server with SYN packets, <br>
         the server then floods the attacker with SYN-ACK packets.</p>
@@ -46,11 +54,17 @@
         with a fake IP address. This way the SYN-ACK packets are not <br>
         sent back to the correct computer preventing the attacker from being flooded.</p>
         <p>Other ways to prevent the attacker from being flooded includes:</p>
-        <ul><li>Using a botnet to send the SYN packets</li>
-        <li>Using a firewall to prevent outgoing packets other than SYN packets</li>
-        <li>Using a firewall to prevent incoming SYN-ACK packets</li></ul>
+        
+        <ul>
+            <li>Using a botnet to send the SYN packets</li>
+            <li>Using a firewall to prevent outgoing packets other than SYN packets</li>
+            <li>Using a firewall to prevent incoming SYN-ACK packets</li>
+        </ul>
+
     @elseif ($step == 4)
-        <h2>Ways to prevent SYN flood attacks</h2>
+
+    
+        <h4>Ways to prevent SYN flood attacks</h4>
         <p>Increasing the backlog queue is a way to help against SYN flood attacks. <br>
         The backlog queue is how many half-open requests a server can have and extending <br>
         this amount means that the server can handle more SYN packets. Increasing the <br>
@@ -78,4 +92,5 @@
         </div>
     @endif
     </form>
+</div>
 @endsection

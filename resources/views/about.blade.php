@@ -1,6 +1,5 @@
 <style>
     .aboutPage{
-    height: 100%;
     background: url('/images/repeatingBackground.jpg'), center no-repeat;
 }
 </style>
@@ -35,5 +34,6 @@
     assets are required to be successful. Each asset can also be upgraded to multiply whatever effects <br>
     they do have. Each upgrade to an asset costs more, and when the asset is sold you will only <br>
     receive the cost of the last upgrade in addition to the original price.</p>
-</div>
+    </div>
 @endsection
+

@@ -1,5 +1,5 @@
 <div class="pagination">
     <a href={{$paginator->previousPageUrl()}}>Previous</a>
-    <a>{{$paginator->currentPage()}}/{{$paginator->lastPage()}}</a>
+    <p>{{$paginator->currentPage()}}/{{$paginator->lastPage()}}</p>
     <a href={{$paginator->nextPageUrl()}}>Next</a>
 </div>

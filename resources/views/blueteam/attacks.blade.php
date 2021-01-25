@@ -4,9 +4,10 @@
 
 @section('pagecontent')
     @if ($previousAttacks->isEmpty())
+    <h4>Blue team attacks</h4>
         <p>You havent experienced any attacks yet!</p>
     @else
-        <table class="table table-bordered table-hover">
+        <table class="table table-bordered ">
                 <thead>
                     <th>Attack Type</th>
                     <th>Attacker</th>

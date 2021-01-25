@@ -9,6 +9,7 @@
 h4{
     margin-bottom:3%;
     margin-top:3%;
+    color:white;
     
 }
 #h4BlueHomePage{
@@ -211,8 +212,8 @@ h4{
     color:black;
   }
 .form-check-label {
-    padding-left:17%;
-    width:60%;
+    padding-left:4%;
+    width:63%;
 }
 .btn.btn-primary2 {
     background-color: #00CC99;
@@ -223,7 +224,7 @@ h4{
     text-decoration: none;
     display: inline-block;
     font-size: 18px;
-    margin: 23px 204px;
+    margin: 23px 144px;
     cursor: pointer;
     width:41%;
     margin-right:5%;
@@ -396,6 +397,17 @@ h4{
 }
 .sqlInjections{
     color:#00CC99;
+    text-decoration: none;
+    
+}
+.sqlInjectionsHover a:hover{
+    color:#00FFCC !important;
+    
+}
+.sqlInjectionsList ul li{
+    list-style-type: none;
+    margin:0 auto;
+    
 }
 
 .rLogin a{
@@ -699,8 +711,8 @@ input[type="checkbox"], input[type="radio"]{
 
 .redTeamMenuSelection ul{
     list-style-type: none;
-    padding-top:1%;
-    padding-left: 20.8%;
+    padding-top:1.2%;
+    padding-left: 6.8%;
     padding-bottom:1%;
     float:left;    
     background-color: rgb(148, 3, 3);      
@@ -901,4 +913,28 @@ color:#00CC99;
     margin: 0 auto;
     padding-top:3%;
     text-align: center;
+}
+.redSqlInjection p{
+ color:white;
+}
+.sqlInject{
+    color:#00CC99 !important;
+}
+.redSynFlood p{
+    color:white;
+}
+.redSynFlood ul li{
+    color:white;
+}
+.redMalvertise p{
+    color:white;
+}
+.redMalvertise ul li{
+    color:white;
+}
+.pagination a{
+    color:#00CC99;
+}
+.pagination a:hover{
+    color:#00FFCC;
 }
