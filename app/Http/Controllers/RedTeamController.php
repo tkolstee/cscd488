@@ -146,10 +146,9 @@ class RedTeamController extends Controller {
             $attMsg = $attack->errormsg;
             return $this->home()->with(compact('attMsg'));
         }
-
         $payloads = $attack->getPayloads();
         $redteam = Auth::user()->getRedTeam();
-        return view('redteam.choosePayload')->with(compact('redteam','attack'));
+        return view('redteam.choosePayload')->with(compact('redteam','attack', 'payloads'));
     }
 
     public function performAttack(request $request){
@@ -161,7 +160,7 @@ class RedTeamController extends Controller {
         $blueteam = Team::get($request->blueteam);
         $attack = Attack::create($request->result, $redteam->id, $blueteam->id);
         $attack->onPreAttack();
-        return view('redteam.choosePayload');
+        return $this->choosePayload($attack);
     }
 
     public function chooseAttack(request $request){
