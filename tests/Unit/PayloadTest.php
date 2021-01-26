@@ -10,6 +10,7 @@ use App\Models\Attack;
 use App\Models\Inventory;
 use App\Models\Payload;
 use App\Models\Payloads\Xss;
+use App\Models\Payloads\Dos;
 use App\Exceptions\TeamNotFoundException;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
