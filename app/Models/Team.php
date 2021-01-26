@@ -88,6 +88,11 @@ class Team extends Model
         return $bonuses;
     }
 
+    public function getBonusesByTarget(){
+        $bonuses = Bonus::all()->where('target_id','=',$this->id);
+        return $bonuses;
+    }
+
     public function leader() {
         return User::all()->where('blueteam','=',$this->id)->where('leader','=',1)->first();
     }

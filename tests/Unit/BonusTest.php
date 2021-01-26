@@ -102,4 +102,20 @@ class BonusTest extends TestCase {
         $this->assertEmpty(Bonus::all());
     }
 
+    public function testDiffOnPre(){
+        $team = $this->createTeams();
+        $blueteam = Team::all()->where('blue','=',1)->first();
+        $tags = ["DifficultyDeduction"];
+        $bonus = $this->createBonus($team->id, $tags);
+        $bonus->percentDiffDeducted = .5;
+        $bonus->target_id = $blueteam->id;
+        $bonus->update();
+        $attack = Attack::create('SynFlood', $team->id, $blueteam->id);
+        $diffBefore = $attack->calculated_difficulty;
+        $attack->onPreAttack();
+        $this->assertTrue($attack->possible);
+        $this->assertEquals($diffBefore - 1, $attack->calculated_difficulty);
+        
+    }
+
 }

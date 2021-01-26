@@ -41,7 +41,7 @@ class Game extends Model
             $revGained = $team->getPerTurnRevenue();
             $revGainedActual = $revGained;
             //Add bonus stuff here
-            $bonuses = $team->getBonuses();
+            $bonuses = $team->getBonusesByTarget();
             foreach($bonuses as $bonus){
                 if(in_array("RevenueDeduction", $bonus->tags)){
                     $revGainedActual -= $revGained * $bonus->percentRevDeducted;
@@ -51,6 +51,10 @@ class Game extends Model
                 }
             }
             $team->balance += $revGained;
+        }
+        $bonuses = Bonus::all();
+        foreach($bonuses as $bonus){
+            $bonus->onTurnChange();
         }
         $redteams = Redteam::all();
         foreach($redteams as $redteam){
