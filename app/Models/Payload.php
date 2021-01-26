@@ -43,6 +43,17 @@ class Payload //extends Model
         return $payloads;
     }
 
+    public static function getByTag($tag) {
+        $payloads = Payload::getAll();
+        $result = [];
+        foreach($payloads as $payload){
+            if (in_array($tag, $payload->tags)) {
+                $result[] = $payload;
+            }
+        }
+        return $result;
+    }
+
     public static function get($name){
         $payloads = Payload::getAll();
         foreach($payloads as $payload){

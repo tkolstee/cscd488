@@ -17,6 +17,8 @@ class Attack extends Model
      *
      * @var array
      */
+    protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk', 'calculated_detection_risk', 'calculated_difficulty','success','detection_level','blueteam','redteam'];
+    protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', 'payloads' => 'array']; // casts "json" database column to array and back
     protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk','success','detection_level','blueteam','redteam'];
     protected $casts = [ 'tags' => 'array', 'prereqs' => 'array']; // casts "json" database column to array and back
 
@@ -40,6 +42,8 @@ class Attack extends Model
         $this->class_name     = $this->_class_name;
         $this->difficulty     = $this->_initial_difficulty;
         $this->detection_risk = $this->_initial_detection_risk;
+        $this->calculated_difficulty = $this->_initial_difficulty;
+        $this->calculated_detection_risk = $this->_initial_detection_risk;
         $this->tags           = $this->_tags;
         $this->prereqs        = $this->_prereqs;
         $this->payload_tag    = $this->_payload_tag;
@@ -58,9 +62,8 @@ class Attack extends Model
         $redteam  = Team::find($this->redteam);
 
         if ( $this->success ) {
-            $blueteam->changeBalance($this->blue_loss);
             $blueteam->changeReputation($this->reputation_loss);
-            $redteam->changeBalance($this->red_gain);
+            $redteam->changeBalance($this->red_gain); //REPLACE WITH CALL TO PAYLOAD
         }
         if ( $this->detection_level > 0 ) {
             if( in_array("Internal", $this->tags)){
@@ -222,17 +225,22 @@ class Attack extends Model
         return true;
     }
 
+    public function getBonuses(){
+        $bonuses = Bonus::all()->where('team_id', '=', $this->redteam)->where('target_id','=',$this->blueteam);
+        return $bonuses;
+    }
+    
     public function changeDifficulty($val){
-        $this->difficulty += $val;
-        if($this->difficulty > 5) $this->difficulty = 5;
-        if($this->difficulty < 1) $this->difficulty = 1;
+        $this->calculated_difficulty += $val * $this->difficulty;
+        if($this->calculated_difficulty > 5) $this->calculated_difficulty = 5;
+        if($this->calculated_difficulty < 1) $this->calculated_difficulty = 1;
         Attack::updateAttack($this);
     }
 
     public function changeDetectionRisk($val){
-        $this->detection_risk += $val;
-        if($this->detection_risk > 5) $this->detection_risk = 5;
-        if($this->detection_risk < 1) $this->detection_risk = 1;
+        $this->calculated_detection_risk += $val * $this->detection_risk;
+        if($this->calculated_detection_risk > 5) $this->calculated_detection_risk = 5;
+        if($this->calculated_detection_risk < 1) $this->calculated_detection_risk = 1;
         Attack::updateAttack($this);
     }
 
@@ -273,6 +281,17 @@ class Attack extends Model
             $have[] = $asset->class_name;
             foreach ( $asset->tags as $tag ) { $have[] = $tag; }
         }
+        $bonuses = $this->getBonuses();
+        foreach ($bonuses as $bonus){
+            if(in_array("DifficultyDeduction", $bonus->tags)){
+                $this->changeDifficulty(-1* $bonus->percentDiffDeducted);
+            }
+            if(in_array("DetectionDeduction", $bonus->tags)){
+                $this->changeDetectionRisk(-1* $bonus->percentDetDeducted);
+            }
+        }
+        $this->calculated_detection_risk = round($this->calculated_detection_risk);
+        $this->calculated_difficulty = round($this->calculated_difficulty);
         $unmet_prereqs = array_diff($this->prereqs, $have);
         if ( count($unmet_prereqs) > 0 ) {
             $this->possible = false;
