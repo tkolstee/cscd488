@@ -40,7 +40,7 @@ class Payload //extends Model
                 $payloads[] = new $class();
             }
         }
-        return collect($payload);
+        return $payloads;
     }
 
     public static function get($name){
@@ -53,4 +53,14 @@ class Payload //extends Model
         throw new AssetNotFoundException();
     }
 
+    public static function getByTag($tag) {
+        $payloads = Payload::getAll();
+        $result = [];
+        foreach($payloads as $payload){
+            if (in_array($tag, $payload->tags)) {
+                $result[] = $payload;
+            }
+        }
+        return $result;
+    }
 }

@@ -6,6 +6,7 @@ use App\Exceptions\AttackNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Payload;
 use Error;
 
 class Attack extends Model
@@ -240,6 +241,11 @@ class Attack extends Model
             return $this->name;
         }
         return "?";
+    }
+
+    public function getPayloads(){
+        if ($this->payload_tag == null){ return null; }
+        return Payload::getByTag($this->payload_tag);
     }
 
     public function onPreAttack() {
