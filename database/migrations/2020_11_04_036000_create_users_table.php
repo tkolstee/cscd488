@@ -21,8 +21,8 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->integer('is_admin')->default(0);
-            $table->foreignId('redteam')->nullable()->constrained('teams')->onDelete('cascade');
-            $table->foreignId('blueteam')->nullable()->constrained('teams')->onDelete('cascade');
+            $table->foreignId('redteam')->nullable()->constrained('teams');
+            $table->foreignId('blueteam')->nullable()->constrained('teams');
             $table->integer('leader')->default(0);
             $table->rememberToken();
             $table->timestamps();

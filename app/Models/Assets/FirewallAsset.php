@@ -17,7 +17,7 @@ class FirewallAsset extends Asset {
 
     function onPreAttack($attack) {
         if (in_array("ExternalNetworkProtocol", $attack->tags)) {
-            $attack->changeDifficulty(2);
+            $attack->changeDifficulty(.2);
         }
     }
 }

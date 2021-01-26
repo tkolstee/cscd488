@@ -21,8 +21,8 @@ class HeightenedAwarenessAsset extends Asset
     {
         $redteam = Team::find($attack->redteam);
         if($redteam->name == $attack->info){
-            $attack->changeDifficulty(1);
-            $attack->changeDetectionRisk(2);
+            $attack->changeDifficulty(.1);
+            $attack->changeDetectionRisk(.2);
         }
     }
 }
