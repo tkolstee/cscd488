@@ -59,9 +59,8 @@ class Attack extends Model
         $redteam  = Team::find($this->redteam);
 
         if ( $this->success ) {
-            $blueteam->changeBalance($this->blue_loss);
             $blueteam->changeReputation($this->reputation_loss);
-            $redteam->changeBalance($this->red_gain);
+            $redteam->changeBalance($this->red_gain); //REPLACE WITH CALL TO PAYLOAD
         }
         if ( $this->detection_level > 0 ) {
             if( in_array("Internal", $this->tags)){

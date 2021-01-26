@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
 use Exception;
 
-class Asset //extends Model
+class Payload //extends Model
 {
     use HasFactory;
     /**

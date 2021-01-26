@@ -13,7 +13,7 @@ class Bonus extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'team_id', 'percentRevDeducted', 'percentRepDeducted', 'percentDiffDeducted', 'percentDetDeducted', 'percentAnalDeducted'];
+    protected $fillable = [ 'team_id', 'target_id','payload_name','percentRevDeducted', 'percentRepDeducted', 'percentDiffDeducted', 'percentDetDeducted', 'percentAnalDeducted'];
     protected $casts = [ 'tags' => 'array']; // casts "json" database column to array and back
 
     public $_tags    = [];
@@ -24,6 +24,7 @@ class Bonus extends Model
     public $_analysis = 0;
     public $_team_id = null;
     public $_target_id = null;
+    public $_payload_name = null;
 
     function __construct() {
        $this->tags = $this->_tags;
@@ -34,6 +35,7 @@ class Bonus extends Model
        $this->percentDetDeducted = $this->_det;
        $this->percentDiffDeducted = $this->_diff;
        $this->percentAnalDeducted = $this->_analysis;
+       $this->payload_name = $this->_payload_name;
     }
 
     public static function createBonus($team_id, $tags){
@@ -45,20 +47,22 @@ class Bonus extends Model
     }
 
     public function onTurnChange(){
-        if(in_array("RevenueDeduction", $this->tags)){
-            $this->percentRevDeducted -= 5;
-        }
-        if(in_array("ReputationDeduction", $this->tags)){
-            $this->percentRepDeducted -= 5;
-        }
-        if(in_array("DetectionDeduction", $this->tags)){
-            $this->percentDetDeducted -= 5;
-        }
-        if(in_array("AnalysisDeduction", $this->tags)){
-            $this->percentAnalDeducted -= 5;
-        }
-        if(in_array("DifficultyDeduction", $this->tags)){
-            $this->percentDiffDeducted -= 5;
+        if(!in_array("UntilAnalyzed", $this->tags)){
+            if(in_array("RevenueDeduction", $this->tags)){
+                $this->percentRevDeducted -= 5;
+            }
+            if(in_array("ReputationDeduction", $this->tags)){
+                $this->percentRepDeducted -= 5;
+            }
+            if(in_array("DetectionDeduction", $this->tags)){
+                $this->percentDetDeducted -= 5;
+            }
+            if(in_array("AnalysisDeduction", $this->tags)){
+                $this->percentAnalDeducted -= 5;
+            }
+            if(in_array("DifficultyDeduction", $this->tags)){
+                $this->percentDiffDeducted -= 5;
+            }
         }
         if(in_array("RevenueSteal", $this->tags)){
             $blueteam = Team::find($this->target_id);
