@@ -19,8 +19,6 @@ class Attack extends Model
      */
     protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk', 'calculated_detection_risk', 'calculated_difficulty','success','detection_level','blueteam','redteam'];
     protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', 'payloads' => 'array']; // casts "json" database column to array and back
-    protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk','success','detection_level','blueteam','redteam'];
-    protected $casts = [ 'tags' => 'array', 'prereqs' => 'array']; // casts "json" database column to array and back
 
     public $_name    = "Abstract class - do not use";
     public $_class_name = "";

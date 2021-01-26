@@ -12,7 +12,6 @@ use App\Models\Inventory;
 use App\Models\Payloads\Xss;
 use App\Models\Payloads\Dos;
 use App\Exceptions\TeamNotFoundException;
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PayloadTest extends TestCase {

@@ -63,15 +63,5 @@ class Payload //extends Model
         }
         throw new AssetNotFoundException();
     }
-
-    public static function getByTag($tag) {
-        $payloads = Payload::getAll();
-        $result = [];
-        foreach($payloads as $payload){
-            if (in_array($tag, $payload->tags)) {
-                $result[] = $payload;
-            }
-        }
-        return $result;
-    }
+    
 }
