@@ -216,8 +216,10 @@ class AttackTest extends TestCase {
         $this->assertEquals(5, $attack->calculated_difficulty);
         $attack->changeDifficulty(-10);
         $this->assertEquals(1, $attack->calculated_difficulty);
-        $attack->changeDifficulty(2);
-        $this->assertEquals(3, $attack->calculated_difficulty);
+        $attack->difficulty = 5;
+        $attack->calculated_difficulty = 5;
+        $attack->changeDifficulty(-.2);
+        $this->assertEquals(4, $attack->calculated_difficulty);
     }
 
     public function testChangeDetectionRisk() {
@@ -232,8 +234,10 @@ class AttackTest extends TestCase {
         $this->assertEquals(5, $attack->calculated_detection_risk);
         $attack->changeDetectionRisk(-10);
         $this->assertEquals(1, $attack->calculated_detection_risk);
-        $attack->changeDetectionRisk(2);
-        $this->assertEquals(3, $attack->calculated_detection_risk);
+        $attack->detection_risk = 5;
+        $attack->calculated_detection_risk = 5;
+        $attack->changeDetectionRisk(-.2);
+        $this->assertEquals(4, $attack->calculated_detection_risk);
     }
 
     public function testCreateAttack() {

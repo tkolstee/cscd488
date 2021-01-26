@@ -263,6 +263,14 @@ class Attack extends Model
 
     public function getBonuses(){
         $bonuses = [];
+        $redbonuses = Bonus::all()->where('team_id', '=', $this->redteam);
+        foreach($redbonuses as $bonus){
+            $bonuses[] = $bonus;
+        }
+        $bluebonuses = Bonus::all()->where('team_id', '=', $this->blueteam);
+        foreach($bluebonuses as $bonus){
+            $bonuses[] = $bonus;
+        }
         return $bonuses;
     }
     
@@ -314,7 +322,12 @@ class Attack extends Model
         }
         $bonuses = $this->getBonuses();
         foreach ($bonuses as $bonus){
-            $bonus->onPreAttack();
+            if(in_array("DifficultyDeduction", $bonus->tags)){
+                $this->changeDifficulty($bonus->percentDiffDeducted);
+            }
+            if(in_array("DetectionDeduction", $bonus->tags)){
+                $this->changeDetectionRisk($bonus->percentDetDeducted);
+            }
         }
         $this->calculated_detection_risk = round($this->calculated_detection_risk);
         $this->calculated_difficulty = round($this->calculated_difficulty);

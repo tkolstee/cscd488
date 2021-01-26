@@ -10,6 +10,7 @@ use App\Exceptions\TeamNotFoundException;
 use App\Exceptions\InventoryNotFoundException;
 use App\Models\Blueteam;
 use App\Models\Asset;
+use App\Models\Bonus;
 
 class Team extends Model
 {
@@ -69,6 +70,22 @@ class Team extends Model
         ]);
         Redteam::create($team->id);
         return $team;
+    }
+
+    public function getPerTurnRevenue(){
+        if($this->blue != 1) throw new TeamNotFoundException();
+        $revGained = 0;
+        $inventories = $this->inventories();
+        foreach($inventories as $inv){
+            $asset = Asset::get($inv->asset_name);
+            $revGained -= $asset->ownership_cost;
+        }
+        return $revGained;
+    }
+
+    public function getBonuses(){
+        $bonuses = Bonus::all()->where('team_id','=',$this->id);
+        return $bonuses;
     }
 
     public function leader() {

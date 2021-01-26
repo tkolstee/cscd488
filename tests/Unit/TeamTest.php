@@ -238,4 +238,11 @@ class TeamTest extends TestCase {
         $attack->update();
         $this->assertEquals(4, $blue->daysSinceLastAttack());
     }
+
+    public function testGetPerTurnRev(){
+        $team = Team::factory()->create();
+        $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'AdDept']);
+        $revGained = $team->getPerTurnRevenue();
+        $this->assertEquals(50, $revGained);
+    }
 }
