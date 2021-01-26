@@ -37,15 +37,23 @@ class Payload //extends Model
         while(($payload = readdir($dir)) !== false){
             if($payload != "." && $payload != ".."){
                 $length = strlen($payload);
-                $payload = substr($payload, 0, $payload - 4);
+                $payload = substr($payload, 0, $length - 4);
                 $class = "\\App\\Models\\Payloads\\" . $payload;
-                $payload[] = new $class();
+                $payloads[] = new $class();
             }
         }
-        if(count($payload) == 0){
-            throw new AssetNotFoundException();
+        return $payloads;
+    }
+
+    public static function getByTag($tag) {
+        $payloads = Payload::getAll();
+        $result = [];
+        foreach($payloads as $payload){
+            if (in_array($tag, $payload->tags)) {
+                $result[] = $payload;
+            }
         }
-        return $payload;
+        return $result;
     }
 
     public static function get($name){

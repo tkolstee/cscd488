@@ -25,17 +25,21 @@ class Bonus extends Model
     public $_team_id = null;
     public $_target_id = null;
     public $_payload_name = null;
+    public $_percent_removal = 0;
+    public $_percent_rev_remove = 0;
 
     function __construct() {
        $this->tags = $this->_tags;
        $this->team_id = $this->_team_id;
        $this->target_id = $this->_target_id;
+       $this->percentRemoval = $this->_percent_removal;
        $this->percentRevDeducted = $this->_rev;
        $this->percentRepDeducted = $this->_rep;
        $this->percentDetDeducted = $this->_det;
        $this->percentDiffDeducted = $this->_diff;
        $this->percentAnalDeducted = $this->_analysis;
        $this->payload_name = $this->_payload_name;
+       $this->percentRevToRemove = $this->_percent_rev_remove;
     }
 
     public static function createBonus($team_id, $tags){
