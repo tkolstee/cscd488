@@ -71,8 +71,8 @@ class PayloadTest extends TestCase {
         $this->assertTrue(in_array("OneTurnOnly", $bonus->tags));
         $this->assertTrue(in_array("RevenueDeduction", $bonus->tags));
         $this->assertTrue(in_array("DetectionDeduction", $bonus->tags));
-        $this->assertEquals(0.5, $bonus->percentRevDeducted);
-        $this->assertEquals(0.2, $bonus->percentDetDeducted);
+        $this->assertEquals(50, $bonus->percentRevDeducted);
+        $this->assertEquals(20, $bonus->percentDetDeducted);
     }
     
 }
