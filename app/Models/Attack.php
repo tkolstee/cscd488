@@ -35,12 +35,18 @@ class Attack extends Model
     public $_initial_reputation_loss = 0;
     public $possible = true;
     public $errormsg = "";
+    public $_initial_analysis_risk = null;
+    public $_initial_attribution_risk = null;
 
     function __construct() {
         $this->name           = $this->_name;
         $this->class_name     = $this->_class_name;
         $this->difficulty     = $this->_initial_difficulty;
         $this->detection_risk = $this->_initial_detection_risk;
+        $this->analysis_risk  = $this->_initial_analysis_risk;
+        $this->attribution_risk = $this->_initial_attribution_risk;
+        $this->calculated_analysis_risk = $this->_initial_analysis_risk;
+        $this->calculated_attribution_risk = $this->_initial_attribution_risk;
         $this->calculated_difficulty = $this->_initial_difficulty;
         $this->calculated_detection_risk = $this->_initial_detection_risk;
         $this->tags           = $this->_tags;
@@ -160,6 +166,12 @@ class Attack extends Model
         $this->payload_choice = $attack->payload_choice;
         $this->difficulty = $attack->difficulty;
         $this->detection_risk = $attack->detection_risk;
+        $this->analysis_risk = $attack->analysis_risk;
+        $this->attribution_risk = $attack->attribution_risk;
+        $this->calculated_detection_risk = $attack->calculated_detection_risk;
+        $this->calculated_difficulty = $attack->calculated_difficulty;
+        $this->calculated_analysis_risk = $attack->calculated_analysis_risk;
+        $this->calculated_attribution_risk = $attack->calculated_attribution_risk;
         $this->success = $attack->success;
         $this->detection_level = $attack->detection_level;
         $this->notified = $attack->notified;
