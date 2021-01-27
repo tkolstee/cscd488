@@ -53,9 +53,6 @@ class Bonus extends Model
     public function onTurnChange(){
         if(!in_array("UntilAnalyzed", $this->tags)){
             if(in_array("RevenueDeduction", $this->tags)){
-                $blueteam = Team::find($this->target_id);
-                $revLost = $blueteam->balance * $this->percentRevDeducted * 0.01 * -1;
-                $blueteam->changeBalance($revLost);
                 $this->percentRevDeducted -= 5;
             }
             if(in_array("ReputationDeduction", $this->tags)){
