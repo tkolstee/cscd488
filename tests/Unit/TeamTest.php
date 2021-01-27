@@ -245,4 +245,11 @@ class TeamTest extends TestCase {
         $revGained = $team->getPerTurnRevenue();
         $this->assertEquals(50, $revGained);
     }
+
+    public function testChangeBalanceRounding(){
+        $team = Team::factory()->create();
+        $balChange = 370.6;
+        $team->changeBalance($balChange);
+        $this->assertEquals(371, $team->balance);
+    }
 }
