@@ -3,10 +3,11 @@
 @section('title', 'Syn Flood Attack')
 
 @section('pagecontent')
-
+<h4>Attack Choice </h4>
 @if(!empty($attack))
 Difficulty: {{$attack->difficulty }}/5 <br>
-<form method="POST" action="/attack/synflood">
+
+<form class="synFloodForm" method="POST" action="/attack/synflood">
         @csrf
             <input type="hidden" name="attID" value="{{ $attack->id }}">
             <?php function random($attack){
