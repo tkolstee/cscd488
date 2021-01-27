@@ -26,11 +26,13 @@
         <h4>TCP Protocol</h4>
         <p>Every connection using the TCP protocol uses a three-way handshake in order to <br>
         initiate communication.</p>
+        <div class="synFloodUl">
         <ul>
             <li>The client sends a SYN packet to the server to request a new connection</li>
             <li>The server acknowledges this request by sending a SYN-ACK package back to the client</li>
             <li>Once the client has received the SYN-ACK package it finally responds with an ACK package</li>
         </ul>
+        </div>
     @elseif ($step == 2)
 
 

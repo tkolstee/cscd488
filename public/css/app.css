@@ -938,3 +938,9 @@ color:#00CC99;
 .pagination a:hover{
     color:#00FFCC;
 }
+.synFloodForm{
+    color:white;
+}
+.synFloodUl ul{
+    margin:0 auto;
+}
