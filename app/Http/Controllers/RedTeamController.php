@@ -43,7 +43,7 @@ class RedTeamController extends Controller {
             case 'startattack': return $this->startAttack(); break;
             case 'chooseattack': return $this->chooseAttack($request); break;
             case 'performattack': return $this->performAttack($request); break;
-            case 'minigameStart': return $this->minigameStart($request); break;
+            case 'savePayload': return $this->savePayload($request); break;
             case 'attackhandler': return $this->attackHandler($request); break;
             case 'settings': return $this->settings($request); break;
             case 'changename': return $this->changeName($request); break;
@@ -121,8 +121,7 @@ class RedTeamController extends Controller {
         return $this->home()->with(compact('attMsg'));
     }
 
-    public function minigameStart(request $request){
-        $attack = Attack::find($request->attID);
+    public function minigameStart($attack){
         $redteam = Team::find($attack->redteam);
         $blueteam = Team::find($attack->blueteam);
         //find the minigame for that attack, then return different view
@@ -141,12 +140,21 @@ class RedTeamController extends Controller {
         return view('redteam.minigame')->with(compact('attack','redteam','blueteam'));
     }
 
+    public function savePayload(request $request) {
+        $attack = Attack::find($request->attID);
+
+        return $this->minigameStart($attack);
+    }
+
     public function choosePayload($attack){
         if(!$attack->possible){
             $attMsg = $attack->errormsg;
             return $this->home()->with(compact('attMsg'));
         }
         $payloads = $attack->getPayloads();
+        if (empty($payloads)) {
+            return $this->minigameStart($attack);
+        }
         $redteam = Auth::user()->getRedTeam();
         return view('redteam.choosePayload')->with(compact('redteam','attack', 'payloads'));
     }

@@ -3,7 +3,7 @@
 @section('title', 'Choose Payload')
 
 @section('pagecontent')
-    <form method="POST" action="/redteam/minigameStart">
+    <form method="POST" action="/redteam/savePayload">
         @csrf
         @foreach($payloads as $payload)
             <input type="radio" name="result" id="{{$payload->name}}" value="{{$payload->name}}">
