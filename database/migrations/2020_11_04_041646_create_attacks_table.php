@@ -25,8 +25,12 @@ class CreateAttacksTable extends Migration
             $table->foreignId('redteam')->constrained('teams')->onDelete('cascade');
             $table->integer('difficulty'); // 1 - 5. 1 always succeeds, 5 always fails.
             $table->integer('detection_risk');    // 1 - 5. 1 is never detected, 5 is always detected
+            $table->integer('analysis_risk')->nullable();
+            $table->integer('attribution_risk')->nullable();
             $table->integer('calculated_difficulty');
             $table->integer('calculated_detection_risk');
+            $table->integer('calculated_analysis_risk')->nullable();
+            $table->integer('calculated_attribution_risk')->nullable();
             $table->boolean('success')->nullable();
             $table->integer('detection_level')->nullable(); //0 = unseen, 1 = detected, 2 = analyzed by sec. analyst, etc.
             $table->boolean('notified')->nullable();
