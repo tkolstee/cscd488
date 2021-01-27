@@ -142,7 +142,8 @@ class RedTeamController extends Controller {
 
     public function savePayload(request $request) {
         $attack = Attack::find($request->attID);
-
+        $attack->payload_choice = $request->result;
+        Attack::updateAttack($attack);
         return $this->minigameStart($attack);
     }
 

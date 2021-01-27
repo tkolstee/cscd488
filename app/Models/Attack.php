@@ -25,6 +25,7 @@ class Attack extends Model
     public $_tags    = [];
     public $_prereqs = [];
     public $_payload_tag = null;
+    public $_payload_choice = null;
     public $_initial_difficulty = 3;
     public $_initial_detection_risk = 3;
     public $_initial_detection = 0;
@@ -45,6 +46,7 @@ class Attack extends Model
         $this->tags           = $this->_tags;
         $this->prereqs        = $this->_prereqs;
         $this->payload_tag    = $this->_payload_tag;
+        $this->payload_choice = $this->_payload_choice;
         $this->success        = null;
         $this->detection_level = $this->initial_detection;
         $this->notified       = null;
@@ -147,6 +149,7 @@ class Attack extends Model
         $this->tags = $attack->tags;
         $this->prereqs = $attack->prereqs;
         $this->payload_tag = $attack->payload_tag;
+        $this->payload_choice = $attack->payload_choice;
         $this->difficulty = $attack->difficulty;
         $this->detection_risk = $attack->detection_risk;
         $this->success = $attack->success;
