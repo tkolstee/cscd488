@@ -60,6 +60,7 @@ class BonusTest extends TestCase {
         $team = $this->createTeams();
         $tags = ["RevenueDeduction", "ReputationDeduction", "DetectionDeduction", "AnalysisDeduction", "DifficultyDeduction"];
         $bonus = $this->createBonus($team->id, $tags);
+        $bonus->target_id = 1; //bad hack 
         $bonus->percentRevDeducted = 10;
         $bonus->percentRepDeducted = 10;
         $bonus->percentDetDeducted = 10;

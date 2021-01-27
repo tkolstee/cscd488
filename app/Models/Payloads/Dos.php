@@ -18,8 +18,8 @@ class Dos extends Payload
         $bonus->team_id = $attack->redteam;
         $bonus->target_id  = $attack->blueteam;
         $bonus->tags = ["OneTurnOnly", "RevenueDeduction", "DetectionDeduction"];
-        $bonus->percentRevDeducted = .5;
-        $bonus->percentDetDeducted = .2;
+        $bonus->percentRevDeducted = 50;
+        $bonus->percentDetDeducted = 20;
         $bonus->save();
     }
 }

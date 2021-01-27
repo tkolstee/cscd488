@@ -176,6 +176,7 @@ class Team extends Model
         if ($this->balance < 0){
             $this->balance = 0;
         }
+        $this->balance = round( $this->balance , 0 , $mode = PHP_ROUND_HALF_UP );
         $this->update();
     }
 

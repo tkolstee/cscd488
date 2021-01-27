@@ -321,7 +321,6 @@ class RedTeamTest extends TestCase
         $request = Request::create('/performattack','POST', ['blueteam' => $target->name, 'result' => "SynFlood"]);
         $response = $controller->performAttack($request);
         $this->assertEquals($team->id, $response->redteam->id);
-        $this->assertEquals($target->id, $response->blueteam->id);
         $this->assertEquals($team->id, $response->attack->redteam);
         $this->assertEquals($target->id, $response->attack->blueteam);
         $this->assertFalse(empty($response->attack->difficulty));

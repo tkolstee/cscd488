@@ -2,21 +2,35 @@
 
 namespace Tests\Unit;
 
+use App\Models\Payload;
 use Tests\TestCase;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Bonus;
 use App\Models\Attack;
 use App\Models\Inventory;
-use App\Models\Payload;
 use App\Models\Payloads\Xss;
 use App\Models\Payloads\Dos;
 use App\Exceptions\TeamNotFoundException;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PayloadTest extends TestCase {
     use RefreshDatabase;
+
+    public function testGetAllPayloads() {
+        $payloads = Payload::getAll();
+        $this->assertNotEquals(0, count($payloads));
+        $this->assertTrue(is_subclass_of($payloads[0], 'App\Models\Payload'));
+    }
+
+    public function testGetPayloadByTag() {
+        $tag = 'EndpointExecutable';
+        $payloads = Payload::getByTag($tag);
+        $this->assertNotEquals(0, count($payloads));
+        foreach ($payloads as $payload){
+            $this->assertTrue(in_array($tag, $payload->tags));
+        }
+    }
     
     private function createTeamsAndAttack(){
         $user = User::factory()->create();
@@ -57,8 +71,8 @@ class PayloadTest extends TestCase {
         $this->assertTrue(in_array("OneTurnOnly", $bonus->tags));
         $this->assertTrue(in_array("RevenueDeduction", $bonus->tags));
         $this->assertTrue(in_array("DetectionDeduction", $bonus->tags));
-        $this->assertEquals(0.5, $bonus->percentRevDeducted);
-        $this->assertEquals(0.2, $bonus->percentDetDeducted);
+        $this->assertEquals(50, $bonus->percentRevDeducted);
+        $this->assertEquals(20, $bonus->percentDetDeducted);
     }
     
 }

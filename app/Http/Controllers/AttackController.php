@@ -20,22 +20,6 @@ class AttackController extends Controller
         }
     }
 
-    public function choosePayload($attack, $attMsg) {
-        $payloads = $attack->payloads;
-        if (empty($payloads)) {
-            return $this->attackComplete($attack, $attMsg);
-        }
-        $redteam = Auth::user()->getRedTeam();
-        return view('redteam.choosePayload')->with(compact('redteam','attack', 'attMsg'));
-    }
-
-    public function executePayload($request) {
-        $attack = Attack::find($request->attID);
-        $payload = $request->result;
-        //Put the stuff for payload handling here? For now, just pass stuff to complete...
-        return $this->attackComplete($attack, $request->attMsg);
-    }
-
     public static function attackComplete($attack, $attMsg){
         $redteam = Team::find($attack->redteam);
         $attack->onAttackComplete();
@@ -74,11 +58,7 @@ class AttackController extends Controller
         }
         $attack->setSuccess($success);
         
-        if ($success) {
-            return $this->choosePayload($attack, $attMsg);
-        }else {
-            return $this->attackComplete($attack, $attMsg);
-        }
+        return $this->attackComplete($attack, $attMsg);
     }
 
     public function synFlood(request $request){
@@ -95,11 +75,7 @@ class AttackController extends Controller
         }
         $attack->setSuccess($success);
         
-        if ($success) {
-            return $this->choosePayload($attack, $attMsg);
-        }else {
-            return $this->attackComplete($attack, $attMsg);
-        }
+        return $this->attackComplete($attack, $attMsg);
     }
 
     public function sqlInjection(request $request){
@@ -121,12 +97,8 @@ class AttackController extends Controller
             default: break;
         }
         $attack->setSuccess($success);
-
-        if ($success) {
-            return $this->choosePayload($attack, $attMsg);
-        }else {
-            return $this->attackComplete($attack, $attMsg);
-        }
+    
+        return $this->attackComplete($attack, $attMsg);
     }
     
 }

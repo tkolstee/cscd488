@@ -10,7 +10,7 @@ class SQLInjectionAttack extends Attack {
     public $_class_name             = "SQLInjection";
     public $_tags                   = [];
     public $_prereqs                = ['SQLDatabase'];
-    public $_payloads               = [];
+    public $_payload_tag            = 'DBAttack';
     public $_initial_difficulty     = 2;
     public $_initial_detection_risk = 5;
     public $_initial_energy_cost    = 100;

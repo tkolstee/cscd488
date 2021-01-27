@@ -6,6 +6,7 @@ use App\Exceptions\AttackNotFoundException;
 use App\Exceptions\TeamNotFoundException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Payload;
 use Error;
 
 class Attack extends Model
@@ -23,7 +24,8 @@ class Attack extends Model
     public $_class_name = "";
     public $_tags    = [];
     public $_prereqs = [];
-    public $_payloads = [];
+    public $_payload_tag = null;
+    public $_payload_choice = null;
     public $_initial_difficulty = 3;
     public $_initial_detection_risk = 3;
     public $_initial_detection = 0;
@@ -43,7 +45,8 @@ class Attack extends Model
         $this->calculated_detection_risk = $this->_initial_detection_risk;
         $this->tags           = $this->_tags;
         $this->prereqs        = $this->_prereqs;
-        $this->payloads       = $this->_payloads;
+        $this->payload_tag    = $this->_payload_tag;
+        $this->payload_choice = $this->_payload_choice;
         $this->success        = null;
         $this->detection_level = $this->initial_detection;
         $this->notified       = null;
@@ -59,9 +62,17 @@ class Attack extends Model
         $redteam  = Team::find($this->redteam);
 
         if ( $this->success ) {
-            $blueteam->changeReputation($this->reputation_loss);
-            $redteam->changeBalance($this->red_gain); //REPLACE WITH CALL TO PAYLOAD
+            if ($this->payload_choice == null) {
+                $blueteam->changeReputation($this->reputation_loss);
+                $redteam->changeBalance($this->red_gain);
+            }
+            else {
+                $payload = Payload::get($this->payload_choice);
+                $payload->onAttackComplete($this);
+                $redteam->changeBalance($this->red_gain);
+            }
         }
+        
         if ( $this->detection_level > 0 ) {
             if( in_array("Internal", $this->tags)){
                 $tokens = $redteam->getTokens();
@@ -94,28 +105,7 @@ class Attack extends Model
         try {
             $class = "\\App\\Models\\Attacks\\" . $attack->class_name . "Attack";
             $att = new $class();
-            $att->id = $attack->id;
-            $att->name = $attack->name;
-            $att->class_name = $attack->class_name;
-            $att->energy_cost = $attack->energy_cost;
-            $att->tags = $attack->tags;
-            $att->prereqs = $attack->prereqs;
-            $att->payloads = $attack->payloads;
-            $att->difficulty = $attack->difficulty;
-            $att->detection_risk = $attack->detection_risk;
-            $att->success = $attack->success;
-            $att->detection_level = $attack->detection_level;
-            $att->calculated_detection_risk = $attack->calculated_detection_risk;
-            $att->calculated_difficulty = $attack->calculated_difficulty;
-            $att->notified = $attack->notified;
-            $att->isNews = $attack->isNews;
-            $att->possible = $attack->possible;
-            $att->blueteam = $attack->blueteam;
-            $att->redteam = $attack->redteam;
-            $att->errormsg = $attack->errormsg;
-            $att->blue_loss = $attack->blue_loss;
-            $att->red_gain = $attack->red_gain;
-            $att->reputation_loss = $attack->reputation_loss;
+            $att->copy($attack);
         }
         catch (Error $e) {
             throw new AttackNotFoundException();
@@ -142,27 +132,7 @@ class Attack extends Model
 
     public static function store($attack){
         $att = new Attack();
-        $att->name = $attack->name;
-        $att->class_name = $attack->class_name;
-        $att->tags = $attack->tags;
-        $att->prereqs = $attack->prereqs;
-        $att->payloads = $attack->payloads;
-        $att->difficulty = $attack->difficulty;
-        $att->detection_risk = $attack->detection_risk;
-        $att->success = $attack->success;
-        $att->detection_level = $attack->detection_level;
-        $att->calculated_detection_risk = $attack->calculated_detection_risk;
-        $att->calculated_difficulty = $attack->calculated_difficulty;
-        $att->notified = $attack->notified;
-        $att->isNews = $attack->isNews;
-        $att->energy_cost = $attack->energy_cost;
-        $att->possible = $attack->possible;
-        $att->blueteam = $attack->blueteam;
-        $att->redteam = $attack->redteam;
-        $att->errormsg = $attack->errormsg;
-        $att->blue_loss = $attack->blue_loss;
-        $att->red_gain = $attack->red_gain;
-        $att->reputation_loss = $attack->reputation_loss;
+        $att->copy($attack);
         $att->save();
         $attack->id = $att->id;
         return $attack;
@@ -173,30 +143,34 @@ class Attack extends Model
             where('redteam','=',$attack->redteam)->where('blueteam','=',$attack->blueteam);
         $att = Attack::find($attack->id);
         if($att == null) throw new AttackNotFoundException;
-        $att->name = $attack->name;
-        $att->class_name = $attack->class_name;
-        $att->tags = $attack->tags;
-        $att->prereqs = $attack->prereqs;
-        $att->payloads = $attack->payloads;
-        $att->difficulty = $attack->difficulty;
-        $att->detection_risk = $attack->detection_risk;
-        $att->success = $attack->success;
-        $att->detection_level = $attack->detection_level;
-        $att->calculated_detection_risk = $attack->calculated_detection_risk;
-        $att->calculated_difficulty = $attack->calculated_difficulty;
-        $att->notified = $attack->notified;
-        $att->isNews = $attack->isNews;
-        $att->energy_cost = $attack->energy_cost;
-        $att->possible = $attack->possible;
-        $att->blueteam = $attack->blueteam;
-        $att->redteam = $attack->redteam;
-        $att->errormsg = $attack->errormsg;
-        $att->blue_loss = $attack->blue_loss;
-        $att->red_gain = $attack->red_gain;
-        $att->reputation_loss = $attack->reputation_loss;
+        $att->copy($attack);
         $att->update();
         $attack->id = $att->id;
         return $attack;
+    }
+
+    private function copy($attack) {
+        $this->id = $attack->id;
+        $this->name = $attack->name;
+        $this->class_name = $attack->class_name;
+        $this->energy_cost = $attack->energy_cost;
+        $this->tags = $attack->tags;
+        $this->prereqs = $attack->prereqs;
+        $this->payload_tag = $attack->payload_tag;
+        $this->payload_choice = $attack->payload_choice;
+        $this->difficulty = $attack->difficulty;
+        $this->detection_risk = $attack->detection_risk;
+        $this->success = $attack->success;
+        $this->detection_level = $attack->detection_level;
+        $this->notified = $attack->notified;
+        $this->isNews = $attack->isNews;
+        $this->possible = $attack->possible;
+        $this->blueteam = $attack->blueteam;
+        $this->redteam = $attack->redteam;
+        $this->errormsg = $attack->errormsg;
+        $this->blue_loss = $attack->blue_loss;
+        $this->red_gain = $attack->red_gain;
+        $this->reputation_loss = $attack->reputation_loss;
     }
 
     public static function getRedPreviousAttacks($redId) {
@@ -284,6 +258,11 @@ class Attack extends Model
             return $this->name;
         }
         return "?";
+    }
+
+    public function getPayloads(){
+        if ($this->payload_tag == null){ return null; }
+        return Payload::getByTag($this->payload_tag);
     }
 
     public function onPreAttack() {

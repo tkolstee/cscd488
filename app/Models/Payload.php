@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
-use Exception;
 
 class Payload //extends Model
 {
@@ -18,7 +16,7 @@ class Payload //extends Model
     protected $fillable = [
         'name',
     ];
-    protected $casts = [ 'rewards' => 'array', ];
+    protected $casts = [ 'tags' => 'array', ];
 
     public $_name    = "Abstract class - do not use";
     public $_tags = [];
@@ -65,5 +63,5 @@ class Payload //extends Model
         }
         throw new AssetNotFoundException();
     }
-
+    
 }
