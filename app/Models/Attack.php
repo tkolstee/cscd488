@@ -62,9 +62,17 @@ class Attack extends Model
         $redteam  = Team::find($this->redteam);
 
         if ( $this->success ) {
-            $blueteam->changeReputation($this->reputation_loss);
-            $redteam->changeBalance($this->red_gain); //REPLACE WITH CALL TO PAYLOAD
+            if ($this->payload_choice == null) {
+                $blueteam->changeReputation($this->reputation_loss);
+                $redteam->changeBalance($this->red_gain);
+            }
+            else {
+                $payload = Payload::get($this->payload_choice);
+                $payload->onAttackComplete($this);
+                $redteam->changeBalance($this->red_gain);
+            }
         }
+        
         if ( $this->detection_level > 0 ) {
             if( in_array("Internal", $this->tags)){
                 $tokens = $redteam->getTokens();

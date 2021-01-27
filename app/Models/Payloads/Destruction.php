@@ -25,7 +25,7 @@ class Destruction extends Payload
         $bonus->payload_name = $this->_name;
         $bonus->team_id = $attack->redteam;
         $bonus->target_id  = $attack->blueteam;
-        $bonus->tags = ['UntilAnalyzed','RevenueDeduction'];
+        $bonus->tags = ['RevenueDeduction'];
         $bonus->percentRevDeducted = 20;
         $bonus->save();
     }
