@@ -11,6 +11,7 @@ use App\Models\Attack;
 use App\Models\Inventory;
 use App\Models\Payloads\Xss;
 use App\Models\Payloads\Dos;
+use App\Models\Payloads\Destruction;
 use App\Exceptions\TeamNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -75,4 +76,17 @@ class PayloadTest extends TestCase {
         $this->assertEquals(20, $bonus->percentDetDeducted);
     }
     
+    public function testDestructionPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new Destruction();
+        $payload->onAttackComplete($attack);
+
+        $bonus = $redteam->getBonuses()->first();
+        $this->assertEquals($redteam->id, $bonus->team_id);
+        $this->assertEquals($blueteam->id, $bonus->target_id);
+        $this->assertTrue(in_array("RevenueDeduction", $bonus->tags));
+        $this->assertEquals(20, $bonus->percentRevDeducted);
+    }
 }
