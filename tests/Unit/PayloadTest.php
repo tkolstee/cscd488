@@ -13,6 +13,7 @@ use App\Models\Payloads\Dos;
 use App\Models\Payloads\Destruction;
 use App\Models\Payloads\BasicAccess;
 use App\Models\Payloads\PrivAccess;
+use App\Models\Payloads\Evasion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PayloadTest extends TestCase {
@@ -116,5 +117,19 @@ class PayloadTest extends TestCase {
         $inv = $redteam->inventories()->first();
         $this->assertEquals('AccessToken', $inv->asset_name);
         $this->assertEquals(2, $inv->level);
+    }
+
+    public function testEvasionPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new Evasion();
+        $payload->onAttackComplete($attack);
+
+        $bonus = $redteam->getBonuses()->first();
+        $this->assertEquals($redteam->id, $bonus->team_id);
+        $this->assertEquals($blueteam->id, $bonus->target_id);
+        $this->assertTrue(in_array('DetectionDeduction', $bonus->tags));
+        $this->assertEquals(30, $bonus->percentDetDeducted);
     }
 }
