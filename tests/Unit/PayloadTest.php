@@ -12,6 +12,7 @@ use App\Models\Inventory;
 use App\Models\Payloads\Xss;
 use App\Models\Payloads\Dos;
 use App\Models\Payloads\Destruction;
+use App\Models\Payloads\BasicAccess;
 use App\Exceptions\TeamNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -88,5 +89,15 @@ class PayloadTest extends TestCase {
         $this->assertEquals($blueteam->id, $bonus->target_id);
         $this->assertTrue(in_array("RevenueDeduction", $bonus->tags));
         $this->assertEquals(20, $bonus->percentRevDeducted);
+    }
+
+    public function testBasicAccessPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $payload = new BasicAccess();
+        $payload->onAttackComplete($attack);
+
+        $this->assertEmpty(Bonus::all());
+        $redteam = Team::find($attack->redteam);
+        $this->assertEquals('AccessToken', $redteam->assets()->first()->class_name);
     }
 }
