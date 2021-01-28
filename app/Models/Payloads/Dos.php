@@ -3,12 +3,12 @@
 namespace App\Models\Payloads;
 
 use App\Models\Payload;
-use App\Models\Bonus;
 
 class Dos extends Payload 
 {
 
-    public $_name    = "Dos";
+    public $_name = "Denial of Service";
+    public $_class_name = "Dos";
     public $_tags = [];
 
     public function onAttackComplete($attack){

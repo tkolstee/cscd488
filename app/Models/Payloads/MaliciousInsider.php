@@ -3,12 +3,12 @@
 namespace App\Models\Payloads;
 
 use App\Models\Payload;
-use App\Models\Bonus;
 
 class MaliciousInsider extends Payload 
 {
-
-    public $_name    = "MaliciousInsider";
+    
+    public $_name = "Malicious Insider";
+    public $_class_name = "MaliciousInsider";
     public $_tags = [];
 
     public function onAttackComplete($attack){

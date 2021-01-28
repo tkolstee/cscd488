@@ -2,14 +2,14 @@
 
 namespace App\Models\Payloads;
 
-use App\Models\Bonus;
 use App\Models\Team;
 use App\Models\Payload;
 
 class Destruction extends Payload 
 {
 
-    public $_name    = "Destruction";
+    public $_name = "Resource Destruction";
+    public $_class_name = "Destruction";
     public $_tags = ['DBAttack','EndpointExecutable'];
 
     public function onAttackComplete($attack){

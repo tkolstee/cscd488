@@ -8,7 +8,8 @@ use App\Models\Inventory;
 class BasicAccess extends Payload 
 {
 
-    public $_name    = "BasicAccess";
+    public $_name = "Bassic Access";
+    public $_class_name = "BasicAccess";
     public $_tags = ['Executable', 'ServerHW', 'OfficeHW'];
 
     public function onAttackComplete($attack){

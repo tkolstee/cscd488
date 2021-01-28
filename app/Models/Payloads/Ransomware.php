@@ -8,6 +8,7 @@ class Ransomware extends Payload
 {
 
     public $_name    = "Ransomware";
+    public $_class_name = "Ransomware";
     public $_tags = ['EndpointExecutable'];
 
     public function onAttackComplete($attack){
