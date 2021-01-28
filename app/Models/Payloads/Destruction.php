@@ -22,7 +22,8 @@ class Destruction extends Payload
 
         //Blueteam has revenue deduction bonus, starting at 20%
         $bonus = new Bonus;
-        $bonus->payload_name = $this->_name;
+        $bonus->attack_id = $attack->id;
+        $bonus->payload_name = $this->name;
         $bonus->team_id = $attack->redteam;
         $bonus->target_id  = $attack->blueteam;
         $bonus->tags = ['RevenueDeduction'];

@@ -14,6 +14,7 @@ class Xss extends Payload
     public function onAttackComplete($attack){
         parent::onAttackComplete($attack);
         $bonus = new Bonus();
+        $bonus->attack_id = $attack->id;
         $bonus->payload_name = "Xss";
         $bonus->team_id = $attack->redteam;
         $bonus->target_id  = $attack->blueteam;
