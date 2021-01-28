@@ -27,7 +27,11 @@ class Payload //extends Model
     }
     
     public function onAttackComplete($attack){
-
+        $bonus = new Bonus;
+        $bonus->payload_name = $this->_name;
+        $bonus->team_id = $attack->redteam;
+        $bonus->target_id  = $attack->blueteam;
+        return $bonus;
     }
 
     public static function getAll(){

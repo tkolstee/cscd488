@@ -12,7 +12,7 @@ class MaliciousInsider extends Payload
     public $_tags = [];
 
     public function onAttackComplete($attack){
-        parent::onAttackComplete($attack);
+        $bouns = parent::onAttackComplete($attack);
         
     }
 }

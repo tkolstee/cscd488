@@ -12,11 +12,7 @@ class Xss extends Payload
     public $_tags = [];
 
     public function onAttackComplete($attack){
-        parent::onAttackComplete($attack);
-        $bonus = new Bonus();
-        $bonus->payload_name = "Xss";
-        $bonus->team_id = $attack->redteam;
-        $bonus->target_id  = $attack->blueteam;
+        $bonus = parent::onAttackComplete($attack);
         $bonus->tags = ["UntilAnalyzed", "RevenueSteal"];
         $bonus->save();
     }
