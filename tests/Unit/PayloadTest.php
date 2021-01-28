@@ -8,12 +8,11 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Bonus;
 use App\Models\Attack;
-use App\Models\Inventory;
 use App\Models\Payloads\Xss;
 use App\Models\Payloads\Dos;
 use App\Models\Payloads\Destruction;
 use App\Models\Payloads\BasicAccess;
-use App\Exceptions\TeamNotFoundException;
+use App\Models\Payloads\PrivAccess;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PayloadTest extends TestCase {
@@ -102,6 +101,20 @@ class PayloadTest extends TestCase {
 
         $this->assertEmpty(Bonus::all());
         $redteam = Team::find($attack->redteam);
-        $this->assertEquals('AccessToken', $redteam->assets()->first()->class_name);
+        $inv = $redteam->inventories()->first();
+        $this->assertEquals('AccessToken', $inv->asset_name);
+        $this->assertEquals(1, $inv->level);
+    }
+
+    public function testPrivAccessPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $payload = new PrivAccess();
+        $payload->onAttackComplete($attack);
+
+        $this->assertEmpty(Bonus::all());
+        $redteam = Team::find($attack->redteam);
+        $inv = $redteam->inventories()->first();
+        $this->assertEquals('AccessToken', $inv->asset_name);
+        $this->assertEquals(2, $inv->level);
     }
 }
