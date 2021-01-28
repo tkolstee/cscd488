@@ -81,9 +81,13 @@ class PayloadTest extends TestCase {
         $attack = $this->createTeamsAndAttack();
         $redteam = Team::find($attack->redteam);
         $blueteam = Team::find($attack->blueteam);
+        $blueteam->balance = 1000;
+        $blueteam->update();
         $payload = new Destruction();
         $payload->onAttackComplete($attack);
 
+        $blueteam = $blueteam->fresh();
+        $this->assertEquals(900, $blueteam->balance); //lose 10% balance
         $bonus = $redteam->getBonuses()->first();
         $this->assertEquals($redteam->id, $bonus->team_id);
         $this->assertEquals($blueteam->id, $bonus->target_id);
