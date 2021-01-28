@@ -879,6 +879,9 @@ color:#00CC99;
 .blueInvTd{
     width:14%;
 }
+.bonusDescTd{
+    width:20%;
+}
 .inventoryFormContainer{
     width:48%;
     margin: 0 auto;

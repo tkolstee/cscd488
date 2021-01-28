@@ -27,6 +27,7 @@ class Bonus extends Model
     public $_payload_name = null;
     public $_percent_removal = 0;
     public $_percent_rev_remove = 0;
+    public $_attack_id = null;
 
     function __construct() {
        $this->tags = $this->_tags;
@@ -39,6 +40,7 @@ class Bonus extends Model
        $this->percentDiffDeducted = $this->_diff;
        $this->percentAnalDeducted = $this->_analysis;
        $this->payload_name = $this->_payload_name;
+       $this->attack_id = $this->_attack_id;
        $this->percentRevToRemove = $this->_percent_rev_remove;
     }
 

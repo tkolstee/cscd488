@@ -35,7 +35,7 @@ class RedTeamController extends Controller {
             case 'learn': return (new LearnController)->page($page, $request); break;
             case 'store': return $this->store();break;
             case 'filter': return $this->filter($request);break;
-            case 'status': return view('redteam.status')->with('redteam',$redteam); break;
+            case 'status': return $this->status($request); break;
             case 'buy': return $this->buy($request); break;
             case 'inventory': return $this->inventory(); break;
             case 'upgrade': return $this->upgrade($request); break;
@@ -51,6 +51,13 @@ class RedTeamController extends Controller {
             case 'minigamecomplete': return $this->minigameComplete($request); break;
             default: return $this->home(); break;
         }
+    }
+
+    public function status(request $request){
+        $redteam = Team::find(Auth::user()->redteam);
+        $bonuses = $redteam->getBonuses();
+        $bonuses = $bonuses->sortBy("target_id");
+        return view('redteam/status')->with(compact('redteam','bonuses'));
     }
 
     public function leaveTeam(request $request){
