@@ -225,8 +225,8 @@ class Attack extends Model
     }
 
     public function calculateDetected() {
-        $rand = rand(1, 5);
-        if ($rand > $this->calculated_detection_risk) {
+        $rand = rand(1, 4);
+        if ($rand > $this->calculated_detection_risk - 1) {
             $this->detection_level = 0;
         }
         else {
