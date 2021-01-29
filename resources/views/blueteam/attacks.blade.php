@@ -28,8 +28,8 @@
                                 {{$attack->name}}
                             @endif
                         </td>
-                        <td>{{App\Models\Team::find($attack->redteam)->name}}</td>
-                        <td>{{$attack->success ? 'true' : 'false'}}</td>
+                        <td>{{$attack->getAttackerName()}}</td>
+                        <td>{{$attack->success ? 'True' : 'False'}}</td>
                         <td>{{$attack->created_at->diffForHumans()}}</td>
                         @if (attack_broadcastable($attack))
                             <td>

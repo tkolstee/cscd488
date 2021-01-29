@@ -175,8 +175,8 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
-        $attack->detection_risk = 5;
-        $attack->update();
+        $attack->calculated_detection_risk = 5;
+        Attack::updateAttack($attack);
         $attack->calculateDetected();
         $this->assertEquals(1, $attack->detection_level);
     }
@@ -186,8 +186,8 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
-        $attack->detection_risk = 1;
-        $attack->update();
+        $attack->calculated_detection_risk = 1;
+        Attack::updateAttack($attack);
         $attack->calculateDetected();
         $this->assertEquals(0, $attack->detection_level);
     }
@@ -198,8 +198,7 @@ class AttackTest extends TestCase {
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
         $attack->success = true;
-        $attack->update();
-
+        Attack::updateAttack($attack);
         $attack->calculateDetected();
         $this->assertNotEquals(0, $attack->detection_level);
     }
@@ -302,9 +301,12 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         Inventory::factory()->create(['asset_name' => 'SecurityAnalyst', 'team_id' => $blue->id]);
         $attack = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack->detection_risk = 5;
+        $attack->calculated_detection_risk = 5;
+        $attack->calculated_analysis_risk = 2;
+        $analysis_risk = $attack->calculated_analysis_risk;
         $attack->calculateDetected();
-        $this->assertEquals(2, $attack->detection_level);
+        $analysis_riskAfter = $attack->calculated_analysis_risk;
+        $this->assertEquals($analysis_riskAfter - (.5 * $analysis_risk), $attack->detection_level);
     }
 
     public function testGetName(){

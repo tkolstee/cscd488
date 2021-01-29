@@ -212,18 +212,37 @@ class Attack extends Model
         $this->calculateDetected();
     }
 
+    public function checkAnalysisBonus(){
+        if($this->detection_level < 2){
+            return;
+        }
+        $bonuses = Bonus::all()->where('attack_id','=',$this->id);
+        foreach($bonuses as $bonus){
+            if(in_array("UntilAnalyzed",$bonus->tags)){
+                Bonus::destroy($bonus->id);
+            }
+        }
+    }
+
     public function calculateDetected() {
-        $rand = rand(1, 4);
-        if ($rand >= $this->detection_risk) {
+        $rand = rand(1, 5);
+        if ($rand > $this->calculated_detection_risk) {
             $this->detection_level = 0;
         }
         else {
+            $this->detection_level = 1;
             $blueteam = Team::find($this->blueteam);
             if ($blueteam->hasAnalyst()) {
-                $this->detection_level = 2;
+                $this->changeAnalysisRisk(.5);
             }
-            else {
-                $this->detection_level = 1;
+            $rand = rand(1,5);
+            if ($rand < $this->calculated_analysis_risk){
+                $this->detection_level = 2;
+                $this->checkAnalysisBonus();
+                $rand = rand(1,5);
+                if($rand < $this->calculated_attribution_risk){
+                    $this->detection_level = 3;
+                }
             }
             $this->notified = false;
         }
@@ -243,6 +262,7 @@ class Attack extends Model
         $blue->changeBalance(-500);
         $this->detection_level = 2;
         Attack::updateAttack($this);
+        $this->checkAnalysisBonus();
         return true;
     }
 
@@ -265,9 +285,30 @@ class Attack extends Model
         Attack::updateAttack($this);
     }
 
+    public function changeAnalysisRisk($val){
+        $this->calculated_analysis_risk += $val * $this->analysis_risk;
+        if($this->calculated_analysis_risk > 5) $this->calculated_analysis_risk = 5;
+        if($this->calculated_analysis_risk < 1) $this->calculated_analysis_risk = 1;
+        Attack::updateAttack($this);
+    }
+
+    public function changeAttributionRisk($val){
+        $this->calculated_detection_risk += $val * $this->detection_risk;
+        if($this->calculated_detection_risk > 5) $this->calculated_detection_risk = 5;
+        if($this->calculated_detection_risk < 1) $this->calculated_detection_risk = 1;
+        Attack::updateAttack($this);
+    }
+
     public function getName(){ //Restrict information given based on detection level
-        if ($this->detection_level >= 2) {
+        if ($this->detection_level > 1) {
             return $this->name;
+        }
+        return "?";
+    }
+
+    public function getAttackerName(){
+        if ($this->detection_level > 2) {
+            return Team::find($this->redteam)->name;
         }
         return "?";
     }
