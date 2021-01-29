@@ -235,12 +235,12 @@ class Attack extends Model
             if ($blueteam->hasAnalyst()) {
                 $this->changeAnalysisRisk(.5);
             }
-            $rand = rand(1,5);
-            if ($rand < $this->calculated_analysis_risk){
+            $rand = rand(1,4);
+            if ($rand < $this->calculated_analysis_risk-1){
                 $this->detection_level = 2;
                 $this->checkAnalysisBonus();
-                $rand = rand(1,5);
-                if($rand < $this->calculated_attribution_risk){
+                $rand = rand(1,4);
+                if($rand < $this->calculated_attribution_risk-1){
                     $this->detection_level = 3;
                 }
             }
