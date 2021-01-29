@@ -3,7 +3,7 @@
 namespace App\Models\Payloads;
 
 use App\Models\Payload;
-use App\Models\Inventory;
+use App\Models\Team;
 
 class PrivAccess extends Payload 
 {
@@ -14,11 +14,8 @@ class PrivAccess extends Payload
 
     public function onAttackComplete($attack){
         //Create privileged access token, belonging to redteam. Do not create bonus. 
-        Inventory::create([
-            'quantity' => 1,
-            'team_id' => $attack->redteam,
-            'asset_name' => 'AccessToken',
-            'level' => 2,
-        ]);
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $redteam->addToken($blueteam->name, 2);
     }
 }
