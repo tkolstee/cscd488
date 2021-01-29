@@ -197,7 +197,7 @@ class BlueTeamFeatureTest extends TestCase
         ]);
         $red = Team::factory()->red()->create();
         $attack1 = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack1->detection_level = 1;
+        $attack1->detection_level = 3;
         $attack1->setNotified(false);
         $attack1 = Attack::find(1);
 
@@ -208,7 +208,7 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertDontSee($attack1->class_name);
 
         $response = $this->actingAs($user)->get('/blueteam/news');
-        $response->assertSeeInOrder([$red->name, $blue->name]); //Check for 'redname attacked bluename' text basically. Change when we add more to news page?
+        $response->assertSeeInOrder([$blue->name, $red->name]); //Check for 'redname attacked bluename' text basically. Change when we add more to news page?
     }
 
     public function testBlueTeamCanSeeBroadcastButtonHomePage()

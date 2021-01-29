@@ -233,7 +233,7 @@ class Attack extends Model
             $this->detection_level = 1;
             $blueteam = Team::find($this->blueteam);
             if ($blueteam->hasAnalyst()) {
-                $this->calculated_analysis_risk += 2;
+                $this->changeAnalysisRisk(.5);
             }
             $rand = rand(1,5);
             if ($rand < $this->calculated_analysis_risk){
@@ -279,6 +279,20 @@ class Attack extends Model
     }
 
     public function changeDetectionRisk($val){
+        $this->calculated_detection_risk += $val * $this->detection_risk;
+        if($this->calculated_detection_risk > 5) $this->calculated_detection_risk = 5;
+        if($this->calculated_detection_risk < 1) $this->calculated_detection_risk = 1;
+        Attack::updateAttack($this);
+    }
+
+    public function changeAnalysisRisk($val){
+        $this->calculated_analysis_risk += $val * $this->analysis_risk;
+        if($this->calculated_analysis_risk > 5) $this->calculated_analysis_risk = 5;
+        if($this->calculated_analysis_risk < 1) $this->calculated_analysis_risk = 1;
+        Attack::updateAttack($this);
+    }
+
+    public function changeAttributionRisk($val){
         $this->calculated_detection_risk += $val * $this->detection_risk;
         if($this->calculated_detection_risk > 5) $this->calculated_detection_risk = 5;
         if($this->calculated_detection_risk < 1) $this->calculated_detection_risk = 1;
