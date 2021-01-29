@@ -73,10 +73,8 @@ class Bonus extends Model
         if(in_array("RevenueSteal", $this->tags)){
             $revGain = $blueteam->getPerTurnRevenue();
             $amount = $revGain * 0.1;
-            $blueteam->balance -= $amount;
-            $redteam->balance += $amount;
-            $blueteam->update();
-            $redteam->update();
+            $blueteam->changeBalance(-1* $amount);
+            $redteam->changeBalance($amount);
         }
         if(in_array("OneTurnOnly", $this->tags)){
             $this->destroy($this->id);
