@@ -88,6 +88,66 @@ class Bonus extends Model
         $this->checkDelete();
     }
 
+    public function getPayloadName(){
+        $attack = Attack::find($this->attack_id);
+        if($attack->detection_level > 1){
+            return $this->payload_name;
+        }
+        return "?";
+    }
+
+    public function getTeamName(){
+        $attack = Attack::find($this->attack_id);
+        if($attack->detection_level > 2){
+            return Team::find($this->team_id)->name;
+        }
+        return "?";
+    }
+
+    public function getTeamDescription(){
+        $desc = "";
+        if(in_array("RevenueSteal",$this->tags)) $desc += 
+            "Steals 10% of target's revenue made each turn. ";
+        if(in_array("RevenueDeduction", $this->tags))  $desc = $desc .  
+            "Target loses " . $this->percentRevDeducted . "% of revenue made this turn. ";
+        if(in_array("ReputationDeduction", $this->tags))  $desc = $desc . 
+            " Target loses " . $this->percentRepDeducted. "% of reputation made this turn. " ;
+        if(in_array("DetectionDeduction", $this->tags))  $desc = $desc .  
+            "You have " . $this->percentDetDeducted. "% less chance of being detected by target. ";
+        if(in_array("AnalysisDeduction", $this->tags))  $desc = $desc .  
+            "You have " . $this->percentAnalDeducted. "% less chance of being analyzed by target. ";
+        if(in_array("DifficultyDeduction", $this->tags))  $desc = $desc .  
+            "It is " . $this->percentDiffDeducted. "% easier to be successful attacking the target. ";
+        if(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
+            "Bonus only lasts until next turn. ";
+        elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
+            "Bonus lasts until the target analyze the attack.";
+        else  $desc = $desc .  "Decrements by 5% each turn.";
+        return $desc;
+    }
+
+    public function getTargetDescription(){
+        $desc = "";
+        if(in_array("RevenueSteal",$this->tags)) $desc += 
+            "Attacker steals 10% of your revenue made each turn. ";
+        if(in_array("RevenueDeduction", $this->tags))  $desc = $desc .  
+            "You lose " . $this->percentRevDeducted . "% of revenue made this turn. ";
+        if(in_array("ReputationDeduction", $this->tags))  $desc = $desc . 
+            "You lose " . $this->percentRepDeducted . "% of reputation made this turn. " ;
+        if(in_array("DetectionDeduction", $this->tags))  $desc = $desc .  
+            "You have " . $this->percentDetDeducted . "% less chance of detecting this attacker. ";
+        if(in_array("AnalysisDeduction", $this->tags))  $desc = $desc .  
+            "You have " . $this->percentAnalDeducted . "% less chance of analyzing this attacker. ";
+        if(in_array("DifficultyDeduction", $this->tags))  $desc = $desc .  
+            "It is " . $this->percentDiffDeducted . "% easier for the attacker to be successful against you. ";
+        if(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
+            "Bonus only lasts until next turn. ";
+        elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
+            "Bonus lasts until you analyze the attack.";
+        else  $desc = $desc .  "Decrements by 5% each turn.";
+        return $desc;
+    }
+
     public function checkDelete(){
         if($this->percentDiffDeducted > 0){
             return;
