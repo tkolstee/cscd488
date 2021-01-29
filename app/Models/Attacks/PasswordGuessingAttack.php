@@ -17,7 +17,6 @@ class PasswordGuessingAttack extends Attack {
     public $_initial_attribution_risk = 0.5;
     public $_initial_energy_cost    = 300;
     public $_initial_reputation_loss= -100;
-    public $possible                = true;
 
 
     function onAttackComplete() {

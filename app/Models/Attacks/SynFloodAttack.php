@@ -16,7 +16,6 @@ class SynFloodAttack extends Attack {
     public $_initial_blue_loss      = -50;
     public $_initial_red_gain       = 100;
     public $_initial_reputation_loss= -100;
-    public $possible                = true;
 
 
     function onAttackComplete() {

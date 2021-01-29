@@ -17,7 +17,6 @@ class MaliciousInsiderAttack extends Attack {
     public $_initial_attribution_risk = 4;
     public $_initial_energy_cost    = 1000;
     public $_initial_reputation_loss= -100;
-    public $possible                = true;
 
 
     function onAttackComplete() {
