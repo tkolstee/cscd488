@@ -28,6 +28,7 @@ class BonusTest extends TestCase {
     private function createBonus($teamID, $tags){
         $bonus = Bonus::factory()->create();
         $bonus->team_id = $teamID;
+        $bonus->target_id = 1; //works because blueteam was made first, id is 1..
         $bonus->tags = $tags;
         $bonus->update();
         return $bonus;
@@ -60,7 +61,6 @@ class BonusTest extends TestCase {
         $team = $this->createTeams();
         $tags = ["RevenueDeduction", "ReputationDeduction", "DetectionDeduction", "AnalysisDeduction", "DifficultyDeduction"];
         $bonus = $this->createBonus($team->id, $tags);
-        $bonus->target_id = 1; //bad hack 
         $bonus->percentRevDeducted = 10;
         $bonus->percentRepDeducted = 10;
         $bonus->percentDetDeducted = 10;
@@ -71,6 +71,36 @@ class BonusTest extends TestCase {
         $this->assertEquals([5,5,5,5,5],[$bonus->percentRevDeducted, $bonus->percentRepDeducted, $bonus->percentDetDeducted, $bonus->percentAnalDeducted, $bonus->percentDiffDeducted]);
         $bonus->onTurnChange();
         $this->assertEmpty(Bonus::all());
+    }
+
+    public function testTurnChangeAddTokens(){
+        $team = $this->createTeams();
+        $tags = ['AddTokens'];
+        $bonus = $this->createBonus($team->id, $tags);
+
+        $this->assertEmpty(Inventory::all());
+        $bonus->onTurnChange();
+        $inv = Inventory::all()->first();
+        $this->assertEquals(1, $inv->quantity);
+
+        $bonus->onTurnChange();
+        $inv->refresh();
+        $this->assertEquals(2, $inv->quantity);
+    }
+
+    public function testTurnChangeTokensCappedAt5(){
+        $team = $this->createTeams();
+        $tags = ['AddTokens'];
+        $bonus = $this->createBonus($team->id, $tags);
+
+        $bonus->onTurnChange();
+        $inv = Inventory::all()->first();
+        $inv->quantity = 5;
+        $inv->update();
+
+        $bonus->onTurnChange();
+        $inv->refresh();
+        $this->assertEquals(5, $inv->quantity);
     }
 
     public function testTurnChangeSteal(){

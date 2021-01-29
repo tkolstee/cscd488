@@ -16,6 +16,7 @@ use App\Models\Payloads\Confusion;
 use App\Models\Payloads\PrivAccess;
 use App\Models\Payloads\Evasion;
 use App\Models\Payloads\WebsiteDefacement;
+use App\Models\Payloads\Keylogger;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PayloadTest extends TestCase {
@@ -167,5 +168,19 @@ class PayloadTest extends TestCase {
         $this->assertEquals(20, $bonus->percentDetDeducted);
         $this->assertTrue(in_array("AnalysisDeduction", $bonus->tags));
         $this->assertEquals(20, $bonus->percentAnalDeducted);
+    }
+
+    public function testKeyloggerPayload() {
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new Keylogger;
+        $payload->onAttackComplete($attack);
+
+        $bonus = $redteam->getBonuses()->first();
+        $this->assertEquals($redteam->id, $bonus->team_id);
+        $this->assertEquals($blueteam->id, $bonus->target_id);
+        $this->assertTrue(in_array("UntilAnalyzed", $bonus->tags));
+        $this->assertTrue(in_array("AddTokens", $bonus->tags));
     }
 }

@@ -82,6 +82,14 @@ class Bonus extends Model
             $this->destroy($this->id);
             return;
         }
+        if(in_array("AddTokens", $this->tags)){
+            $redteam = Team::find($this->team_id);
+            $blueteam = Team::find($this->target_id);
+            $tokenQty = $redteam->getTokenQuantity($blueteam->name, 1);
+            if ($tokenQty < 5){
+                $redteam->addToken($blueteam->name, 1);
+            }
+        }
         $this->update();
         $this->checkDelete();
     }
