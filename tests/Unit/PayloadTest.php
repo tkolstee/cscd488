@@ -12,6 +12,7 @@ use App\Models\Payloads\Xss;
 use App\Models\Payloads\Dos;
 use App\Models\Payloads\Destruction;
 use App\Models\Payloads\BasicAccess;
+use App\Models\Payloads\Confusion;
 use App\Models\Payloads\PrivAccess;
 use App\Models\Payloads\Evasion;
 use App\Models\Payloads\WebsiteDefacement;
@@ -150,5 +151,21 @@ class PayloadTest extends TestCase {
         $this->assertEquals($blueteam->id, $bonus->target_id);
         $this->assertTrue(in_array("RevenueDeduction", $bonus->tags));
         $this->assertEquals(20, $bonus->percentRevDeducted);
+    }
+
+    public function testConfusionPayload() {
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new Confusion;
+        $payload->onAttackComplete($attack);
+
+        $bonus = $redteam->getBonuses()->first();
+        $this->assertEquals($redteam->id, $bonus->team_id);
+        $this->assertEquals($blueteam->id, $bonus->target_id);
+        $this->assertTrue(in_array("DetectionDeduction", $bonus->tags));
+        $this->assertEquals(20, $bonus->percentDetDeducted);
+        $this->assertTrue(in_array("AnalysisDeduction", $bonus->tags));
+        $this->assertEquals(20, $bonus->percentAnalDeducted);
     }
 }
