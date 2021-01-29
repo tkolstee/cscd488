@@ -33,7 +33,7 @@ class Attack extends Model
     public $_initial_blue_loss = 0;
     public $_initial_red_gain = 0;
     public $_initial_reputation_loss = 0;
-    public $possible = true;
+    public $_possible = true;
     public $errormsg = "";
     public $_initial_analysis_risk = null;
     public $_initial_attribution_risk = null;
@@ -61,6 +61,7 @@ class Attack extends Model
         $this->blue_loss      = $this->_initial_blue_loss;
         $this->red_gain       = $this->_initial_red_gain;
         $this->reputation_loss= $this->_initial_reputation_loss;
+        $this->possible = $this->_possible;
     }
 
     function onAttackComplete() { 

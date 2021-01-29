@@ -31,6 +31,7 @@ class CreateAttacksTable extends Migration
             $table->decimal('calculated_detection_risk');
             $table->decimal('calculated_analysis_risk')->nullable();
             $table->decimal('calculated_attribution_risk')->nullable();
+            $table->boolean('possible')->default('true');
             $table->boolean('success')->nullable();
             $table->integer('detection_level')->nullable(); //0 = unseen, 1 = detected, 2 = analyzed by sec. analyst, etc.
             $table->boolean('notified')->nullable();
