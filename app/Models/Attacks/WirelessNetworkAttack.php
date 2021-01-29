@@ -14,7 +14,7 @@ class WirelessNetworkAttack extends Attack {
     public $_initial_difficulty     = 2;
     public $_initial_detection_risk = 1;
     public $_initial_analysis_risk  = 3;
-    public $_initial_attribution_risk = 1;
+    public $_initial_attribution_risk = 0.5;
     public $_initial_energy_cost    = 400;
     public $_initial_reputation_loss= -100;
     public $possible                = true;

@@ -178,7 +178,7 @@ class AttackTest extends TestCase {
         $attack->calculated_detection_risk = 5;
         Attack::updateAttack($attack);
         $attack->calculateDetected();
-        $this->assertEquals(1, $attack->detection_level);
+        $this->assertTrue($attack->detection_level >= 1);
     }
 
     public function testCalculateDetectedFalse() {
@@ -186,7 +186,7 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
-        $attack->calculated_detection_risk = 1;
+        $attack->calculated_detection_risk = 0;
         Attack::updateAttack($attack);
         $attack->calculateDetected();
         $this->assertEquals(0, $attack->detection_level);
@@ -228,12 +228,10 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
-
-        $this->assertEquals($baseAttack->detection_risk, $attack->detection_risk);
         $attack->changeDetectionRisk(10);
         $this->assertEquals(5, $attack->calculated_detection_risk);
         $attack->changeDetectionRisk(-10);
-        $this->assertEquals(1, $attack->calculated_detection_risk);
+        $this->assertEquals(0, $attack->calculated_detection_risk);
         $attack->detection_risk = 5;
         $attack->calculated_detection_risk = 5;
         $attack->changeDetectionRisk(-.2);
@@ -297,17 +295,17 @@ class AttackTest extends TestCase {
         $this->assertTrue($attack->possible);
     }
 
-    public function testAnalystDetectsAttacks(){
+    public function testAnalystAddsAnalysisRiskAttacks(){
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
         Inventory::factory()->create(['asset_name' => 'SecurityAnalyst', 'team_id' => $blue->id]);
         $attack = Attack::create('SynFlood', $red->id, $blue->id);
         $attack->calculated_detection_risk = 5;
+        $attack->analysis_risk = 2;
         $attack->calculated_analysis_risk = 2;
         $analysis_risk = $attack->calculated_analysis_risk;
         $attack->calculateDetected();
-        $analysis_riskAfter = $attack->calculated_analysis_risk;
-        $this->assertEquals($analysis_riskAfter - (.5 * $analysis_risk), $attack->detection_level);
+        $this->assertEquals($analysis_risk + (.5 * $analysis_risk), $attack->calculated_analysis_risk);
     }
 
     public function testGetName(){

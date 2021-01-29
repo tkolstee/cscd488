@@ -225,8 +225,8 @@ class Attack extends Model
     }
 
     public function calculateDetected() {
-        $rand = rand(1, 4);
-        if ($rand > $this->calculated_detection_risk - 1) {
+        $rand = rand(0, 500)/100;
+        if ($rand > $this->calculated_detection_risk) {
             $this->detection_level = 0;
         }
         else {
@@ -235,12 +235,12 @@ class Attack extends Model
             if ($blueteam->hasAnalyst()) {
                 $this->changeAnalysisRisk(.5);
             }
-            $rand = rand(1,4);
-            if ($rand < $this->calculated_analysis_risk-1){
+            $rand = rand(0, 500)/100;
+            if ($rand < $this->calculated_analysis_risk){
                 $this->detection_level = 2;
                 $this->checkAnalysisBonus();
-                $rand = rand(1,4);
-                if($rand < $this->calculated_attribution_risk-1){
+                $rand = rand(0, 500)/100;
+                if($rand < $this->calculated_attribution_risk){
                     $this->detection_level = 3;
                 }
             }
@@ -281,21 +281,21 @@ class Attack extends Model
     public function changeDetectionRisk($val){
         $this->calculated_detection_risk += $val * $this->detection_risk;
         if($this->calculated_detection_risk > 5) $this->calculated_detection_risk = 5;
-        if($this->calculated_detection_risk < 1) $this->calculated_detection_risk = 1;
+        if($this->calculated_detection_risk < 0) $this->calculated_detection_risk = 0;
         Attack::updateAttack($this);
     }
 
     public function changeAnalysisRisk($val){
         $this->calculated_analysis_risk += $val * $this->analysis_risk;
         if($this->calculated_analysis_risk > 5) $this->calculated_analysis_risk = 5;
-        if($this->calculated_analysis_risk < 1) $this->calculated_analysis_risk = 1;
+        if($this->calculated_analysis_risk < 0) $this->calculated_analysis_risk = 0;
         Attack::updateAttack($this);
     }
 
     public function changeAttributionRisk($val){
         $this->calculated_detection_risk += $val * $this->detection_risk;
         if($this->calculated_detection_risk > 5) $this->calculated_detection_risk = 5;
-        if($this->calculated_detection_risk < 1) $this->calculated_detection_risk = 1;
+        if($this->calculated_detection_risk < 0) $this->calculated_detection_risk = 0;
         Attack::updateAttack($this);
     }
 
@@ -352,7 +352,6 @@ class Attack extends Model
                 $this->changeDetectionRisk(-1* $bonus->percentDetDeducted);
             }
         }
-        $this->calculated_detection_risk = round($this->calculated_detection_risk);
         $this->calculated_difficulty = round($this->calculated_difficulty);
         $unmet_prereqs = array_diff($this->prereqs, $have);
         if ( count($unmet_prereqs) > 0 ) {

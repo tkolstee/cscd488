@@ -16,9 +16,11 @@
             </thead>
             <tbody>
                 @foreach($bonuses as $bonus)
+                <tr>
                     <td>{{$bonus->payload_name}}</td>
                     <td>{{App\Models\Team::find($bonus->target_id)->name}}</td>
                     <td class="bonusDescTd">{{$bonus->getTeamDescription()}}</td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
