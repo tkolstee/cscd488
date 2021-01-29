@@ -198,6 +198,7 @@ class AttackTest extends TestCase {
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
         $attack->success = true;
+        $attack->calculated_detection_risk = 5;
         Attack::updateAttack($attack);
         $attack->calculateDetected();
         $this->assertNotEquals(0, $attack->detection_level);
