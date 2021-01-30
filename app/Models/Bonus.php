@@ -138,7 +138,7 @@ class Bonus extends Model
         if(in_array("ChanceToRemove", $this->tags))  $desc = $desc . 
             "Has a " . $this->removalChance . "% chance to be automatically removed each turn. ";
         if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
-            "Target can pay you to remove this bonus. ";
+            "Target can pay you ". $this->removalCostFactor . " times their per turn revenue to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
             "Bonus lasts until the target analyze the attack.";
         else  $desc = $desc .  "Decrements by 5% each turn.";
@@ -164,7 +164,7 @@ class Bonus extends Model
         if(in_array("ChanceToRemove", $this->tags))  $desc = $desc . 
             "You have a " . $this->removalChance . "% chance to automatically remove this each turn. ";
         if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
-            "You can pay the attacker to remove this bonus. ";
+            "You can pay the attacker " . $this->removalCostFactor . " times your per turn revenue to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
             "Bonus lasts until you analyze the attack.";
         else  $desc = $desc .  "Decrements by 5% each turn.";
