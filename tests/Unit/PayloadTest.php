@@ -17,6 +17,7 @@ use App\Models\Payloads\PrivAccess;
 use App\Models\Payloads\Evasion;
 use App\Models\Payloads\WebsiteDefacement;
 use App\Models\Payloads\Keylogger;
+use App\Models\Payloads\Ransomware;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PayloadTest extends TestCase {
@@ -182,5 +183,22 @@ class PayloadTest extends TestCase {
         $this->assertEquals($blueteam->id, $bonus->target_id);
         $this->assertTrue(in_array("UntilAnalyzed", $bonus->tags));
         $this->assertTrue(in_array("AddTokens", $bonus->tags));
+    }
+
+    public function testRansomwarePayload() {
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new Ransomware;
+        $payload->onAttackComplete($attack);
+
+        $bonus = $redteam->getBonuses()->first();
+        $this->assertEquals($redteam->id, $bonus->team_id);
+        $this->assertEquals($blueteam->id, $bonus->target_id);
+        $this->assertTrue(in_array("RevenueDeduction", $bonus->tags));
+        $this->assertTrue(in_array("ChanceToRemove", $bonus->tags));
+        $this->assertTrue(in_array("PayToRemove", $bonus->tags));
+        $this->assertEquals(50, $bonus->percentRevDeducted);
+        $this->assertEquals(10, $bonus->removalChance);
     }
 }
