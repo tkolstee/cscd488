@@ -133,6 +133,10 @@ class Bonus extends Model
             "It is " . $this->percentDiffDeducted. "% easier to be successful attacking the target. ";
         if(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
             "Bonus only lasts until next turn. ";
+        if(in_array("ChanceToRemove", $this->tags))  $desc = $desc . 
+            "Has a " . $this->removalChance . "% chance to be automatically removed each turn. ";
+        if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
+            "Target can pay you to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
             "Bonus lasts until the target analyze the attack.";
         else  $desc = $desc .  "Decrements by 5% each turn.";
@@ -155,6 +159,10 @@ class Bonus extends Model
             "It is " . $this->percentDiffDeducted . "% easier for the attacker to be successful against you. ";
         if(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
             "Bonus only lasts until next turn. ";
+        if(in_array("ChanceToRemove", $this->tags))  $desc = $desc . 
+            "You have a " . $this->removalChance . "% chance to automatically remove this each turn. ";
+        if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
+            "You can pay the attacker to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
             "Bonus lasts until you analyze the attack.";
         else  $desc = $desc .  "Decrements by 5% each turn.";
