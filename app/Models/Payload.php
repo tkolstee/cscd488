@@ -33,6 +33,7 @@ class Payload //extends Model
         $bonus->payload_name = $this->_class_name;
         $bonus->team_id = $attack->redteam;
         $bonus->target_id  = $attack->blueteam;
+        $bonus->attack_id = $attack->id;
         return $bonus;
     }
 
