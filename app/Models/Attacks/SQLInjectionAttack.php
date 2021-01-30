@@ -12,12 +12,11 @@ class SQLInjectionAttack extends Attack {
     public $_prereqs                = ['SQLDatabase'];
     public $_payload_tag            = 'DBAttack';
     public $_initial_difficulty     = 2;
-    public $_initial_detection_risk = 5;
-    public $_initial_energy_cost    = 100;
-    public $_initial_blue_loss      = -50;
-    public $_initial_red_gain       = 100;
+    public $_initial_detection_risk = 3;
+    public $_initial_analysis_risk = 3;
+    public $_initial_attribution_risk = 1.5;
+    public $_initial_energy_cost    = 200;
     public $_initial_reputation_loss= -100;
-    public $possible                = true;
 
 
     function onAttackComplete() {

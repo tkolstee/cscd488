@@ -33,7 +33,7 @@
         @if (!$unreadAttacks->isEmpty())
             <h4>Your team was attacked while you were away!</h4>
             @foreach ($unreadAttacks as $attack)
-                <p>
+                <p>{{$attack->getAttackerName()}} attacked you with 
                 {{$attack->getName()}} attack {{$attack->created_at->diffForHumans()}}. 
                 @if($attack->success)
                     You lost ${{$attack->blue_loss*-1}} and {{$attack->reputation_loss*-1}} reputation

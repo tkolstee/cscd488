@@ -47,7 +47,7 @@ class BlueTeamController extends Controller {
                 case 'news': return $this->news(); break;
                 case 'attacks': return $this->attacks(); break;
                 case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
-                case 'status': return view('blueteam.status')->with('blueteam',$blueteam); break;
+                case 'status': return $this->status($request); break;
                 case 'store': return $this->store();
                 case 'filter': return $this->filter($request);
                 case 'training': return view('blueteam.training')->with('blueteam',$blueteam); break;
@@ -71,9 +71,15 @@ class BlueTeamController extends Controller {
             default: return $this->home(); break;
         }
         
-
     }
  
+    public function status(request $request){
+        $blueteam = Auth::user()->getBlueTeam();
+        $bonuses = $blueteam->getBonusesByTarget();
+        $bonuses = $bonuses->sortByDesc("created_at");
+        return view('blueteam/status')->with(compact('blueteam','bonuses'));
+    }
+
     public function leaveTeam(request $request){
         if($request->result == "stay"){
             return $this->settings($request);

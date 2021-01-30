@@ -17,7 +17,6 @@ class BackdoorBasicAttack extends Attack {
     public $_initial_blue_loss      = 0;
     public $_initial_red_gain       = 0;
     public $_initial_reputation_loss= 0;
-    public $possible                = true;
 
 
     function onAttackComplete() {

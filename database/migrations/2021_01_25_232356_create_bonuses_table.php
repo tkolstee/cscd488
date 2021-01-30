@@ -16,7 +16,8 @@ class CreateBonusesTable extends Migration
         Schema::create('bonuses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('team_id')->nullable()->constrained('teams')->onDelete('cascade');   
-            $table->foreignId('target_id')->nullable()->constrained('teams')->onDelete('cascade');       
+            $table->foreignId('target_id')->nullable()->constrained('teams')->onDelete('cascade');    
+            $table->foreignId('attack_id')->nullable()->constrained('attacks')->onDelete('cascade');   
             $table->text('payload_name')->nullable();     
             $table->json('tags');
             $table->integer('percentRevDeducted')->nullable();

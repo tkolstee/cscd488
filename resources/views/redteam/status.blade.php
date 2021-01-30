@@ -3,6 +3,27 @@
 @section('title', 'Red Team Home')
 
 @section('pagecontent')
-    <h4>Red Status Learning Page</h4>
-    <p>This is the red team status page. Much Wow.</p>
+    @if(count($bonuses ?? []) < 1)
+        <h4>You have no bonuses :(</h4>
+    @else
+        <h4>Your Bonuses:</h4>
+        <div>
+        <table class="table table-bordered">
+            <thead>
+                <th>Name</th>
+                <th>Target</th>
+                <th class="bonusDescTd">Effect</th>
+            </thead>
+            <tbody>
+                @foreach($bonuses as $bonus)
+                <tr>
+                    <td>{{$bonus->payload_name}}</td>
+                    <td>{{App\Models\Team::find($bonus->target_id)->name}}</td>
+                    <td class="bonusDescTd">{{$bonus->getTeamDescription()}}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        </div>
+    @endif
 @endsection
