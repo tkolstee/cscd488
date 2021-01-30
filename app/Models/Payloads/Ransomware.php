@@ -15,9 +15,9 @@ class Ransomware extends Payload
     public function onAttackComplete($attack){
         $bonus = parent::onAttackComplete($attack);
 
-        //Ransomware always discovered, ensure det_lvl is at least 1
-        if ($attack->detection_level < 1) {
-            $attack->detection_level = 1;
+        //Ransomware always discovered, ensure det_lvl is at least 2
+        if ($attack->detection_level < 2) {
+            $attack->detection_level = 2;
             Attack::updateAttack($attack);
         }
 
