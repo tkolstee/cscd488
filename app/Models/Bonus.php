@@ -28,6 +28,7 @@ class Bonus extends Model
     public $_percent_removal = 0;
     public $_percent_rev_remove = 0;
     public $_removalChance = 0;
+    public $_removalCostFactor = 1;
     public $_attack_id = null;
 
     function __construct() {
@@ -42,6 +43,7 @@ class Bonus extends Model
        $this->percentAnalDeducted = $this->_analysis;
        $this->payload_name = $this->_payload_name;
        $this->removalChance = $this->_removalChance;
+       $this->removalCostFactor = $this->_removalCostFactor;
        $this->attack_id = $this->_attack_id;
        $this->percentRevToRemove = $this->_percent_rev_remove;
     }
@@ -189,5 +191,22 @@ class Bonus extends Model
             return;
         }
         $this->destroy($this->id);
+    }
+
+    public function payToRemove(){
+        if (!in_array('PayToRemove', $this->tags)){
+            return false;
+        }
+        $blueteam = Team::find($this->target_id);
+        $redteam = Team::find($this->team_id);
+        $cost = $blueteam->getPerTurnRevenue() * $this->removalCostFactor;
+        if ($cost > $blueteam->balance){
+            return false;
+        }
+
+        $blueteam->changeBalance($cost *-1);
+        $redteam->changeBalance($cost);
+        $this->destroy($this->id);
+        return true;
     }
 }

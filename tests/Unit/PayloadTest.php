@@ -200,5 +200,6 @@ class PayloadTest extends TestCase {
         $this->assertTrue(in_array("PayToRemove", $bonus->tags));
         $this->assertEquals(50, $bonus->percentRevDeducted);
         $this->assertEquals(10, $bonus->removalChance);
+        $this->assertEquals(2, $bonus->removalCostFactor);
     }
 }

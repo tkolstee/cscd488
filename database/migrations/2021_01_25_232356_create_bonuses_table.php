@@ -28,6 +28,7 @@ class CreateBonusesTable extends Migration
             $table->integer('percentRemoval')->nullable();
             $table->integer('percentRevToRemove')->nullable();
             $table->integer('removalChance')->nullable();
+            $table->integer('removalCostFactor')->nullable(); //removal cost compared to perTurnRevenue. 2 = twice perTurnRev
             $table->timestamps();
         });
     }

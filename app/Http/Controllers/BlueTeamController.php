@@ -84,12 +84,7 @@ class BlueTeamController extends Controller {
 
     public function removeBonus(request $request){
         $bonus = Bonus::find($request->bonusID);
-        $blueteam = Auth::user()->getBlueTeam();
-        $redteam = Team::find($bonus->team_id);
-        $cost = $blueteam->getPerTurnRevenue();
-        $blueteam->changeBalance($cost *-1);
-        $redteam->changeBalance($cost);
-        Bonus::destroy($bonus->id);
+        $bonus->payToRemove();
         return $this->status();
     }
 

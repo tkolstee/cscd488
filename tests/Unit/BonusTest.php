@@ -180,4 +180,43 @@ class BonusTest extends TestCase {
         $bonus->onTurnChange();
         $this->assertNotEmpty(Bonus::all());
     }
+
+    public function testPayToRemoveBonusIncorrectTags(){
+        $bonus = new Bonus;
+        $bonus->tags = [];
+        $this->assertFalse($bonus->payToRemove());
+    }
+
+    public function testPayToRemoveNotEnoughMoney(){
+        $team = $this->createTeams();
+        $blueteam = Team::all()->where('blue','=',1)->first();
+        $blueteam->balance = -10; //Impossible, but works for testing purposes
+        $blueteam->update();
+        $tags = ["PayToRemove"];
+        $bonus = $this->createBonus($team->id, $tags);
+        $bonus->removalCostFactor = 1;
+        $bonus->update();
+
+        $this->assertFalse($bonus->payToRemove());
+        $this->assertNotEmpty(Bonus::all());
+    }
+
+    public function testPayToRemoveValidBonus(){
+        $team = $this->createTeams();
+        $blueteam = Team::all()->where('blue','=',1)->first();
+        $removalFactor = 3;
+        $cost = $blueteam->getPerTurnRevenue() * $removalFactor;
+        $blueteam->balance = $cost;
+        $blueteam->update();
+        $tags = ["PayToRemove"];
+        $bonus = $this->createBonus($team->id, $tags);
+        $bonus->removalCostFactor = $removalFactor;
+
+        $bonus->payToRemove();
+        $this->assertEmpty(Bonus::all());
+        $blueteam->refresh();
+        $this->assertEquals(0, $blueteam->balance);
+        $team->refresh();
+        $this->assertEquals($cost, $team->balance);
+    }
 }

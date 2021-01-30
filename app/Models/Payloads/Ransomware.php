@@ -26,6 +26,7 @@ class Ransomware extends Payload
         $bonus->tags = ['RevenueDeduction', 'ChanceToRemove', 'PayToRemove'];
         $bonus->percentRevDeducted = 50;
         $bonus->removalChance = 10;
+        $bonus->removalCostFactor = 2;
         $bonus->save();
     }
 }
