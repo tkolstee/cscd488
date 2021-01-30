@@ -53,6 +53,8 @@ class Bonus extends Model
     }
 
     public function onTurnChange(){
+        $redteam = Team::find($this->team_id);
+        $blueteam = Team::find($this->target_id);
         if(!in_array("UntilAnalyzed", $this->tags)){
             if(in_array("RevenueDeduction", $this->tags)){
                 $this->percentRevDeducted -= 5;
@@ -71,18 +73,20 @@ class Bonus extends Model
             }
         }
         if(in_array("RevenueSteal", $this->tags)){
-            $blueteam = Team::find($this->target_id);
-            $redteam = Team::find($this->team_id);
             $revGain = $blueteam->getPerTurnRevenue();
             $amount = $revGain * 0.1;
-            $blueteam->balance -= $amount;
-            $redteam->balance += $amount;
-            $blueteam->update();
-            $redteam->update();
+            $blueteam->changeBalance(-1* $amount);
+            $redteam->changeBalance($amount);
         }
         if(in_array("OneTurnOnly", $this->tags)){
             $this->destroy($this->id);
             return;
+        }
+        if(in_array("AddTokens", $this->tags)){
+            $tokenQty = $redteam->getTokenQuantity($blueteam->name, 1);
+            if ($tokenQty < 5){
+                $redteam->addToken($blueteam->name, 1);
+            }
         }
         $this->update();
         $this->checkDelete();

@@ -8,16 +8,12 @@ use App\Models\Bonus;
 class Xss extends Payload 
 {
 
-    public $_name    = "Xss";
+    public $_name = "Cross-site scripting";
+    public $class_name    = "Xss";
     public $_tags = [];
 
     public function onAttackComplete($attack){
-        parent::onAttackComplete($attack);
-        $bonus = new Bonus();
-        $bonus->attack_id = $attack->id;
-        $bonus->payload_name = "Xss";
-        $bonus->team_id = $attack->redteam;
-        $bonus->target_id  = $attack->blueteam;
+        $bonus = parent::onAttackComplete($attack);
         $bonus->tags = ["UntilAnalyzed", "RevenueSteal"];
         $bonus->save();
     }

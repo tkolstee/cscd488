@@ -165,6 +165,16 @@ class Team extends Model
         return $inventories;
     }
 
+    public function getTokenQuantity($info, $level){
+        if($this->blue != 1) {
+            $inv = Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', 'AccessToken')
+            ->where('info', '=', $info)->where('level', '=', $level)->first();
+            
+            if ($inv == null) { return 0;}
+            return $inv->quantity;
+        }
+    }
+
     public function getTokensByBlue(){
         if($this->blue == 0) throw new TeamNotFoundException();
         $invs = Inventory::all()->where('info', '=', $this->name)->where('asset_name','=',"AccessToken");

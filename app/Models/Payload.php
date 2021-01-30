@@ -19,15 +19,21 @@ class Payload //extends Model
     protected $casts = [ 'tags' => 'array', ];
 
     public $_name    = "Abstract class - do not use";
+    public $_class_name = "Payload";
     public $_tags = [];
 
     function __construct() {
-        $this->name           = $this->_name;
+        $this->name        = $this->_name;
+        $this->class_name  = $this->_class_name;
         $this->tags        = $this->_tags;
     }
     
     public function onAttackComplete($attack){
-
+        $bonus = new Bonus;
+        $bonus->payload_name = $this->_class_name;
+        $bonus->team_id = $attack->redteam;
+        $bonus->target_id  = $attack->blueteam;
+        return $bonus;
     }
 
     public static function getAll(){
@@ -54,10 +60,10 @@ class Payload //extends Model
         return $result;
     }
 
-    public static function get($name){
+    public static function get($className){
         $payloads = Payload::getAll();
         foreach($payloads as $payload){
-            if($payload->name == $name){
+            if($payload->class_name == $className){
                 return $payload;
             }
         }
