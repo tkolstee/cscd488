@@ -27,6 +27,7 @@ class Bonus extends Model
     public $_payload_name = null;
     public $_percent_removal = 0;
     public $_percent_rev_remove = 0;
+    public $_removalChance = 0;
     public $_attack_id = null;
 
     function __construct() {
@@ -40,6 +41,7 @@ class Bonus extends Model
        $this->percentDiffDeducted = $this->_diff;
        $this->percentAnalDeducted = $this->_analysis;
        $this->payload_name = $this->_payload_name;
+       $this->removalChance = $this->_removalChance;
        $this->attack_id = $this->_attack_id;
        $this->percentRevToRemove = $this->_percent_rev_remove;
     }
@@ -86,6 +88,13 @@ class Bonus extends Model
             $tokenQty = $redteam->getTokenQuantity($blueteam->name, 1);
             if ($tokenQty < 5){
                 $redteam->addToken($blueteam->name, 1);
+            }
+        }
+        if(in_array("ChanceToRemove", $this->tags)){
+            $rand = rand(0, 100);
+            if ($rand <= $this->removalChance) {
+                $this->destroy($this->id);
+                return;
             }
         }
         $this->update();
@@ -153,6 +162,9 @@ class Bonus extends Model
     }
 
     public function checkDelete(){
+        if (in_array("ChanceToRemove", $this->tags)){
+            return;
+        }
         if($this->percentDiffDeducted > 0){
             return;
         }

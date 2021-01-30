@@ -146,7 +146,38 @@ class BonusTest extends TestCase {
         $attack->onPreAttack();
         $this->assertTrue($attack->possible);
         $this->assertEquals($diffBefore - 1, $attack->calculated_difficulty);
-        
     }
 
+    public function testChanceToRemove(){
+        $team = $this->createTeams();
+        $blueteam = Team::all()->where('blue','=',1)->first();
+        $tags = ["ChanceToRemove"];
+        $bonus = $this->createBonus($team->id, $tags);
+        $bonus->removalChance = 0;
+        $bonus->target_id = $blueteam->id;
+        $bonus->update();
+        
+        $this->assertNotEmpty(Bonus::all());
+
+        $bonus->onTurnChange();
+        $this->assertNotEmpty(Bonus::all());
+
+        $bonus->removalChance = 100;
+        $bonus->onTurnChange();
+        $this->assertEmpty(Bonus::all());
+    }
+
+    public function testChanceToRemoveAndDeduction(){
+        $team = $this->createTeams();
+        $blueteam = Team::all()->where('blue','=',1)->first();
+        $tags = ["ChanceToRemove", "RevenueDeduction"];
+        $bonus = $this->createBonus($team->id, $tags);
+        $bonus->removalChance = 0;
+        $bonus->percentRevDeducted = 0;
+        $bonus->target_id = $blueteam->id;
+        $bonus->update();
+
+        $bonus->onTurnChange();
+        $this->assertNotEmpty(Bonus::all());
+    }
 }

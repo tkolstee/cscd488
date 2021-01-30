@@ -27,6 +27,7 @@ class CreateBonusesTable extends Migration
             $table->integer('percentDiffDeducted')->nullable();
             $table->integer('percentRemoval')->nullable();
             $table->integer('percentRevToRemove')->nullable();
+            $table->integer('removalChance')->nullable();
             $table->timestamps();
         });
     }
