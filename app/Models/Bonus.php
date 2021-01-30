@@ -204,6 +204,8 @@ class Bonus extends Model
             return false;
         }
 
+        if ($cost < 0) { $cost = 0;}
+
         $blueteam->changeBalance($cost *-1);
         $redteam->changeBalance($cost);
         $this->destroy($this->id);
