@@ -30,9 +30,6 @@ class Attack extends Model
     public $_initial_detection_risk = 3;
     public $_initial_detection = 0;
     public $_initial_energy_cost = 100;
-    public $_initial_blue_loss = 0;
-    public $_initial_red_gain = 0;
-    public $_initial_reputation_loss = 0;
     public $_possible = true;
     public $errormsg = "";
     public $_initial_analysis_risk = null;
@@ -58,9 +55,6 @@ class Attack extends Model
         $this->notified       = null;
         $this->isNews         = null;
         $this->energy_cost    = $this->_initial_energy_cost;
-        $this->blue_loss      = $this->_initial_blue_loss;
-        $this->red_gain       = $this->_initial_red_gain;
-        $this->reputation_loss= $this->_initial_reputation_loss;
         $this->possible = $this->_possible;
     }
 
@@ -174,9 +168,6 @@ class Attack extends Model
         $this->blueteam = $attack->blueteam;
         $this->redteam = $attack->redteam;
         $this->errormsg = $attack->errormsg;
-        $this->blue_loss = $attack->blue_loss;
-        $this->red_gain = $attack->red_gain;
-        $this->reputation_loss = $attack->reputation_loss;
     }
 
     public static function getRedPreviousAttacks($redId) {
