@@ -20,15 +20,31 @@ class Payload //extends Model
 
     public $_name    = "Abstract class - do not use";
     public $_class_name = "Payload";
+    public $_percentRevLost = 0;
+    public $_percentRepLost = 0;
     public $_tags = [];
 
     function __construct() {
         $this->name        = $this->_name;
         $this->class_name  = $this->_class_name;
+        $this->percentRevLost = $this->_percentRevLost;
+        $this->percentRepLost = $this->_percentRepLost;
         $this->tags        = $this->_tags;
     }
     
     public function onAttackComplete($attack){
+        $blueteam = Team::find($attack->blueteam);
+        if ($this->percentRevLost != 0) {
+            $revLost = $blueteam->balance * $this->percentRevLost * 0.01 * -1;
+            $blueteam->changeBalance($revLost);
+        }
+        if ($this->percentRepLost != 0) {
+            $repLost = $blueteam->reputation * $this->percentRepLost * 0.01 * -1;
+            $blueteam->changeReputation($repLost);
+        }
+    }
+
+    protected function createBonus($attack){
         $bonus = new Bonus;
         $bonus->payload_name = $this->_class_name;
         $bonus->team_id = $attack->redteam;

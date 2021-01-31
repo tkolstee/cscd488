@@ -12,7 +12,8 @@ class Confusion extends Payload
     public $_tags = ['Executable','ServerHW'];
 
     public function onAttackComplete($attack){
-        $bonus = parent::onAttackComplete($attack);
+        parent::onAttackComplete($attack);
+        $bonus = parent::createBonus($attack);
         $bonus->tags = ['DetectionDeduction', 'AnalysisDeduction'];
         $bonus->percentDetDeducted = 20;
         $bonus->percentAnalDeducted = 20;

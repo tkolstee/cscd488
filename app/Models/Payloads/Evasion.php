@@ -13,7 +13,8 @@ class Evasion extends Payload
     public $_tags = ['Executable','ServerHW'];
 
     public function onAttackComplete($attack){
-        $bonus = parent::onAttackComplete($attack);
+        parent::onAttackComplete($attack);
+        $bonus = parent::createBonus($attack);
         $bonus->tags = ['DetectionDeduction'];
         $bonus->percentDetDeducted = 30;
         $bonus->save();

@@ -12,7 +12,8 @@ class Keylogger extends Payload
     public $_tags = ['EndpointExecutable','OfficeHW'];
 
     public function onAttackComplete($attack){
-        $bonus = parent::onAttackComplete($attack);
+        parent::onAttackComplete($attack);
+        $bonus = parent::createBonus($attack);
         $bonus->tags = ['UntilAnalyzed', 'AddTokens'];
         $bonus->save();
     }

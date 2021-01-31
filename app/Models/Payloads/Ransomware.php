@@ -13,7 +13,7 @@ class Ransomware extends Payload
     public $_tags = ['EndpointExecutable'];
 
     public function onAttackComplete($attack){
-        $bonus = parent::onAttackComplete($attack);
+        parent::onAttackComplete($attack);
 
         //Ransomware always discovered, ensure det_lvl is at least 2
         if ($attack->detection_level < 2) {
@@ -23,6 +23,7 @@ class Ransomware extends Payload
 
         //Lose 50% of per turn revenue, decreasing 5% each turn. 
         //10% chance to remove automatically each turn. Can pay to remove.
+        $bonus = parent::createBonus($attack);
         $bonus->tags = ['RevenueDeduction', 'ChanceToRemove', 'PayToRemove'];
         $bonus->percentRevDeducted = 50;
         $bonus->removalChance = 10;

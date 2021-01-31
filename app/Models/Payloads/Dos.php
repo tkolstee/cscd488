@@ -12,7 +12,8 @@ class Dos extends Payload
     public $_tags = [];
 
     public function onAttackComplete($attack){
-        $bonus = parent::onAttackComplete($attack);
+        parent::onAttackComplete($attack);
+        $bonus = parent::createBonus($attack);
         $bonus->tags = ["OneTurnOnly", "RevenueDeduction", "DetectionDeduction"];
         $bonus->percentRevDeducted = 50;
         $bonus->percentDetDeducted = 20;
