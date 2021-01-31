@@ -68,16 +68,9 @@ class Attack extends Model
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
 
-        if ( $this->success ) {
-            if ($this->payload_choice == null) {
-                $blueteam->changeReputation($this->reputation_loss);
-                $redteam->changeBalance($this->red_gain);
-            }
-            else {
-                $payload = Payload::get($this->payload_choice);
-                $payload->onAttackComplete($this);
-                $redteam->changeBalance($this->red_gain);
-            }
+        if ( $this->success && $this->payload_choice != null) {
+            $payload = Payload::get($this->payload_choice);
+            $payload->onAttackComplete($this);
         }
         
         if ( $this->detection_level > 0 ) {
