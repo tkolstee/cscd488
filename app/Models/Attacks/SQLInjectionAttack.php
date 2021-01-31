@@ -16,7 +16,6 @@ class SQLInjectionAttack extends Attack {
     public $_initial_analysis_risk = 3;
     public $_initial_attribution_risk = 1.5;
     public $_initial_energy_cost    = 200;
-    public $_initial_reputation_loss= -100;
 
 
     function onAttackComplete() {

@@ -16,7 +16,6 @@ class SupplyChainHwAttack extends Attack {
     public $_initial_analysis_risk  = 1;
     public $_initial_attribution_risk = 1;
     public $_initial_energy_cost    = 1000;
-    public $_initial_reputation_loss= -100;
 
 
     function onAttackComplete() {

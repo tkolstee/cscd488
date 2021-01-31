@@ -16,7 +16,6 @@ class PhishingCredentialsAttack extends Attack {
     public $_initial_analysis_risk  = 4;
     public $_initial_attribution_risk = 1;
     public $_initial_energy_cost    = 50;
-    public $_initial_reputation_loss= -100;
 
 
     function onAttackComplete() {
