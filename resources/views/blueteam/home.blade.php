@@ -36,7 +36,7 @@
                 <p>{{$attack->getAttackerName()}} attacked you with 
                 {{$attack->getName()}} attack {{$attack->created_at->diffForHumans()}}. 
                 @if($attack->success)
-                    You lost ${{$attack->blue_loss*-1}} and {{$attack->reputation_loss*-1}} reputation
+                    The attack succeeded
                 @else
                     The attack failed
                 @endif
