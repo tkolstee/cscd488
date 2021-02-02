@@ -34,6 +34,7 @@
             @csrf
             @include('partials.store_assets_table', ['assets' => $assets, 'ownedAssets' => $ownedAssets])
             @include('partials.pagination', ['paginator' => $assets])
+            <input type="hidden" name="currentPage" value="{{$assets->currentPage()}}">
             <button type="submit" class="btn btn-primary">
                 Purchase
             </button>

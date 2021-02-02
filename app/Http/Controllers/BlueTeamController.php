@@ -15,6 +15,7 @@ use App\Exceptions\InventoryNotFoundException;
 use Exception;
 use App\Models\Attack;
 use App\Models\Bonus;
+use Illuminate\Pagination\Paginator;
 
 class BlueTeamController extends Controller {
 
@@ -151,13 +152,14 @@ class BlueTeamController extends Controller {
     }
 
     public function cancel(Request $request){
+        if(empty($_POST['cancel'])) return $this->store($request);
         $result = array_keys($_POST['cancel'])[0];
-        $view = $this->store();
+        $view = $this->store($request);
         if($request->cart == "buy"){
             $session = session('buyCart');
         }else{
             $session = session('sellCart');
-            $view = $this->inventory();
+            $view = $this->inventory($request);
         }
         $key = array_search($result, $session);
         unset($session[$key]);
@@ -219,7 +221,8 @@ class BlueTeamController extends Controller {
         if(count($targeted) > 0){
             try{
                 $redteams = Team::getRedTeams();
-                return view('blueteam.target')->with(compact('blueteam', 'targeted', 'redteams'));
+                $endTurn = true;
+                return view('blueteam.target')->with(compact('blueteam', 'targeted', 'redteams', 'endTurn'));
             }catch(TeamNotFoundException $e){}
         }
         $turn = 1;
@@ -237,7 +240,8 @@ class BlueTeamController extends Controller {
             try{
                 $redteams = Team::getRedTeams();
             }catch(TeamNotFoundException $e){}
-            return view('blueteam.target')->with(compact('blueteam', 'targeted', 'redteams'));
+            $currentPage = $request->currentPage;
+            return view('blueteam.target')->with(compact('blueteam', 'targeted', 'redteams','currentPage'));
         }
         $count = $request->invCount;
         for($i = 1; $i < $count + 1; $i++){
@@ -248,9 +252,13 @@ class BlueTeamController extends Controller {
             $inv = $blueteam->inventory($asset, 1);
             $inv->setInfo($redteam->name);
         }
-        $turn = 1;
-        $endTime = Setting::get('turn_end_time');
-        return $this->home()->with(compact('turn', 'endTime'));
+        if($request->endTurn){
+            $turn = 1;
+            $endTime = Setting::get('turn_end_time');
+            return $this->home()->with(compact('turn', 'endTime'));
+        }
+        return $this->store($request);
+        
     }
 
     public function home(){
@@ -315,7 +323,7 @@ class BlueTeamController extends Controller {
         $success = $inv->upgrade();
         if($success == false) $error = "unsuccessful";
         else $error = null;
-        return $this->inventory()->with(compact('error'));
+        return $this->inventory($request)->with(compact('error'));
     }
 
     public function sell(request $request){
@@ -332,12 +340,21 @@ class BlueTeamController extends Controller {
             $sellCart[] = $inv;
         }
         session(['sellCart' => $sellCart]);
-        return $this->inventory();
+        return $this->inventory($request);
     }//end sell
 
-    public function inventory(){
+    public function inventory(request $request = null){
+        if($request != null){
+            $currentPage = $request->currentPage;
+            if(!empty($currentPage)){
+                Paginator::currentPageResolver(function () use ($currentPage) {
+                    return $currentPage;
+                });
+            }
+        }
         $blueteam = Auth::user()->getBlueTeam();
         $inventory = $blueteam->inventories()->paginate(5);
+        $inventory->setPath('/blueteam/inventory');
         return view('blueteam.inventory')->with(compact('blueteam', 'inventory'));
     }
 
@@ -355,12 +372,22 @@ class BlueTeamController extends Controller {
             $buyCart[] = $actAsset->name;
         }
         session(['buyCart' => $buyCart]);
-        return $this->store();
+        $currentPage = $request->currentPage;
+        return $this->store($request);
     }
 
-    public function store(){
+    public function store(request $request = null){
+        if($request != null){
+            $currentPage = $request->currentPage;
+            if(!empty($currentPage)){
+                Paginator::currentPageResolver(function () use ($currentPage) {
+                    return $currentPage;
+                });
+            }
+        }
         $blueteam = Auth::user()->getBlueTeam();
         $assets = collect(Asset::getBuyableBlue())->paginate(5);
+        $assets->setPath('/blueteam/store');
         $tags = Asset::getTags($assets);
         $ownedAssets = $blueteam->assets();
         return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags', 'ownedAssets'));

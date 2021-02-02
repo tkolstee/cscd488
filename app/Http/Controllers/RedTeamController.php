@@ -229,7 +229,7 @@ class RedTeamController extends Controller {
                 return $this->inventory()->with(compact('error'));
             }
         }
-        return $this->inventory();
+        return $this->inventory($request);
     }//end sell
 
     public function buy(request $request){
@@ -254,10 +254,18 @@ class RedTeamController extends Controller {
             $asset = Asset::get($assetName);
             $redteam->buyAsset($asset);
         }
-        return $this->store();
+        return $this->store($request);
     }
 
-    public function store(){
+    public function store(request $request = null){
+        if($request != null){
+            $currentPage = $request->currentPage;
+            if(!empty($currentPage)){
+                Paginator::currentPageResolver(function () use ($currentPage) {
+                    return $currentPage;
+                });
+            }
+        }
         $redteam = Auth::user()->getRedTeam();
         $assets = collect(Asset::getBuyableRed())->paginate(5);
         $tags = Asset::getTags($assets);
@@ -283,7 +291,15 @@ class RedTeamController extends Controller {
         return view('redteam.store')->with(compact('redteam', 'assets', 'tags', 'ownedAssets'));
     }
 
-    public function inventory(){
+    public function inventory(request $request = null){
+        if($request != null){
+            $currentPage = $request->currentPage;
+            if(!empty($currentPage)){
+                Paginator::currentPageResolver(function () use ($currentPage) {
+                    return $currentPage;
+                });
+            }
+        }
         $redteam = Auth::user()->getRedTeam();
         $inventory = $redteam->inventories()->paginate(5);
         return view('redteam.inventory')->with(compact('redteam', 'inventory'));

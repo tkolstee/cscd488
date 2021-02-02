@@ -26,14 +26,15 @@
     <form  class="blueStoreForm" action="/blueteam/store">
         <button class="btn btn-primary">Clear Filter</button>
     </form>
-    
     @if(count($assets ?? []) == 0)
         <p>No items are available for purchase right now.</p>
     @else
+        <?php $currentPage = $assets->currentPage(); ?>
         <form class="storeForm" method="POST" action="/blueteam/buy">
             @csrf
             @include('partials.store_assets_table', ['assets' => $assets, 'ownedAssets' => $ownedAssets])
             @include('partials.pagination', ['paginator' => $assets])
+        <input type="hidden" name="currentPage" value="{{$currentPage}}">
             <button type="submit" class="btn btn-primary">
                 Add to Cart
             </button>
