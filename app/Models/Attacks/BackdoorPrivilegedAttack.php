@@ -14,9 +14,6 @@ class BackdoorPrivilegedAttack extends Attack {
     public $_initial_difficulty     = 2;
     public $_initial_detection_risk = 2;
     public $_initial_energy_cost    = 150;
-    public $_initial_blue_loss      = 0;
-    public $_initial_red_gain       = 0;
-    public $_initial_reputation_loss= 0;
 
 
     function onAttackComplete() {

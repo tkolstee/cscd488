@@ -16,7 +16,6 @@ class DriveByAttack extends Attack {
     public $_initial_analysis_risk  = 2;
     public $_initial_attribution_risk = 2.5;
     public $_initial_energy_cost    = 100;
-    public $_initial_reputation_loss= -100;
 
 
     function onAttackComplete() {

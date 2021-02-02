@@ -14,6 +14,7 @@ use App\Exceptions\TeamNotFoundException;
 use App\Exceptions\InventoryNotFoundException;
 use Exception;
 use App\Models\Attack;
+use App\Models\Bonus;
 
 class BlueTeamController extends Controller {
 
@@ -47,7 +48,8 @@ class BlueTeamController extends Controller {
                 case 'news': return $this->news(); break;
                 case 'attacks': return $this->attacks(); break;
                 case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
-                case 'status': return $this->status($request); break;
+                case 'status': return $this->status(); break;
+                case 'removeBonus': return $this->removeBonus($request); break;
                 case 'store': return $this->store();
                 case 'filter': return $this->filter($request);
                 case 'training': return view('blueteam.training')->with('blueteam',$blueteam); break;
@@ -73,11 +75,17 @@ class BlueTeamController extends Controller {
         
     }
  
-    public function status(request $request){
+    public function status(){
         $blueteam = Auth::user()->getBlueTeam();
         $bonuses = $blueteam->getBonusesByTarget();
         $bonuses = $bonuses->sortByDesc("created_at");
         return view('blueteam/status')->with(compact('blueteam','bonuses'));
+    }
+
+    public function removeBonus(request $request){
+        $bonus = Bonus::find($request->bonusID);
+        $bonus->payToRemove();
+        return $this->status();
     }
 
     public function leaveTeam(request $request){

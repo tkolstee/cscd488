@@ -3,11 +3,15 @@
 namespace App\Models\Assets;
 
 use App\Models\Asset;
-use App\Models\Attack;
 
 class AccessTokenAsset extends Asset 
 {
-
+    /**
+     * Access Token type is denoted by level. 
+     * 1 = Basic
+     * 2 = Privileged
+     * 3 = Pwnd
+     */
     public $_name    = "Access Token";
     public $_class_name = "AccessToken";
     public $_tags    = [];

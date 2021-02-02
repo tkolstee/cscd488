@@ -23,9 +23,6 @@ class AttackController extends Controller
     public static function attackComplete($attack, $attMsg){
         $redteam = Team::find($attack->redteam);
         $attack->onAttackComplete();
-        if($attack->success){
-            $attMsg .= " You earned $".$attack->red_gain;
-        }
         return (new RedTeamController)->home()->with(compact('attMsg'));
     }
 

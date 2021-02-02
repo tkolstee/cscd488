@@ -176,6 +176,18 @@ class TeamTest extends TestCase {
         $this->assertEquals(1, count($getTokens));
     }
 
+    public function testGetTokenQuantity(){
+        $team = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $asset = new AccessTokenAsset();
+
+        $this->assertEquals(0, $team->getTokenQuantity($blue->name, 1));
+        $token = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => $asset->class_name, 
+        'info' => $blue->name, 'level' => 1, 'quantity' => 3]);
+
+        $this->assertEquals(3, $team->getTokenQuantity($blue->name, 1));
+    }
+
     public function testAddAccessToken(){
         $team = Team::factory()->red()->create();
         $blue = Team::factory()->create();

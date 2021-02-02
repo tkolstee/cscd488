@@ -4,19 +4,19 @@ namespace App\Models\Payloads;
 
 use App\Models\Payload;
 
-class Dos extends Payload 
+class Confusion extends Payload 
 {
 
-    public $_name = "Denial of Service";
-    public $_class_name = "Dos";
-    public $_tags = [];
+    public $_name = "Confusion";
+    public $_class_name = "Confusion";
+    public $_tags = ['Executable','ServerHW'];
 
     public function onAttackComplete($attack){
         parent::onAttackComplete($attack);
         $bonus = parent::createBonus($attack);
-        $bonus->tags = ["OneTurnOnly", "RevenueDeduction", "DetectionDeduction"];
-        $bonus->percentRevDeducted = 50;
+        $bonus->tags = ['DetectionDeduction', 'AnalysisDeduction'];
         $bonus->percentDetDeducted = 20;
+        $bonus->percentAnalDeducted = 20;
         $bonus->save();
     }
 }

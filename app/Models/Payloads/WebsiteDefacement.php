@@ -1,22 +1,22 @@
-<?php
+<?php 
 
 namespace App\Models\Payloads;
 
 use App\Models\Team;
 use App\Models\Payload;
 
-class Destruction extends Payload 
+class WebsiteDefacement extends Payload 
 {
 
-    public $_name = "Resource Destruction";
-    public $_class_name = "Destruction";
+    public $_name = "Website Defacement";
+    public $_class_name = "WebsiteDefacement";
     public $_tags = ['DBAttack','EndpointExecutable'];
-    public $_percentRevLost = 10;
+    public $_percentRepLost = 20;
 
     public function onAttackComplete($attack){
         parent::onAttackComplete($attack);
 
-        //Blueteam has revenue deduction bonus, starting at 20%
+        //Lose 20% per-tern revenue
         $bonus = parent::createBonus($attack);
         $bonus->tags = ['RevenueDeduction'];
         $bonus->percentRevDeducted = 20;

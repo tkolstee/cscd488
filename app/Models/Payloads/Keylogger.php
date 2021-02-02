@@ -3,19 +3,18 @@
 namespace App\Models\Payloads;
 
 use App\Models\Payload;
-use App\Models\Bonus;
 
-class Xss extends Payload 
+class Keylogger extends Payload 
 {
 
-    public $_name = "Cross-site scripting";
-    public $class_name    = "Xss";
-    public $_tags = [];
+    public $_name = "Keylogger";
+    public $_class_name = "Keylogger";
+    public $_tags = ['EndpointExecutable','OfficeHW'];
 
     public function onAttackComplete($attack){
         parent::onAttackComplete($attack);
         $bonus = parent::createBonus($attack);
-        $bonus->tags = ["UntilAnalyzed", "RevenueSteal"];
+        $bonus->tags = ['UntilAnalyzed', 'AddTokens'];
         $bonus->save();
     }
 }

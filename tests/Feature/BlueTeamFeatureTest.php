@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Team;
 use App\Models\Attack;
 use App\Models\Asset;
+use App\Models\Bonus;
 use App\Models\Game;
 use Tests\TestCase;
 use App\Models\Inventory;
@@ -405,5 +406,30 @@ class BlueTeamFeatureTest extends TestCase
         $team->update();
         $game->endTurn();
         $this->get('blueteam/home')->assertSee("Reputation: 150");//+100
+    }
+
+    public function testPayToRemoveBonus() {
+        $blue = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $blue->id,
+            'leader' => 1,
+        ]);
+        $this->be($user);
+        $red = Team::factory()->red()->create();
+
+        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
+        $tags = ["PayToRemove"];
+        $bonus = Bonus::createBonus($red->id, $tags);
+        $bonus->target_id = $blue->id;
+        $bonus->attack_id = $attack->id;
+        $bonus->removalCostFactor = 2;
+        $bonus->payload_name = "PayloadName";
+        $bonus->update();
+
+        $this->get('blueteam/status')->assertSee("Pay To Remove");
+        $response = $this->post('/blueteam/removeBonus', [
+            'bonusID' => $bonus->id,
+        ]);
+        $response->assertViewIs('blueteam.status')->assertDontSee("Pay To Remove");
     }
 }

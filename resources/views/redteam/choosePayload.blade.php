@@ -6,8 +6,8 @@
     <form method="POST" action="/redteam/savePayload">
         @csrf
         @foreach($payloads as $payload)
-            <input type="radio" name="result" id="{{$payload->name}}" value="{{$payload->name}}">
-            <label for="{{$payload->name}}">{{$payload->name}}</label>
+            <input type="radio" name="result" id="{{$payload->class_name}}" value="{{$payload->class_name}}">
+            <label for="{{$payload->class_name}}">{{$payload->name}}</label>
         @endforeach
         <input type="hidden" name="attID" value="{{ $attack->id }}">
         <div class="form-group row mb-0">

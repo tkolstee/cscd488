@@ -27,6 +27,8 @@ class Bonus extends Model
     public $_payload_name = null;
     public $_percent_removal = 0;
     public $_percent_rev_remove = 0;
+    public $_removalChance = 0;
+    public $_removalCostFactor = 1;
     public $_attack_id = null;
 
     function __construct() {
@@ -40,6 +42,8 @@ class Bonus extends Model
        $this->percentDiffDeducted = $this->_diff;
        $this->percentAnalDeducted = $this->_analysis;
        $this->payload_name = $this->_payload_name;
+       $this->removalChance = $this->_removalChance;
+       $this->removalCostFactor = $this->_removalCostFactor;
        $this->attack_id = $this->_attack_id;
        $this->percentRevToRemove = $this->_percent_rev_remove;
     }
@@ -53,6 +57,8 @@ class Bonus extends Model
     }
 
     public function onTurnChange(){
+        $redteam = Team::find($this->team_id);
+        $blueteam = Team::find($this->target_id);
         if(!in_array("UntilAnalyzed", $this->tags)){
             if(in_array("RevenueDeduction", $this->tags)){
                 $this->percentRevDeducted -= 5;
@@ -71,18 +77,27 @@ class Bonus extends Model
             }
         }
         if(in_array("RevenueSteal", $this->tags)){
-            $blueteam = Team::find($this->target_id);
-            $redteam = Team::find($this->team_id);
             $revGain = $blueteam->getPerTurnRevenue();
             $amount = $revGain * 0.1;
-            $blueteam->balance -= $amount;
-            $redteam->balance += $amount;
-            $blueteam->update();
-            $redteam->update();
+            $blueteam->changeBalance(-1* $amount);
+            $redteam->changeBalance($amount);
         }
         if(in_array("OneTurnOnly", $this->tags)){
             $this->destroy($this->id);
             return;
+        }
+        if(in_array("AddTokens", $this->tags)){
+            $tokenQty = $redteam->getTokenQuantity($blueteam->name, 1);
+            if ($tokenQty < 5){
+                $redteam->addToken($blueteam->name, 1);
+            }
+        }
+        if(in_array("ChanceToRemove", $this->tags)){
+            $rand = rand(0, 100);
+            if ($rand <= $this->removalChance) {
+                $this->destroy($this->id);
+                return;
+            }
         }
         $this->update();
         $this->checkDelete();
@@ -120,6 +135,10 @@ class Bonus extends Model
             "It is " . $this->percentDiffDeducted. "% easier to be successful attacking the target. ";
         if(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
             "Bonus only lasts until next turn. ";
+        if(in_array("ChanceToRemove", $this->tags))  $desc = $desc . 
+            "Has a " . $this->removalChance . "% chance to be automatically removed each turn. ";
+        if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
+            "Target can pay you ". $this->removalCostFactor . " times their per turn revenue to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
             "Bonus lasts until the target analyze the attack.";
         else  $desc = $desc .  "Decrements by 5% each turn.";
@@ -142,6 +161,10 @@ class Bonus extends Model
             "It is " . $this->percentDiffDeducted . "% easier for the attacker to be successful against you. ";
         if(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
             "Bonus only lasts until next turn. ";
+        if(in_array("ChanceToRemove", $this->tags))  $desc = $desc . 
+            "You have a " . $this->removalChance . "% chance to automatically remove this each turn. ";
+        if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
+            "You can pay the attacker " . $this->removalCostFactor . " times your per turn revenue to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
             "Bonus lasts until you analyze the attack.";
         else  $desc = $desc .  "Decrements by 5% each turn.";
@@ -149,6 +172,9 @@ class Bonus extends Model
     }
 
     public function checkDelete(){
+        if (in_array("ChanceToRemove", $this->tags)){
+            return;
+        }
         if($this->percentDiffDeducted > 0){
             return;
         }
@@ -165,5 +191,24 @@ class Bonus extends Model
             return;
         }
         $this->destroy($this->id);
+    }
+
+    public function payToRemove(){
+        if (!in_array('PayToRemove', $this->tags)){
+            return false;
+        }
+        $blueteam = Team::find($this->target_id);
+        $redteam = Team::find($this->team_id);
+        $cost = $blueteam->getPerTurnRevenue() * $this->removalCostFactor;
+        if ($cost > $blueteam->balance){
+            return false;
+        }
+
+        if ($cost < 0) { $cost = 0;}
+
+        $blueteam->changeBalance($cost *-1);
+        $redteam->changeBalance($cost);
+        $this->destroy($this->id);
+        return true;
     }
 }
