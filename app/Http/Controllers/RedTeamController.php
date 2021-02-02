@@ -266,9 +266,13 @@ class RedTeamController extends Controller {
                 });
             }
         }
+        session(['redFilter' => null]);
+        session(['redSort' => null]);
         $redteam = Auth::user()->getRedTeam();
-        $assets = collect(Asset::getBuyableRed())->paginate(5);
+        $assets = Asset::getBuyableRed();
         $tags = Asset::getTags($assets);
+        $assets = collect($assets)->paginate(5);
+        $assets->setPath('/redteam/store');
         $ownedAssets = $redteam->assets();
         return view('redteam.store')->with(compact('redteam', 'assets', 'tags', 'ownedAssets'));
     }
@@ -278,16 +282,31 @@ class RedTeamController extends Controller {
         $tags = Asset::getTags($redAssets);
         $redteam = Auth::user()->getRedTeam();
         $ownedAssets = $redteam->assets();
-        
         $assets = collect($redAssets);
         if (!empty($request->filter)) {
-            $tagFilter = $request->filter;
+            if($request->filter == "No Filter"){
+                session(['redFilter' => null]);
+            }else{
+                session(['redFilter' => $request->filter]);
+            }
+        }
+        if(!empty(session(['redFilter']))){
+            $tagFilter = session('redFilter');
             $assets = Asset::filterByTag($assets, $tagFilter);
         }
         if (!empty($request->sort)) {
-            $sort = $request->sort;
+            if($request->sort == "Name"){
+                session(['redSort' => null]);
+            }else{
+                session(['redSort' => $request->sort]);
+            }
+            }
+        if(!empty(session('redSort'))){
+            $sort = session('redSort');
             $assets = $assets->sortBy($sort);
         }
+        $assets = $assets->paginate(5);
+        $assets->setPath('/blueteam/filter');
         return view('redteam.store')->with(compact('redteam', 'assets', 'tags', 'ownedAssets'));
     }
 
