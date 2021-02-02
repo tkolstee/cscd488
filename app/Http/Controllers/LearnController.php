@@ -13,6 +13,7 @@ class LearnController extends Controller
             case 'sqlinjection': return $this->sqlInjection($request); break;
             case 'synflood': return $this->synFlood($request); break;
             case 'malvertise': return $this->malvertise($request); break;
+            case 'mitm' : return $this->mitm($request); break;
             default: return $this->home($request); break;
         }
     }
@@ -20,6 +21,11 @@ class LearnController extends Controller
     public function malvertise(request $request){
         $step = $this->getStep($request);
         return view('redteam.learn.malvertise')->with(compact('step'));
+    }
+
+    public function mitm(request $request){
+        $step = $this->getStep($request);
+        return view('redteam.learn.mitm')->with(compact('step'));
     }
 
     public function synFlood(request $request){
