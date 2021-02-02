@@ -7,7 +7,7 @@
         @csrf
         @foreach($payloads as $payload)
             <input type="radio" name="result" id="{{$payload->class_name}}" value="{{$payload->class_name}}">
-            <label for="{{$payload->class_name}}">{{$payload->name}}</label>
+            <label class="chooseTeamRadioButtons" for="{{$payload->class_name}}">{{$payload->name}}</label>
         @endforeach
         <input type="hidden" name="attID" value="{{ $attack->id }}">
         <div class="form-group row mb-0">
