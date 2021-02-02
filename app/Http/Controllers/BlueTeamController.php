@@ -78,7 +78,7 @@ class BlueTeamController extends Controller {
     public function status(){
         $blueteam = Auth::user()->getBlueTeam();
         $bonuses = $blueteam->getBonusesByTarget();
-        $bonuses = $bonuses->sortByDesc("created_at");
+        $bonuses = $bonuses->sortByDesc("created_at")->paginate(3);
         return view('blueteam/status')->with(compact('blueteam','bonuses'));
     }
 
@@ -386,7 +386,7 @@ class BlueTeamController extends Controller {
 
     public function leaderboard() {
         $blueteam = Auth::user()->getBlueTeam();
-        $teams = Team::getBlueTeams()->sortByDesc('reputation');
+        $teams = Team::getBlueTeams()->sortByDesc('reputation')->paginate(5);
         return view('blueteam.leaderboard')->with(compact('blueteam', 'teams'));
     }
 

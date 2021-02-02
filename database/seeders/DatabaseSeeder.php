@@ -28,13 +28,15 @@ class DatabaseSeeder extends Seeder
         ]);
 
         for ($i = 0; $i < 6; $i++){
-            User::create([
+            $user = User::create([
                 'name' => $i,                   //1
                 'email' => $i . '@email.com',   //1@email.com
                 'username' => 'user'.$i,        //user1
                 'password' => bcrypt('password'), //password
                 'is_admin' => 0,
             ]);
+            $user->createBlueTeam("Blueteam".$i);
+            $user->createRedTeam("Redteam".$i);
         }
     }
 }

@@ -24,6 +24,7 @@
                 @endforeach
             </tbody>
         </table>
+        @include('partials.pagination', ['paginator' => $bonuses])
         </div>
     @endif
 @endsection

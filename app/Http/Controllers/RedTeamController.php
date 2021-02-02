@@ -56,7 +56,7 @@ class RedTeamController extends Controller {
     public function status(request $request){
         $redteam = Team::find(Auth::user()->redteam);
         $bonuses = $redteam->getBonuses();
-        $bonuses = $bonuses->sortBy("target_id");
+        $bonuses = $bonuses->sortBy("target_id")->paginate(3);
         return view('redteam/status')->with(compact('redteam','bonuses'));
     }
 
