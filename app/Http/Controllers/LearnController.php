@@ -48,7 +48,7 @@ class LearnController extends Controller
     }
 
     public function home(Request $request){
-        $attacks = Attack::getAll();
+        $attacks = Attack::getLearnableAttacks();
         return view('redteam.learn')->with(compact('attacks'));
     }
 }
