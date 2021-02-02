@@ -10,6 +10,7 @@
         <form method="POST" action="/redteam/sell">
             @csrf
             @include('partials.inventory_table', ['inventory' => $inventory])
+            @include('partials.pagination', ['paginator' => $inventory])
             <button type="submit" class="btn btn-primary" name="sellSubmit">
                 Sell
             </button>

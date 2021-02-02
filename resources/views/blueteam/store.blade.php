@@ -24,7 +24,7 @@
         </button>
     </form>
     <form  class="blueStoreForm" action="/blueteam/store">
-        <button>Clear Filter</button>
+        <button class="btn btn-primary">Clear Filter</button>
     </form>
     
     @if(count($assets ?? []) == 0)
@@ -33,10 +33,12 @@
         <form class="storeForm" method="POST" action="/blueteam/buy">
             @csrf
             @include('partials.store_assets_table', ['assets' => $assets, 'ownedAssets' => $ownedAssets])
+            @include('partials.pagination', ['paginator' => $assets])
             <button type="submit" class="btn btn-primary">
                 Add to Cart
             </button>
         </form>
+       
     @endif
 
 @endsection

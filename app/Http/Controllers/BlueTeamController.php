@@ -337,7 +337,7 @@ class BlueTeamController extends Controller {
 
     public function inventory(){
         $blueteam = Auth::user()->getBlueTeam();
-        $inventory = $blueteam->inventories();
+        $inventory = $blueteam->inventories()->paginate(5);
         return view('blueteam.inventory')->with(compact('blueteam', 'inventory'));
     }
 
@@ -360,7 +360,7 @@ class BlueTeamController extends Controller {
 
     public function store(){
         $blueteam = Auth::user()->getBlueTeam();
-        $assets = Asset::getBuyableBlue();
+        $assets = collect(Asset::getBuyableBlue())->paginate(5);
         $tags = Asset::getTags($assets);
         $ownedAssets = $blueteam->assets();
         return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags', 'ownedAssets'));

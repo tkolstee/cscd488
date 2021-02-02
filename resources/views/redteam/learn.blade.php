@@ -15,5 +15,6 @@
             </ul>
         </div>
         @endforeach
+        @include('partials.pagination', ['paginator' => $attacks])
     @endif
 @endsection

@@ -42,7 +42,7 @@ class LearnController extends Controller
     }
 
     public function home(Request $request){
-        $attacks = Attack::getAll();
+        $attacks = collect(Attack::getAll())->paginate(5);
         return view('redteam.learn')->with(compact('attacks'));
     }
 }

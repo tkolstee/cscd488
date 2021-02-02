@@ -259,7 +259,7 @@ class RedTeamController extends Controller {
 
     public function store(){
         $redteam = Auth::user()->getRedTeam();
-        $assets = Asset::getBuyableRed();
+        $assets = collect(Asset::getBuyableRed())->paginate(5);
         $tags = Asset::getTags($assets);
         $ownedAssets = $redteam->assets();
         return view('redteam.store')->with(compact('redteam', 'assets', 'tags', 'ownedAssets'));
@@ -285,7 +285,7 @@ class RedTeamController extends Controller {
 
     public function inventory(){
         $redteam = Auth::user()->getRedTeam();
-        $inventory = $redteam->inventories();
+        $inventory = $redteam->inventories()->paginate(5);
         return view('redteam.inventory')->with(compact('redteam', 'inventory'));
     }
 
