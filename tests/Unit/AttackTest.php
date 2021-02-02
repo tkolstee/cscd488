@@ -343,4 +343,14 @@ class AttackTest extends TestCase {
         $attack->onPreAttack();
         $this->assertTrue($attack->possible);
     }
+
+    public function testRedTeamGainsMoney(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
+        $this->assertEquals(0, $red->balance);
+        $attack->onAttackComplete();
+        $red->refresh();
+        $this->assertEquals($attack->energy_cost, $red->balance);
+    }
 }

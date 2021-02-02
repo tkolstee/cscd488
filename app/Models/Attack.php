@@ -78,6 +78,7 @@ class Attack extends Model
             }
         }
         $redteam->useEnergy($this->energy_cost);
+        $redteam->changeBalance($this->energy_cost);
     }
 
     public static function getAll(){
