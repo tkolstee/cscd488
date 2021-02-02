@@ -19,6 +19,9 @@ use App\Models\Attacks\SQLInjectionAttack;
 class RedTeamController extends Controller {
 
     public function page($page, Request $request) {
+        if($page != 'chooseattack'){
+            session(['redCurrentTarget' => null]);
+        }
         try{
             $redteam = Auth::user()->getRedTeam();
         }catch(TeamNotFoundException $e){
@@ -183,14 +186,19 @@ class RedTeamController extends Controller {
     }
 
     public function chooseAttack(request $request){
-        if($request->result == ""){
-            $error = "No-Team-Selected";
-            return $this->startAttack()->with(compact('error'));
+        if(empty(session('redCurrentTarget'))){
+            if($request->result == ""){
+                $error = "No-Team-Selected";
+                return $this->startAttack()->with(compact('error'));
+            }else{
+                session(['redCurrentTarget' => $request->result]);
+            }
         }
         $user = Auth::user();
         $redteam = Auth::user()->getRedTeam();
-        $blueteam = Team::get($request->result);
-        $possibleAttacks = Attack::getAll();
+        $blueteam = Team::get(session('redCurrentTarget'));
+        $possibleAttacks = collect(Attack::getAll())->paginate(5);
+        $possibleAttacks->setPath('/redteam/chooseattack');
         return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks'));
     }
 
@@ -199,7 +207,10 @@ class RedTeamController extends Controller {
             $targets = Team::getBlueTeams()->where('id','!=',Auth::user()->blueteam);
         }catch(TeamNotFoundException $e){
             $targets = [];
+            $targets = collect($targets);
         }
+        $targets = $targets->paginate(5);
+        $targets->setPath('/redteam/startattack');
         $redteam = Auth::user()->getRedTeam();
         return view('redteam.startAttack')->with(compact('targets','redteam'));
     }
