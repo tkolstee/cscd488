@@ -17,6 +17,7 @@ class MaliciousInsiderAttack extends Attack {
     public $_initial_attribution_risk = 4;
     public $_initial_energy_cost    = 1000;
 
+    public $learn_page              = false;
 
     function onAttackComplete() {
         parent::onAttackComplete();

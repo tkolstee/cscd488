@@ -17,6 +17,7 @@ class FuzzingAttack extends Attack {
     public $_initial_attribution_risk = 0.5;
     public $_initial_energy_cost    = 200;
 
+    public $learn_page              = true;
 
     function onAttackComplete() {
         parent::onAttackComplete();

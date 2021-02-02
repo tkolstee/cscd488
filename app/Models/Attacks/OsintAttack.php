@@ -17,6 +17,7 @@ class OsintAttack extends Attack {
     public $_initial_attribution_risk = 0;
     public $_initial_energy_cost    = 30;
 
+    public $learn_page              = false;
 
     function onAttackComplete() {
         parent::onAttackComplete();

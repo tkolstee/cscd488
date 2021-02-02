@@ -24,6 +24,7 @@ class AttackTest extends TestCase {
 
     public function testGetLearnableAttacks() {
         $attacks = Attack::getLearnableAttacks();
+        $this->assertNotEquals(0, count($attacks));
         foreach ($attacks as $attack) {
             $this->assertTrue($attack->learn_page);
         }
