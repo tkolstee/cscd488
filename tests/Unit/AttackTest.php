@@ -22,6 +22,13 @@ class AttackTest extends TestCase {
         $this->assertNotEquals(0, count($attacks));
     }
 
+    public function testGetLearnableAttacks() {
+        $attacks = Attack::getLearnableAttacks();
+        foreach ($attacks as $attack) {
+            $this->assertTrue($attack->learn_page);
+        }
+    }
+
     public function testGetAttack() {
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
