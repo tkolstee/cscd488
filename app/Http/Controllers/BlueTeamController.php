@@ -257,7 +257,7 @@ class BlueTeamController extends Controller {
             $endTime = Setting::get('turn_end_time');
             return $this->home()->with(compact('turn', 'endTime'));
         }
-        return $this->store($request);
+        return $this->inventory($request);
         
     }
 
@@ -385,10 +385,13 @@ class BlueTeamController extends Controller {
                 });
             }
         }
+        session(['blueFilter' => null]);
+        session(['blueSort' => null]);
         $blueteam = Auth::user()->getBlueTeam();
-        $assets = collect(Asset::getBuyableBlue())->paginate(5);
-        $assets->setPath('/blueteam/store');
+        $assets = collect(Asset::getBuyableBlue());
         $tags = Asset::getTags($assets);
+        $assets = $assets->paginate(5);
+        $assets->setPath('/blueteam/store');
         $ownedAssets = $blueteam->assets();
         return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags', 'ownedAssets'));
     }
@@ -399,15 +402,30 @@ class BlueTeamController extends Controller {
         $assets = collect($blueAssets);
         $blueteam = Auth::user()->getBlueTeam();
         $ownedAssets = $blueteam->assets();
-
         if (!empty($request->filter)) {
-            $tagFilter = $request->filter;
+            if($request->filter == "No Filter"){
+                session(['blueFilter' => null]);
+            }else{
+                session(['blueFilter' => $request->filter]);
+            }
+        }
+        if(!empty(session('blueFilter'))){
+            $tagFilter = session('blueFilter');
             $assets = Asset::filterByTag($assets, $tagFilter);
         }
         if (!empty($request->sort)) {
-            $sort = $request->sort;
+            if($request->sort != "Name"){
+                session(['blueSort' => $request->sort]);
+            }else{
+                session(['blueSort' => null]);
+            }
+        }
+        if(!empty(session('blueSort'))){
+            $sort = session('blueSort');
             $assets = $assets->sortBy($sort);
         }
+        $assets = $assets->paginate(5);
+        $assets->setPath('/blueteam/filter');
         return view('blueteam.store')->with(compact('blueteam', 'assets', 'tags', 'ownedAssets'));
     }
 
