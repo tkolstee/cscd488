@@ -18,19 +18,21 @@
             </thead>
             <tbody>
                 @foreach($bonuses as $bonus)
+                <tr>
                     <?php $attack = App\Models\Attack::find($bonus->attack_id); ?>
-                    <td>
-                        {{$bonus->getPayloadName()}}
-                        @if (in_array("PayToRemove", $bonus->tags))
-                            <form action="/blueteam/removeBonus" method="post">
-                                @csrf
-                                <input type="hidden" name="bonusID" value={{$bonus->id }}>
-                                <input type="submit" value="Pay To Remove"/>
-                            </form>
-                        @endif
-                    </td>
+                    <td>{{$bonus->getPayloadName()}}</td>
                     <td>{{$bonus->getTeamName()}}</td>
                     <td class="bonusDescTd"> {{$bonus->getTargetDescription()}}</td>
+                    @if (in_array("PayToRemove", $bonus->tags))
+                    <td>
+                        <form action="/blueteam/removeBonus" method="post">
+                            @csrf
+                            <input type="hidden" name="bonusID" value={{$bonus->id }}>
+                            <input class="btn btn-primaryInventory" type="submit" value="Pay To Remove"/>
+                        </form>
+                    </td>
+                    @endif
+                    </tr>
                 @endforeach
             </tbody>
         </table>

@@ -111,17 +111,14 @@ class RedTeamController extends Controller {
         return view('redteam.attacks')->with(compact('redteam','previousAttacks')); 
     }
 
-    public function minigameComplete(request $request){
-        $attack = Attack::find($request->attID);
+    public function minigameComplete($attack){
         if($attack == null){
             throw new AttackNotFoundException();
         }
         $attMsg = "Success: ";
-        if($request->result == 1){
-            $attack->setSuccess(true);
+        if($attack->success){
             $attMsg .= "true";
         }else{
-            $attack->setSuccess(false);
             $attMsg .= "false";
         }
         $attack->onAttackComplete();
@@ -143,8 +140,14 @@ class RedTeamController extends Controller {
             }
         }
         
-        //if the view doesn't exist return default
-        return view('redteam.minigame')->with(compact('attack','redteam','blueteam'));
+        //if the view doesn't exist return by chance
+        $rand = rand(0,500)/100;
+        if($rand >= $attack->difficulty){
+            $attack->setSuccess(true);
+        }else{
+            $attack->setSuccess(false);
+        }
+        return $this->minigameComplete($attack);
     }
 
     public function savePayload(request $request) {
