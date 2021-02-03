@@ -1,10 +1,10 @@
 @extends('redteam.base')
 
-@section('title', 'Man in the Middle Learning Page')
+@section('title', 'Cross-site Scripting Learning Page')
 
 @section('pagecontent')
 <div>
-    <form method="POST" action="/learn/mitm">
+    <form method="POST" action="/learn/xss">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">
         @if ($step != 1)
