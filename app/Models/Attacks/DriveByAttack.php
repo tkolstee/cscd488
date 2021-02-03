@@ -17,6 +17,7 @@ class DriveByAttack extends Attack {
     public $_initial_attribution_risk = 2.5;
     public $_initial_energy_cost    = 100;
 
+    public $learn_page              = true;
 
     function onAttackComplete() {
         parent::onAttackComplete();

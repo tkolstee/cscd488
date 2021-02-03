@@ -95,6 +95,22 @@ class Attack extends Model
         return $attacks;
     }
 
+    public static function getLearnableAttacks(){
+        $dir = opendir(dirname(__FILE__)."/Attacks");
+        while(($attack = readdir($dir)) !== false){
+            if($attack != "." && $attack != ".."){
+                $length = strlen($attack);
+                $attack = substr($attack, 0, $length - 4);
+                $class = "\\App\\Models\\Attacks\\" . $attack;
+                $attack = new $class();
+                if ($attack->learn_page == true) {
+                    $attacks[] = $attack;
+                }
+            }
+        }
+        return $attacks;
+    }
+
     public static function get($name, $red, $blue){
         $attack = Attack::all()->where('class_name','=',$name)->where('redteam','=',$red)->where('blueteam','=',$blue)->where('success','=',null)->first();
         try {

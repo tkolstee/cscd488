@@ -15,6 +15,7 @@ class MalvertiseAttack extends Attack {
     public $_initial_detection_risk = 4;
     public $_initial_energy_cost    = 100;
 
+    public $learn_page              = true;
 
     function onAttackComplete() {
         parent::onAttackComplete();

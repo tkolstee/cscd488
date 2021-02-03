@@ -17,6 +17,7 @@ class ImplantedHwServerAttack extends Attack {
     public $_initial_attribution_risk = 2;
     public $_initial_energy_cost    = 500;
 
+    public $learn_page              = true;
 
     function onAttackComplete() {
         parent::onAttackComplete();
