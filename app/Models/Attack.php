@@ -187,7 +187,7 @@ class Attack extends Model
         $this->blueteam = $attack->blueteam;
         $this->redteam = $attack->redteam;
         $this->errormsg = $attack->errormsg;
-        $this->helpText = $attack->helpText;
+        $this->help_text = $attack->help_text;
     }
 
     public static function getRedPreviousAttacks($redId) {
