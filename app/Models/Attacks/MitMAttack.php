@@ -16,6 +16,7 @@ class MitMAttack extends Attack {
     public $_initial_analysis_risk  = 3.5;
     public $_initial_attribution_risk = 0.5;
     public $_initial_energy_cost    = 50;
+    public $_help_text              = "Be a middleman for traffic between employees and the company.";
 
     public $learn_page              = true;
 

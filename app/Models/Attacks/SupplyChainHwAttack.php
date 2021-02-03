@@ -16,6 +16,7 @@ class SupplyChainHwAttack extends Attack {
     public $_initial_analysis_risk  = 1;
     public $_initial_attribution_risk = 1;
     public $_initial_energy_cost    = 1000;
+    public $_help_text              = "Compromise the hardware a company buys at the factory or during shipping.";
 
     public $learn_page              = true;
 

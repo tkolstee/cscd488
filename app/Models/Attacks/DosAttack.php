@@ -16,6 +16,7 @@ class DosAttack extends Attack {
     public $_initial_analysis_risk  = 4.5;
     public $_initial_attribution_risk = 1;
     public $_initial_energy_cost    = 200;
+    public $_help_text              = "Take the company offline by passing expensive or excessive traffic.";
 
     public $learn_page              = true;
 

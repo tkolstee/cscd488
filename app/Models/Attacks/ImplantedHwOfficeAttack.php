@@ -16,6 +16,7 @@ class ImplantedHwOfficeAttack extends Attack {
     public $_initial_analysis_risk  = 2;
     public $_initial_attribution_risk = 1.5;
     public $_initial_energy_cost    = 300;
+    public $_help_text              = "Plant a piece of hardware in the office.";
 
     public $learn_page              = true;
 

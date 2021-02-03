@@ -16,6 +16,7 @@ class MaliciousInsiderAttack extends Attack {
     public $_initial_analysis_risk  = 5;
     public $_initial_attribution_risk = 4;
     public $_initial_energy_cost    = 1000;
+    public $_help_text              = "Get hired as an employee.";
 
     public $learn_page              = false;
 

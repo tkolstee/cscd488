@@ -16,6 +16,7 @@ class PasswordGuessingAttack extends Attack {
     public $_initial_analysis_risk  = 4.5;
     public $_initial_attribution_risk = 0.5;
     public $_initial_energy_cost    = 300;
+    public $_help_text              = "Gain access through brute force and dictionary attacks.";
 
     public $learn_page              = false;
 
