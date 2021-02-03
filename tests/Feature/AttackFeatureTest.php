@@ -67,8 +67,8 @@ class AttackFeatureTest extends TestCase
         ]);
         $response->assertViewIs('redteam.chooseAttack' );
         $response->assertSee("Select a method of attack against ".$blueteam->name);
-        $response->assertSee("SQL Injection");
-        $response->assertSee("Syn Flood");
+        $firstAttackName = Attack::getAll()[0]->name;
+        $response->assertSee($firstAttackName);
     }
 
     public function testShouldErrorWhenNoAttackSelect() {

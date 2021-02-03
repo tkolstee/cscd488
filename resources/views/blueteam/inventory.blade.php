@@ -12,12 +12,12 @@
         <form class="storeFormInventory" method="POST" action="/blueteam/sell">
             @csrf
             @include('partials.inventory_table', ['inventory' => $inventory])
-            @include('partials.pagination', ['paginator' => $inventory])
             <input type="hidden" name="currentPage" value="{{$currentPage}}">
             <button type="submit" class="btn btn-primary" name="sellSubmit">
                 Sell
             </button>
         </form>
+        @include('partials.pagination', ['paginator' => $inventory])
     </div>
     @endif
 @endsection

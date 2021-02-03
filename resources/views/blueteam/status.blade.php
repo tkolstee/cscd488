@@ -36,7 +36,7 @@
                 @endforeach
             </tbody>
         </table>
-        @include('partials.pagination', ['paginator' => $bonuses])
         </div>
+        @include('partials.pagination', ['paginator' => $bonuses])
     @endif
 @endsection

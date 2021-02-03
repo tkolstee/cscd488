@@ -13,13 +13,13 @@
         <tbody>
             @foreach($teams as $team)
                 <tr>
-                    <td>{{($loop->index + 1) + (5 * ($teams->currentPage() - 1)) }}</td>
+                    <td>{{($loop->index + 1) + ($teams->perPage() * ($teams->currentPage() - 1)) }}</td>
                     <td>{{$team->name}}</td>
                     <td>{{$team->reputation}}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-    @include('partials.pagination', ['paginator' => $teams])
 </div>
+@include('partials.pagination', ['paginator' => $teams])
 @endsection
