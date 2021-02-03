@@ -3,7 +3,7 @@
 @section('title', 'Syn Flood Learning Page')
 
 @section('pagecontent')
-<div class="redSynFlood">
+<div class="redLearn">
     <form method="POST" action="/learn/synflood">
     @csrf
     <input type="hidden" name="step" value="{{ $step }}">

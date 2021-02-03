@@ -3,7 +3,7 @@
 @section('title', 'Fuzzing Learning Page')
 
 @section('pagecontent')
-<div>
+<div class="redLearn">
     <form method="POST" action="/learn/fuzzing">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">

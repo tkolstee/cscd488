@@ -3,7 +3,7 @@
 @section('title', 'Implanted Hardware Learning Page')
 
 @section('pagecontent')
-<div>
+<div class="redLearn">
     <form method="POST" action="/learn/implantedhw">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">

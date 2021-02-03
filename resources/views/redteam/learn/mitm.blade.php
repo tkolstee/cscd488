@@ -3,7 +3,7 @@
 @section('title', 'Man in the Middle Learning Page')
 
 @section('pagecontent')
-<div>
+<div class="redLearn">
     <form method="POST" action="/learn/mitm">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">

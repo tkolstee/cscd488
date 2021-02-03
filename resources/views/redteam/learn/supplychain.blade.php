@@ -3,7 +3,7 @@
 @section('title', 'Supply Chain Attack Learning Page')
 
 @section('pagecontent')
-<div>
+<div class="redLearn">
     <form method="POST" action="/learn/supplychain">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">

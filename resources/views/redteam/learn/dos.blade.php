@@ -3,7 +3,7 @@
 @section('title', 'Denial of Service Learning Page')
 
 @section('pagecontent')
-<div>
+<div class="redLearn">
     <form method="POST" action="/learn/dos">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">

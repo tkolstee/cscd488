@@ -967,24 +967,16 @@ color:#00CC99;
     padding-top:3%;
     text-align: center;
 }
-.redSqlInjection p{
+.redLearn p{
  color:white;
 }
-.sqlInject{
+.redLearn{
     color:#00CC99 !important;
 }
-.redSynFlood p{
+.redLearn ul li{
     color:white;
 }
-.redSynFlood ul li{
-    color:white;
-}
-.redMalvertise p{
-    color:white;
-}
-.redMalvertise ul li{
-    color:white;
-}
+
 .pagination a{
     color:#00CC99;
 }

@@ -3,7 +3,7 @@
 @section('title', 'Wireless Network Attack Learning Page')
 
 @section('pagecontent')
-<div>
+<div class="redLearn">
     <form method="POST" action="/learn/wirelessnetwork">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">

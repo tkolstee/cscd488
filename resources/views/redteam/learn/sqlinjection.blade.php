@@ -3,7 +3,7 @@
 @section('title', 'SQL Injection Learning Page')
 
 @section('pagecontent')
-<div class="redSqlInjection">
+<div class="redLearn">
     <form method="POST" action="/learn/sqlinjection">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">

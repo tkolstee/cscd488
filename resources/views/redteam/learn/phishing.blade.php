@@ -3,7 +3,7 @@
 @section('title', 'Phishing Learning Page')
 
 @section('pagecontent')
-<div>
+<div class="redLearn">
     <form method="POST" action="/learn/phishing">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">

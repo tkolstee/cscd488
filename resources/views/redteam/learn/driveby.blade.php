@@ -3,7 +3,7 @@
 @section('title', 'Drive-by Learning Page')
 
 @section('pagecontent')
-<div>
+<div class="redLearn">
     <form method="POST" action="/learn/driveby">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">
@@ -18,8 +18,12 @@
         @endif
 
         @if ($step == 1)
-            <h4>Work In Progress</h4>
-            <p></p>
+            <h4>What is a Drive-By attack?</h4>
+            <p>A Drive-By attack is when an attacker compromises a website, so when you visit it, you are forced
+                to download malware. Generally the type of malware forcibly downloaded is an exploit kit. Normally
+                designed to search for vulnerabilities in your computer's security, an exploit kit attacks and takes
+                control of your system. 
+            </p>
 
         @elseif ($step == 2)
             <h4></h4>

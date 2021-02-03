@@ -3,7 +3,7 @@
 @section('title', 'Backdoor Learning Page')
 
 @section('pagecontent')
-<div>
+<div class="redLearn">
     <form method="POST" action="/learn/backdoor">
         @csrf
         <input type="hidden" name="step" value="{{ $step }}">
