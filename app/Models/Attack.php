@@ -34,6 +34,7 @@ class Attack extends Model
     public $errormsg = "";
     public $_initial_analysis_risk = null;
     public $_initial_attribution_risk = null;
+    public $_help_text = null;
 
     function __construct() {
         $this->name           = $this->_name;
@@ -56,6 +57,7 @@ class Attack extends Model
         $this->isNews         = null;
         $this->energy_cost    = $this->_initial_energy_cost;
         $this->possible = $this->_possible;
+        $this->help_text = $this->_help_text;
     }
 
     function onAttackComplete() { 
@@ -185,6 +187,7 @@ class Attack extends Model
         $this->blueteam = $attack->blueteam;
         $this->redteam = $attack->redteam;
         $this->errormsg = $attack->errormsg;
+        $this->helpText = $attack->helpText;
     }
 
     public static function getRedPreviousAttacks($redId) {
