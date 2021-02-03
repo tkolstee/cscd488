@@ -16,6 +16,7 @@ class FoundMediaAttack extends Attack {
     public $_initial_analysis_risk  = 2;
     public $_initial_attribution_risk = 2.5;
     public $_initial_energy_cost    = 200;
+    public $_help_text              = "An employee \"finds\" a flash drive and inserts it.";
 
     public $learn_page              = false;
 

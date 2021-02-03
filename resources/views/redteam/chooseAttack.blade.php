@@ -9,7 +9,7 @@
     @csrf
     @foreach ($possibleAttacks ?? [] as $attack)
         <input type="radio" name="result" id="{{ $attack->class_name }}" value="{{ $attack->class_name }}">
-        <label class="chooseTeamRadioButtons" for="{{ $attack->class_name }}">{{ $attack->name }}</label>
+        <label title="{{$attack->help_text ?? "" }}" class="chooseTeamRadioButtons" for="{{ $attack->class_name }}">{{ $attack->name }}</label>
         <br>
     @endforeach
     @include('partials.pagination', ['paginator' => $possibleAttacks])

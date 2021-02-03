@@ -16,6 +16,7 @@ class ScanAttack extends Attack {
     public $_initial_analysis_risk  = 4.5;
     public $_initial_attribution_risk = 0.5;
     public $_initial_energy_cost    = 20;
+    public $_help_text              = "Find information on services and hosts reachable from outside.";
 
     public $learn_page              = false;
 

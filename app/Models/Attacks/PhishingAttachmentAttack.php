@@ -16,6 +16,7 @@ class PhishingAttachmentAttack extends Attack {
     public $_initial_analysis_risk  = 3;
     public $_initial_attribution_risk = 1.5;
     public $_initial_energy_cost    = 50;
+    public $_help_text              = "Get an employee to open a malicious attachment.";
 
     public $learn_page              = true;
 

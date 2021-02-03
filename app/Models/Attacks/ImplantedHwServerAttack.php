@@ -16,6 +16,7 @@ class ImplantedHwServerAttack extends Attack {
     public $_initial_analysis_risk  = 2;
     public $_initial_attribution_risk = 2;
     public $_initial_energy_cost    = 500;
+    public $_help_text              = "Plant a piece of hardware in the datacenter.";
 
     public $learn_page              = true;
 

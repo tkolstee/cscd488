@@ -16,6 +16,7 @@ class EavesdroppingAttack extends Attack {
     public $_initial_analysis_risk  = 3.5;
     public $_initial_attribution_risk = 1;
     public $_initial_energy_cost    = 400;
+    public $_help_text              = "Spy on network traffic for credentials or info.";
 
     public $learn_page              = false;
 

@@ -14,6 +14,7 @@ class BackdoorPrivilegedAttack extends Attack {
     public $_initial_difficulty     = 2;
     public $_initial_detection_risk = 2;
     public $_initial_energy_cost    = 150;
+    public $_help_text              = "Use existing access tokens to secure more, ensuring you will maintain access to the company.";
 
     public $learn_page              = true;
 

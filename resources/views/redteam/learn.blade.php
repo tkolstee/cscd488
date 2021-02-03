@@ -10,7 +10,7 @@
         @foreach ($attacks as $attack)
         <div class="sqlInjectionsList">
             <ul>
-                <li class="sqlInjectionsHover"><a class="sqlInjections" href={{ "/learn/".strtolower($attack->class_name) }}>{{$attack->name}}</a></li>
+                <li title="{{$attack->help_text ?? "" }}" class="sqlInjectionsHover"><a class="sqlInjections" href={{ "/learn/".strtolower($attack->class_name) }}>{{$attack->name}}</a></li>
                 <br>
             </ul>
         </div>
