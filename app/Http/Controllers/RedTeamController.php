@@ -19,6 +19,9 @@ use App\Models\Attacks\SQLInjectionAttack;
 class RedTeamController extends Controller {
 
     public function page($page, Request $request) {
+        if($page != 'chooseattack'){
+            session(['redCurrentTarget' => null]);
+        }
         try{
             $redteam = Auth::user()->getRedTeam();
         }catch(TeamNotFoundException $e){
@@ -56,7 +59,7 @@ class RedTeamController extends Controller {
     public function status(request $request){
         $redteam = Team::find(Auth::user()->redteam);
         $bonuses = $redteam->getBonuses();
-        $bonuses = $bonuses->sortBy("target_id");
+        $bonuses = $bonuses->sortBy("target_id")->paginate(3);
         return view('redteam/status')->with(compact('redteam','bonuses'));
     }
 
@@ -111,17 +114,14 @@ class RedTeamController extends Controller {
         return view('redteam.attacks')->with(compact('redteam','previousAttacks')); 
     }
 
-    public function minigameComplete(request $request){
-        $attack = Attack::find($request->attID);
+    public function minigameComplete($attack){
         if($attack == null){
             throw new AttackNotFoundException();
         }
         $attMsg = "Success: ";
-        if($request->result == 1){
-            $attack->setSuccess(true);
+        if($attack->success){
             $attMsg .= "true";
         }else{
-            $attack->setSuccess(false);
             $attMsg .= "false";
         }
         $attack->onAttackComplete();
@@ -143,8 +143,14 @@ class RedTeamController extends Controller {
             }
         }
         
-        //if the view doesn't exist return default
-        return view('redteam.minigame')->with(compact('attack','redteam','blueteam'));
+        //if the view doesn't exist return by chance
+        $rand = rand(0,500)/100;
+        if($rand >= $attack->difficulty){
+            $attack->setSuccess(true);
+        }else{
+            $attack->setSuccess(false);
+        }
+        return $this->minigameComplete($attack);
     }
 
     public function savePayload(request $request) {
@@ -180,14 +186,19 @@ class RedTeamController extends Controller {
     }
 
     public function chooseAttack(request $request){
-        if($request->result == ""){
-            $error = "No-Team-Selected";
-            return $this->startAttack()->with(compact('error'));
+        if(empty(session('redCurrentTarget'))){
+            if($request->result == ""){
+                $error = "No-Team-Selected";
+                return $this->startAttack()->with(compact('error'));
+            }else{
+                session(['redCurrentTarget' => $request->result]);
+            }
         }
         $user = Auth::user();
         $redteam = Auth::user()->getRedTeam();
-        $blueteam = Team::get($request->result);
-        $possibleAttacks = Attack::getAll();
+        $blueteam = Team::get(session('redCurrentTarget'));
+        $possibleAttacks = collect(Attack::getAll())->paginate(5);
+        $possibleAttacks->setPath('/redteam/chooseattack');
         return view('redteam.chooseAttack')->with(compact('redteam','blueteam','possibleAttacks'));
     }
 
@@ -196,7 +207,10 @@ class RedTeamController extends Controller {
             $targets = Team::getBlueTeams()->where('id','!=',Auth::user()->blueteam);
         }catch(TeamNotFoundException $e){
             $targets = [];
+            $targets = collect($targets);
         }
+        $targets = $targets->paginate(5);
+        $targets->setPath('/redteam/startattack');
         $redteam = Auth::user()->getRedTeam();
         return view('redteam.startAttack')->with(compact('targets','redteam'));
     }
@@ -226,7 +240,7 @@ class RedTeamController extends Controller {
                 return $this->inventory()->with(compact('error'));
             }
         }
-        return $this->inventory();
+        return $this->inventory($request);
     }//end sell
 
     public function buy(request $request){
@@ -251,13 +265,25 @@ class RedTeamController extends Controller {
             $asset = Asset::get($assetName);
             $redteam->buyAsset($asset);
         }
-        return $this->store();
+        return $this->store($request);
     }
 
-    public function store(){
+    public function store(request $request = null){
+        if($request != null){
+            $currentPage = $request->currentPage;
+            if(!empty($currentPage)){
+                Paginator::currentPageResolver(function () use ($currentPage) {
+                    return $currentPage;
+                });
+            }
+        }
+        session(['redFilter' => null]);
+        session(['redSort' => null]);
         $redteam = Auth::user()->getRedTeam();
         $assets = Asset::getBuyableRed();
         $tags = Asset::getTags($assets);
+        $assets = collect($assets)->paginate(5);
+        $assets->setPath('/redteam/store');
         $ownedAssets = $redteam->assets();
         return view('redteam.store')->with(compact('redteam', 'assets', 'tags', 'ownedAssets'));
     }
@@ -267,22 +293,45 @@ class RedTeamController extends Controller {
         $tags = Asset::getTags($redAssets);
         $redteam = Auth::user()->getRedTeam();
         $ownedAssets = $redteam->assets();
-        
         $assets = collect($redAssets);
         if (!empty($request->filter)) {
-            $tagFilter = $request->filter;
+            if($request->filter == "No Filter"){
+                session(['redFilter' => null]);
+            }else{
+                session(['redFilter' => $request->filter]);
+            }
+        }
+        if(!empty(session(['redFilter']))){
+            $tagFilter = session('redFilter');
             $assets = Asset::filterByTag($assets, $tagFilter);
         }
         if (!empty($request->sort)) {
-            $sort = $request->sort;
+            if($request->sort == "Name"){
+                session(['redSort' => null]);
+            }else{
+                session(['redSort' => $request->sort]);
+            }
+            }
+        if(!empty(session('redSort'))){
+            $sort = session('redSort');
             $assets = $assets->sortBy($sort);
         }
+        $assets = $assets->paginate(5);
+        $assets->setPath('/blueteam/filter');
         return view('redteam.store')->with(compact('redteam', 'assets', 'tags', 'ownedAssets'));
     }
 
-    public function inventory(){
+    public function inventory(request $request = null){
+        if($request != null){
+            $currentPage = $request->currentPage;
+            if(!empty($currentPage)){
+                Paginator::currentPageResolver(function () use ($currentPage) {
+                    return $currentPage;
+                });
+            }
+        }
         $redteam = Auth::user()->getRedTeam();
-        $inventory = $redteam->inventories();
+        $inventory = $redteam->inventories()->paginate(5);
         return view('redteam.inventory')->with(compact('redteam', 'inventory'));
     }
 

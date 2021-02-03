@@ -12,6 +12,7 @@
         <label class="chooseTeamRadioButtons" for="{{ $attack->class_name }}">{{ $attack->name }}</label>
         <br>
     @endforeach
+    @include('partials.pagination', ['paginator' => $possibleAttacks])
     <input type="hidden" name="blueteam" value="{{ $blueteam->name }}">
     <div class="form-group row mb-0">
         <div class="col-md-8 offset-md-4">

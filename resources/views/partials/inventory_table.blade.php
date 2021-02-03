@@ -7,7 +7,7 @@
     <tbody>
         @foreach ($inventory ?? [] as $inv)
         <?php $invAsset = App\Models\Asset::get($inv->asset_name); 
-        $inArray = in_array("Action",$invAsset->tags)?>
+        $inArray = in_array("Action",$invAsset->tags); ?>
             <tr>
                 <td class="blueInvTd"><input type="checkbox" name="results[]" value="{{ $inv->id }}"></td>
                 <td>{{ $invAsset->name }}</td>
@@ -23,24 +23,24 @@
                     </td>
                     @endif
                 @endif
-                @if(!$inArray)
-                <td>Level: {{$inv->level }}</td>
-                @if($inv->level < 3)
-                    @if($invAsset->blue == 1)    
-                        <td><button type="submit" formaction="/blueteam/upgrade" 
-                            class="btn btn-primaryInventory" 
-                            name="submit" value="{{$inv->id }}">
-                            Upgrade Cost: {{ $inv->getUpgradeCost() }}</button>
-                        </td>
+                @if(!$inArray && !in_array("Targeted", $invAsset->tags))
+                    <td>Level: {{$inv->level }}</td>
+                    @if($inv->level < 3 )
+                        @if($invAsset->blue == 1)    
+                            <td><button type="submit" formaction="/blueteam/upgrade" 
+                                class="btn btn-primaryInventory" 
+                                name="submit" value="{{$inv->id }}">
+                                Upgrade Cost: {{ $inv->getUpgradeCost() }}</button>
+                            </td>
+                        @endif
+                        @if($invAsset->blue == 0)
+                            <td><button type="submit" formaction="/redteam/upgrade" 
+                                class="btn btn-primaryInventory" 
+                                name="submit" value="{{$inv->id }}">
+                                Upgrade Cost: {{ $inv->getUpgradeCost() }}</button>
+                            </td>
+                        @endif
                     @endif
-                    @if($invAsset->blue == 0)
-                        <td><button type="submit" formaction="/redteam/upgrade" 
-                            class="btn btn-primaryInventory" 
-                            name="submit" value="{{$inv->id }}">
-                            Upgrade Cost: {{ $inv->getUpgradeCost() }}</button>
-                        </td>
-                    @endif
-                @endif
                 @endif
                 @if($inArray)
                     <td><button type="submit" formaction="/asset" 
