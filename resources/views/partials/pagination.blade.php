@@ -1,6 +1,6 @@
 <div class="pagination">
     @if($paginator->currentPage() > 1)
-    <a href={{$paginator->previousPageUrl()}}><button class="btn btn-pagination-prev">Previous</button></a>
+    <a href={{$paginator->previousPageUrl()}}><button class="btn btn-pagination-prev" formaction="{{$paginator->previousPageUrl()}}">Previous</button></a>
     @endif
     <p class="p-pagination">
         <select class="select-pagination" id="dynamic_select" onchange="if (this.value) window.location.href=this.value">
@@ -11,6 +11,6 @@
         /{{$paginator->lastPage()}}
     </p>
     @if($paginator->currentPage() < $paginator->lastPage())
-        <a href={{$paginator->nextPageUrl()}}><button class="btn btn-pagination-next">Next</button></a>
+        <a href={{$paginator->nextPageUrl()}}><button class="btn btn-pagination-next" formaction="{{$paginator->nextPageUrl()}}">Next</button></a>
     @endif
 </div>
