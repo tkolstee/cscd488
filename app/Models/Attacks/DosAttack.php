@@ -8,7 +8,7 @@ class DosAttack extends Attack {
 
     public $_name                   = "DoS";
     public $_class_name             = "Dos";
-    public $_tags                   = [];
+    public $_tags                   = ['FirewallDefends'];
     public $_prereqs                = [];
     public $_payload_choice           = "Dos";
     public $_initial_difficulty     = 1.25;

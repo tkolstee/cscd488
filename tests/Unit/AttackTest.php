@@ -312,8 +312,8 @@ class AttackTest extends TestCase {
         $attack->analysis_risk = 2;
         $attack->calculated_analysis_risk = 2;
         $analysis_risk = $attack->calculated_analysis_risk;
-        $attack->calculateDetected();
-        $this->assertEquals($analysis_risk + (.5 * $analysis_risk), $attack->calculated_analysis_risk);
+        $attack->onPreAttack();
+        $this->assertEquals($analysis_risk + (.3 * $analysis_risk), $attack->calculated_analysis_risk);
     }
 
     public function testGetName(){
