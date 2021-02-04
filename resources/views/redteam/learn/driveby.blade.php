@@ -58,7 +58,7 @@
                 beneficial to your security such as Ad Blockers. These help stop adware by <br>
                 preventing the malicious script from executing.</p>
         @endif
-        <!-- Reference:   -->
+        <!-- Reference:  https://heimdalsecurity.com/blog/how-drive-by-download-attacks-work/ -->
         @if ($step != 3)
             <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">
