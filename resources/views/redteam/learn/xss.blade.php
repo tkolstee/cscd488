@@ -71,11 +71,30 @@
                 into how it actually gets handled. Depending on where the user input is inserted, <br>
                 the user may insert the closing delimeter for the HTML tag/code in order to further <br>
                 insert malicious javascript.</p>
-
+            <p>Input handling is a good way to neutralize any malicious scripts before they are included <br>
+                in the website, but due to context, there is no real way to ensure that input will be <br>
+                completely safe. This means output handling is more important and anywhere user input is <br>
+                displayed should have proper checks to make sure nothing malicious will happen.</p>
+            <p>Output checking, whether on client-side or server-side, is dependent upon when the output will be <br>
+                displayed. If the output is accessed and displayed through javascript then it will be necessary <br>
+                to validation check client-side to prevent DOM-based XSS attacks. To prevent Persistent or Reflected <br>
+                XSS attacks, server-side validation is needed.</p>
         @elseif ($step == 4)
-            <h4></h4>
-            <p></p>
-
+            <h4>Encoding vs Validation</h4>
+            <p>Encoding user input is the act of removing certain characters so the string is interpreted as <br>
+                a string instead of as code. This involves turning characters like "<" to names following "&". <br>
+                There are limitations to encoding, however, because there will always be some context that cannot be <br>
+                accounted for. Validation is the act of filtering out user input to remove or block certain <br>
+                parts of the input. A common way to validate is to check for HTML tags and filter out some. <br>
+                Validation can either classify by whitelisting or blacklisting allowable patterns. If whitelisting, <br>
+                then only input following whitelisted patterns will be allowed. If blacklisting, then only <br>
+                input that does not follow those blacklisted patterns is allowed. The outcome of validation can <br>
+                either be rejected, not using that input, or sanitized and cleaned of invalid patterns.</p>
+            <p>A Content Security Policy, or CSP, can be implemented into the header of a website in order to <br>
+                limit sources that resources are received from. Website owners can limit where media, images, <br>
+                scripts, etc come from and whether to let them come from anywhere besides the host at all. <br>
+                This means that XSS attacks cannot use their javascript to link to any external files or harmful <br>
+                things.</p>
         @endif
         <!-- Reference:  https://excess-xss.com/ -->
         @if ($step != 4)
