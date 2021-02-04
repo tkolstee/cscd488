@@ -39,11 +39,12 @@
                                 </a> 
                                 @if (Auth::user()->isAdmin())
                                     <br>
-                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="/admin/home" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    <a href="/admin/home" role="button">
                                         Admin Home
                                     </a>
                                 @endif
                                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="/user/settings">User Settings</a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault();
                                         document.getElementById('logout-form').submit();">

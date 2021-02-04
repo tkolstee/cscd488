@@ -20,14 +20,14 @@
 
     <h3 class="aboutJanus">Red Team</h3>
     <p>Users can each make their own Red Team. The Red Team is responsible for attacking other Blue Teams <br>
-    in order to make money, earn footholds, and damage the Blue Team. Red Teams do not have designated turns, <br>
+    in order to make money, earn bonuses, and damage the Blue Team. Red Teams do not have designated turns, <br>
     but they do have an energy amount that refreshes at the designated turn-reset time. Red Teams can <br>
     also buy or sell assets in order to help them attack</p>
 
     <h3 class="aboutJanus">Assets</h3>
     <p>Assets all have different ways to affect Red and Blue Teams. Some assets affect the <br>
     detection risk of certain attacks, affect the difficulty of certain attacks, affect attack <br>
-    prerequisite requirements, help aquire footholds into certain BlueTeams for future attack, or <br>
+    prerequisite requirements, help aquire bonuses into certain BlueTeams for future attack, or <br>
     affect the money lost or gained from certain attacks. And some assets are owned to generate <br>
     revenue for the Blue Team every turn.</p>
     <p>All assets have different effects against different attacks, so a wide variety of defensive and offensive <br>

@@ -32,6 +32,8 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::group(['middleware' => ['not.admin']], function() {
 
+        Route::any('/user/{page}', [App\Http\Controllers\UserController::class, 'page'])->name('user');
+
         Route::any('/blueteam/{page}', [App\Http\Controllers\BlueTeamController::class, 'page'])->name('blueteam');
 
         Route::any('/asset', [App\Http\Controllers\AssetController::class, 'useAction'])->name('asset');
