@@ -445,21 +445,26 @@ h4{
     color:#00CC99;
     
 }
-.sqlInjections{
-    color:#00CC99;
-    text-decoration: none;
-    
-}
-.sqlInjectionsHover a:hover{
-    color:#00FFCC !important;
-    
-}
-.sqlInjectionsList ul li{
+.learnHome ul li{
     list-style-type: none;
     margin:0 auto;
-    
+    width: 36%;
 }
-
+.learnHome button{
+    background-color: #00CC99;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 18px;
+    margin: 23px 8px;
+    cursor: pointer;
+}
+.learnHome button:hover {
+    background-color: #00FFCC;
+}
 .rLogin a{
     color:#00CC99;
     padding-right:5%;
@@ -976,7 +981,10 @@ color:#00CC99;
 .redLearn ul li{
     color:white;
 }
-
+.redLearn ul{
+    list-style-position: inside;
+    margin:0 auto;
+}
 .pagination a{
     color:#00CC99;
 }
@@ -985,7 +993,4 @@ color:#00CC99;
 }
 .synFloodForm{
     color:white;
-}
-.synFloodUl ul{
-    margin:0 auto;
 }
