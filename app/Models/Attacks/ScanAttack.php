@@ -8,7 +8,7 @@ class ScanAttack extends Attack {
 
     public $_name                   = "Scan";
     public $_class_name             = "Scan";
-    public $_tags                   = [];
+    public $_tags                   = ['FirewallDefends'];
     public $_prereqs                = [];
     public $_payload_choice           = "SecInfo";
     public $_initial_difficulty     = 0;

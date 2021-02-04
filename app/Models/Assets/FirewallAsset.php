@@ -13,11 +13,15 @@ class FirewallAsset extends Asset {
     public $_blue = 1;
     public $_buyable = 1;
     public $_purchase_cost = 100;
-    public $_ownership_cost = 0;
+    public $_ownership_cost = 100;
 
     function onPreAttack($attack) {
-        if (in_array("ExternalNetworkProtocol", $attack->tags)) {
+        if (in_array("FirewallDefends", $attack->tags)) {
             $attack->changeDifficulty(.2);
+        }
+        if (in_array('Internal', $attack->tags) || in_array('PrivilegedAccess', $attack->tags) || in_array('PwnedAccess', $attack->tags)){
+            $attack->changeDetectionRisk(.15);
+            $attack->changeAnalysisRisk(.15);
         }
     }
 }

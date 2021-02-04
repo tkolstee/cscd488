@@ -237,9 +237,6 @@ class Attack extends Model
         else {
             $this->detection_level = 1;
             $blueteam = Team::find($this->blueteam);
-            if ($blueteam->hasAnalyst()) {
-                $this->changeAnalysisRisk(.5);
-            }
             $rand = rand(0, 500)/100;
             if ($rand < $this->calculated_analysis_risk){
                 $this->detection_level = 2;
