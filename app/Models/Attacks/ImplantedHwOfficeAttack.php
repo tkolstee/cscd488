@@ -18,7 +18,7 @@ class ImplantedHwOfficeAttack extends Attack {
     public $_initial_energy_cost    = 300;
     public $_help_text              = "Plant a piece of hardware in the office.";
 
-    public $learn_page              = true;
+    public $learn_page              = false;
 
     function onAttackComplete() {
         parent::onAttackComplete();

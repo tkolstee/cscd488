@@ -17,8 +17,6 @@ class LearnController extends Controller
             case 'ddos': return $this->dos($request); break;
             case 'driveby': return $this->driveby($request); break;
             case 'fuzzing': return $this->fuzzing($request); break;
-            case 'implantedhwoffice': return $this->implantedhw($request); break;
-            case 'implantedhwserver': return $this->implantedhw($request); break;
             case 'malvertise': return $this->malvertise($request); break;
             case 'mitm' : return $this->mitm($request); break;
             case 'phishingattachment': return $this->phishing($request); break;
@@ -53,11 +51,6 @@ class LearnController extends Controller
     public function fuzzing(request $request){
         $step = $this->getStep($request);
         return view('redteam.learn.fuzzing')->with(compact('step'));
-    }
-
-    public function implantedhw(request $request){
-        $step = $this->getStep($request);
-        return view('redteam.learn.implantedhw')->with(compact('step'));
     }
 
     public function malvertise(request $request){
