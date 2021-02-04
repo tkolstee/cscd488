@@ -8,10 +8,9 @@
     <h2>There are no attacks available to learn about </h2>
     @else
         @foreach ($attacks as $attack)
-        <div class="sqlInjectionsList">
+        <div class="learnHome">
             <ul>
-                <li title="{{$attack->help_text ?? "" }}" class="sqlInjectionsHover"><a class="sqlInjections" href={{ "/learn/".strtolower($attack->class_name) }}>{{$attack->name}}</a></li>
-                <br>
+                <li title="{{$attack->help_text ?? "" }}"><a href={{ "/learn/".strtolower($attack->class_name) }}><button>{{$attack->name}}</button></a></li>
             </ul>
         </div>
         @endforeach
