@@ -57,6 +57,11 @@ class BackdoorPrivilegedAttack extends Attack {
         }
         if(!$lowEnergy) $this->energy_cost = (2 * $this->energy_cost);
         Attack::updateAttack($this);
+        if ( $redteam->getEnergy() < $this->energy_cost ) {
+            $this->possible = false;
+            $this->detection_level = 0;
+            $this->errormsg = "Not enough energy available.";
+        }
         return $this;
     }
 }
