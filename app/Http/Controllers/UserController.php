@@ -35,8 +35,10 @@ class UserController extends Controller {
             'name' => ['required', 'string', 'max:255'],
         ]);
         $user = Auth::user();
-        $user->name = $request->name;
-        $user->update();
+        if($user->name != $request->name){
+            $user->name = $request->name;
+            $user->update();
+        }
         return $this->settings($request);
     }
 
