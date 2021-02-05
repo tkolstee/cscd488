@@ -70,6 +70,6 @@ class Game extends Model
 
     public static function prereqsDisabled(){
         $game = Game::get();
-        return $game->disable_prereqs;
+        return $game->disable_prereqs == 1;
     }
 }

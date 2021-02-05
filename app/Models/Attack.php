@@ -355,11 +355,14 @@ class Attack extends Model
             }
         }
         $this->calculated_difficulty = round($this->calculated_difficulty);
-        $unmet_prereqs = array_diff($this->prereqs, $have);
-        if ( count($unmet_prereqs) > 0 ) {
-            $this->possible = false;
-            $this->detection_level = 0;
-            $this->errormsg = "Unsatisfied prereqs for this attack";
+
+        if (!Game::prereqsDisabled()) {
+            $unmet_prereqs = array_diff($this->prereqs, $have);
+            if ( count($unmet_prereqs) > 0 ) {
+                $this->possible = false;
+                $this->detection_level = 0;
+                $this->errormsg = "Unsatisfied prereqs for this attack";
+            }
         }
         if ( $redteam->getEnergy() < $this->energy_cost ) {
             $this->possible = false;
