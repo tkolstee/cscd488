@@ -16,6 +16,7 @@ class CreateGamesTable extends Migration
         Schema::create('games', function (Blueprint $table) {
             $table->id();
             $table->integer('turn')->default(0);
+            $table->boolean('disable_prereqs')->default(false);
             $table->timestamps();
         });
     }
