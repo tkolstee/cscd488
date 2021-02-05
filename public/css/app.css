@@ -994,3 +994,53 @@ color:#00CC99;
 .synFloodForm{
     color:white;
 }
+.settingsPage{
+    background: url('/images/repeatingBackground.jpg'), center no-repeat;
+    text-align: center;
+}
+.settingsPage button{
+    background-color: #00CC99;
+    border: none;
+    color: black;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 8px 8px;
+    cursor: pointer;
+    width:5%;
+}
+.settingsPage button:hover {
+    background-color: #00FFCC;
+}
+.settingsPage input{
+    background-color: #00CC99;
+    color: black;
+    width: 15%;
+}
+.settingsPage input:focus{
+    background-color:#00FFCC;
+    color: black;
+}
+.settingsPage label{
+    color: white;
+    width: 10%;
+    display:inline-block;
+}
+.changePass button {
+    background-color: #00CC99;
+    border: none;
+    color: black;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    margin: 8px 8px;
+    cursor: pointer;
+    width:30%;
+}
+.changePass button:hover {
+    background-color: #00FFCC;
+}
