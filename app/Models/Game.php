@@ -61,4 +61,15 @@ class Game extends Model
             $redteam->setEnergy(1000);
         }
     }
+
+    public static function toggleDisablePrereqs(){
+        $game = Game::get();
+        $game->disable_prereqs = !$game->disable_prereqs;
+        $game->update();
+    } 
+
+    public static function prereqsDisabled(){
+        $game = Game::get();
+        return $game->disable_prereqs == 1;
+    }
 }

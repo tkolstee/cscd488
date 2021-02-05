@@ -361,4 +361,20 @@ class AttackTest extends TestCase {
         $red->refresh();
         $this->assertEquals($attack->energy_cost, $red->balance);
     }
+
+    public function testDisablePrereqs(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack1 = Attack::create('SQLInjection', $red->id, $blue->id);
+        $this->assertFalse(\App\Models\Game::prereqsDisabled());
+        $attack1->onPreAttack();
+        $this->assertFalse($attack1->possible);
+        $this->assertEquals("Unsatisfied prereqs for this attack", $attack1->errormsg);
+
+        \App\Models\Game::toggleDisablePrereqs();
+        $attack2 = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack2->onPreAttack();
+        $this->assertTrue($attack2->possible);
+        $this->assertNotEquals("Unsatisfied prereqs for this attack", $attack2->errormsg);
+    }
 }

@@ -26,6 +26,9 @@ class AdminController extends Controller {
             case 'next-turn':
                 Game::endTurn();
                 break;
+            case 'toggle-prereqs':
+                Game::toggleDisablePrereqs();
+                break;
             default:
                 break;
         }
