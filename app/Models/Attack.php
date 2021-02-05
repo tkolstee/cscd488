@@ -323,58 +323,46 @@ class Attack extends Model
     public function onPreAttack() {
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
-
-        // Get all assets in both attacker's and target's inventories
         $blueInv = $blueteam->inventories();
         $redInv = $redteam->inventories();
+        $inventories = $blueInv->merge($redInv);
 
-        // Collect all tags and names of these assets to match against prerequisites for this attack
+        // Collect all tags and names of these assets to match against prerequisites for this attack. Assets modify attack
         $have = [];
-
-        // Each asset has an opportunity to modify the attack object
-        //
-        foreach ($blueInv as $inv) {
+        foreach ($inventories as $inv) {
             $asset = Asset::get($inv->asset_name);
             $asset->onPreAttack($this);
             $have[] = $asset->class_name;
-            foreach ( $asset->tags as $tag ) { $have[] = $tag; }
+            $have[] = $asset->tags; 
         }
-        foreach ($redInv as $inv) {
-            $asset = Asset::get($inv->asset_name);
-            $asset->onPreAttack($this);
-            $have[] = $asset->class_name;
-            foreach ( $asset->tags as $tag ) { $have[] = $tag; }
-        }
-        $bonuses = $this->getBonuses();
-        foreach ($bonuses as $bonus){
-            if(in_array("DifficultyDeduction", $bonus->tags)){
-                $this->changeDifficulty(-1* $bonus->percentDiffDeducted);
-            }
-            if(in_array("DetectionDeduction", $bonus->tags)){
-                $this->changeDetectionRisk(-1* $bonus->percentDetDeducted);
-            }
-        }
-        $this->calculated_difficulty = round($this->calculated_difficulty);
-
         if (!Game::prereqsDisabled()) {
             $unmet_prereqs = array_diff($this->prereqs, $have);
             if ( count($unmet_prereqs) > 0 ) {
                 $this->possible = false;
                 $this->detection_level = 0;
                 $this->errormsg = "Unsatisfied prereqs for this attack";
+                Attack::updateAttack($this);
+                return $this;
             }
         }
         if ( $redteam->getEnergy() < $this->energy_cost ) {
             $this->possible = false;
             $this->detection_level = 0;
             $this->errormsg = "Not enough energy available.";
+            Attack::updateAttack($this);
+            return $this;
         }
         $this->checkTokens();
+        $bonuses = $this->getBonuses();
+        foreach ($bonuses as $bonus){
+            $this->applyBonus($bonus);
+        }
+        $this->calculated_difficulty = round($this->calculated_difficulty);
         Attack::updateAttack($this);
         return $this;
     }
 
-    public function checkTokens(){
+    private function checkTokens(){
         if ( in_array("Internal", $this->tags) ){
             $redteam = Team::find($this->redteam);
             $blueteam = Team::find($this->blueteam);
@@ -397,7 +385,7 @@ class Attack extends Model
         }
     }
 
-    public function tokensRequired(){
+    private function tokensRequired(){
         $blueteam = Team::find($this->blueteam);
         $invs = $blueteam->inventories();
         $tokensRequired = 1;
@@ -409,4 +397,12 @@ class Attack extends Model
         return $tokensRequired;
     }
 
+    private function applyBonus($bonus){
+        if(in_array("DifficultyDeduction", $bonus->tags)){
+            $this->changeDifficulty(-1* $bonus->percentDiffDeducted);
+        }
+        if(in_array("DetectionDeduction", $bonus->tags)){
+            $this->changeDetectionRisk(-1* $bonus->percentDetDeducted);
+        }
+    }
 }
