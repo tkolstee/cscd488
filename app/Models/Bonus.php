@@ -30,6 +30,7 @@ class Bonus extends Model
     public $_removalChance = 0;
     public $_removalCostFactor = 1;
     public $_attack_id = null;
+    public $_revenue_generated = 0;
 
     function __construct() {
        $this->tags = $this->_tags;
@@ -46,6 +47,7 @@ class Bonus extends Model
        $this->removalCostFactor = $this->_removalCostFactor;
        $this->attack_id = $this->_attack_id;
        $this->percentRevToRemove = $this->_percent_rev_remove;
+       $this->revenueGenerated = $this->_revenue_generated;
     }
 
     public static function createBonus($team_id, $tags){
@@ -81,6 +83,9 @@ class Bonus extends Model
             $amount = $revGain * 0.1;
             $blueteam->changeBalance(-1* $amount);
             $redteam->changeBalance($amount);
+        }
+        if(in_array("RevenueGeneration", $this->tags)){
+            $redteam->changeBalance($this->revenueGenerated);
         }
         if(in_array("OneTurnOnly", $this->tags)){
             $this->destroy($this->id);
