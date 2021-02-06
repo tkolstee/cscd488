@@ -184,6 +184,9 @@ class Bonus extends Model
         if (in_array("ChanceToRemove", $this->tags)){
             return;
         }
+        if (in_array("UntilAnalyzed", $this->tags)){
+            return;
+        }
         if($this->percentDiffDeducted > 0){
             return;
         }
