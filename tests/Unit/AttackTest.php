@@ -12,6 +12,7 @@ use App\Models\Attacks\MalvertiseAttack;
 use App\Models\Attacks\SQLInjectionAttack;
 use App\Models\Attacks\SynFloodAttack;
 use App\Models\Assets\AccessTokenAsset;
+use App\Models\Bonus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AttackTest extends TestCase {
@@ -388,5 +389,25 @@ class AttackTest extends TestCase {
         $attack2->onPreAttack();
         $this->assertTrue($attack2->possible);
         $this->assertNotEquals("Unsatisfied prereqs for this attack", $attack2->errormsg);
+    }
+
+    public function testUntilAnalyzedRewardCannotBeUndetected() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack->detection_risk = 0; //Shouldn't be detected
+        $attack->difficult = 0; //Attack will succeed
+        Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        
+        $tags = ['UntilAnalyzed'];
+        $bonus = Bonus::createBonus($red->id, $tags);
+        $bonus->target_id = $blue->id;
+        $bonus->attack_id = $attack->id;
+        $bonus->update();
+
+        $this->assertEquals(0, $attack->detection_level);
+        $attack->onAttackComplete();
+        $this->assertEquals(1, $attack->detection_level);
     }
 }

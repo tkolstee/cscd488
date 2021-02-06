@@ -82,6 +82,14 @@ class Attack extends Model
                 }
             }
         }
+        elseif ($this->detection_level == 0) {
+            $bonuses = $this->getBonuses();
+            foreach ($bonuses as $bonus){
+                if (in_array("UntilAnalyzed", $bonus->tags)){
+                    $this->detection_level = 1;
+                }
+            }
+        }
         $redteam->useEnergy($this->energy_cost);
     }
 
