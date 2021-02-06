@@ -352,14 +352,26 @@ class AttackTest extends TestCase {
         $this->assertTrue($attack->possible);
     }
 
-    public function testRedTeamGainsMoney(){
+    public function testRedTeamGainsMoneyOnSuccess(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
+        $this->assertEquals(0, $red->balance);
+        $attack->success = true;
+        Attack::updateAttack($attack);
+        $attack->onAttackComplete();
+        $red->refresh();
+        $this->assertEquals($attack->energy_cost, $red->balance);
+    }
+
+    public function testRedTeamDoesNotGainMoneyOnFailure(){
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
         $attack = Attack::create('SQLInjection', $red->id, $blue->id);
         $this->assertEquals(0, $red->balance);
         $attack->onAttackComplete();
         $red->refresh();
-        $this->assertEquals($attack->energy_cost, $red->balance);
+        $this->assertEquals(0, $red->balance);
     }
 
     public function testDisablePrereqs(){

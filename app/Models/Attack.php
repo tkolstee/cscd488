@@ -64,9 +64,12 @@ class Attack extends Model
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
 
-        if ( $this->success && $this->payload_choice != null) {
-            $payload = Payload::get($this->payload_choice);
-            $payload->onAttackComplete($this);
+        if ($this->success) {
+            $redteam->changeBalance($this->energy_cost);
+            if ($this->payload_choice != null) {
+                $payload = Payload::get($this->payload_choice);
+                $payload->onAttackComplete($this);
+            }
         }
         
         if ( $this->detection_level > 0 ) {
@@ -80,7 +83,6 @@ class Attack extends Model
             }
         }
         $redteam->useEnergy($this->energy_cost);
-        $redteam->changeBalance($this->energy_cost);
     }
 
     public static function getAll(){
