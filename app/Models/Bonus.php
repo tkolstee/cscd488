@@ -128,6 +128,8 @@ class Bonus extends Model
         $desc = "";
         if(in_array("RevenueSteal",$this->tags)) $desc += 
             "Steals 10% of target's revenue made each turn. ";
+        if(in_array("RevenueGeneration", $this->tags)) $desc = $desc .
+            "Your team generates $" . $this->revenueGenerated . " each turn. ";
         if(in_array("RevenueDeduction", $this->tags))  $desc = $desc .  
             "Target loses " . $this->percentRevDeducted . "% of revenue made this turn. ";
         if(in_array("ReputationDeduction", $this->tags))  $desc = $desc . 
@@ -145,7 +147,7 @@ class Bonus extends Model
         if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
             "Target can pay you ". $this->removalCostFactor . " times their per turn revenue to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
-            "Bonus lasts until the target analyze the attack.";
+            "Bonus lasts until the target analyzes the attack.";
         else  $desc = $desc .  "Decrements by 5% each turn.";
         return $desc;
     }
@@ -154,6 +156,8 @@ class Bonus extends Model
         $desc = "";
         if(in_array("RevenueSteal",$this->tags)) $desc += 
             "Attacker steals 10% of your revenue made each turn. ";
+        if(in_array("RevenueGeneration", $this->tags)) $desc = $desc .
+            "The attacking team generates $" . $this->revenueGenerated . " each turn. This is not stolen. ";
         if(in_array("RevenueDeduction", $this->tags))  $desc = $desc .  
             "You lose " . $this->percentRevDeducted . "% of revenue made this turn. ";
         if(in_array("ReputationDeduction", $this->tags))  $desc = $desc . 
