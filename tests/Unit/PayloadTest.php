@@ -8,6 +8,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Bonus;
 use App\Models\Attack;
+use App\Models\Payloads\AdWare;
 use App\Models\Payloads\Xss;
 use App\Models\Payloads\Dos;
 use App\Models\Payloads\Destruction;
@@ -201,5 +202,20 @@ class PayloadTest extends TestCase {
         $this->assertEquals(50, $bonus->percentRevDeducted);
         $this->assertEquals(10, $bonus->removalChance);
         $this->assertEquals(2, $bonus->removalCostFactor);
+    }
+
+    public function testAdwarePayload() {
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new AdWare;
+        $payload->onAttackComplete($attack);
+
+        $bonus = $redteam->getBonuses()->first();
+        $this->assertEquals($redteam->id, $bonus->team_id);
+        $this->assertEquals($blueteam->id, $bonus->target_id);
+        $this->assertTrue(in_array("RevenueGeneration", $bonus->tags));
+        $this->assertTrue(in_array("UntilAnalyzed", $bonus->tags));
+        $this->assertEquals(100, $bonus->revenueGenerated);
     }
 }
