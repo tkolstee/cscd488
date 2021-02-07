@@ -33,15 +33,12 @@ class PayloadTest extends TestCase {
     public function testPayloadOnPreAttackCanIncreaseSuccess() {
         $attack = $this->createTeamsAndAttack();
         $initialDiff = $attack->difficulty;
-        $attack->calculated_difficulty = $initialDiff;
-        Attack::updateAttack($attack);
-        $attack->onPreAttack();
         $this->assertEquals(2, $attack->calculated_difficulty);
+
         $payload = new Payload;
-        //$payload->percentIncreasedSuccess = 20;
-        //$payload->onPreAttack($attack);
-        $attack->changeDifficulty(-.5);
-        $this->assertEquals($initialDiff - 1, $attack->calulcated_difficulty);
+        $payload->percentIncreasedSuccess = .2;
+        $payload->onPreAttack($attack);
+        $this->assertEquals($initialDiff * .8, $attack->calulcated_difficulty);
     }
 
     public function testGetPayloadByTag() {
@@ -54,11 +51,9 @@ class PayloadTest extends TestCase {
     }
     
     private function createTeamsAndAttack(){
-        $user = User::factory()->create();
         $blueteam = Team::factory()->create();
         $redteam = Team::factory()->red()->create();
-        $user->redteam = $redteam->id;
-        $user->update();
+        $user = User::factory()->create(['redteam' => $redteam->id]);
         $this->be($user);
         $attack = Attack::create('SynFlood',$redteam->id, $blueteam->id);
         $attack->onPreAttack();
@@ -225,7 +220,7 @@ class PayloadTest extends TestCase {
         $payload = new AdWare;
         $payload->onAttackComplete($attack);
 
-        $this->assertEquals(20, $payload->percentIncreasedSuccess);
+        $this->assertEquals(.20, $payload->percentIncreasedSuccess);
         $bonus = $redteam->getBonuses()->first();
         $this->assertEquals($redteam->id, $bonus->team_id);
         $this->assertEquals($blueteam->id, $bonus->target_id);
