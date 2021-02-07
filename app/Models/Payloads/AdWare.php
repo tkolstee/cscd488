@@ -10,6 +10,7 @@ class AdWare extends Payload
     public $_name = "Adware";
     public $_class_name = "AdWare";
     public $_tags = ['EndpointExecutable'];
+    public $_percentIncreasedSuccess = 20;
 
     public function onAttackComplete($attack){
         $bonus = parent::createBonus($attack);

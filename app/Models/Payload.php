@@ -22,6 +22,7 @@ class Payload //extends Model
     public $_class_name = "Payload";
     public $_percentRevLost = 0;
     public $_percentRepLost = 0;
+    public $_percentIncreasedSuccess = 0;
     public $_tags = [];
 
     function __construct() {
@@ -29,7 +30,16 @@ class Payload //extends Model
         $this->class_name  = $this->_class_name;
         $this->percentRevLost = $this->_percentRevLost;
         $this->percentRepLost = $this->_percentRepLost;
+        $this->percentIncreasedSuccess = $this->_percentIncreasedSuccess;
         $this->tags        = $this->_tags;
+    }
+
+    public function onPreAttack($attack){
+        //Handle changes to attack success rate here
+        if ($this->percentIncreasedSuccess != 0){
+            $difficultyChange = -1 * $this->percentIncreasedSuccess * 0.01;
+            $attack->changeDifficulty($difficultyChange);
+        }
     }
     
     public function onAttackComplete($attack){

@@ -30,6 +30,20 @@ class PayloadTest extends TestCase {
         $this->assertTrue(is_subclass_of($payloads[0], 'App\Models\Payload'));
     }
 
+    public function testPayloadOnPreAttackCanIncreaseSuccess() {
+        $attack = $this->createTeamsAndAttack();
+        $initialDiff = $attack->difficulty;
+        $attack->calculated_difficulty = $initialDiff;
+        Attack::updateAttack($attack);
+        $attack->onPreAttack();
+        $this->assertEquals(2, $attack->calculated_difficulty);
+        $payload = new Payload;
+        //$payload->percentIncreasedSuccess = 20;
+        //$payload->onPreAttack($attack);
+        $attack->changeDifficulty(-.5);
+        $this->assertEquals($initialDiff - 1, $attack->calulcated_difficulty);
+    }
+
     public function testGetPayloadByTag() {
         $tag = 'EndpointExecutable';
         $payloads = Payload::getByTag($tag);
@@ -211,6 +225,7 @@ class PayloadTest extends TestCase {
         $payload = new AdWare;
         $payload->onAttackComplete($attack);
 
+        $this->assertEquals(20, $payload->percentIncreasedSuccess);
         $bonus = $redteam->getBonuses()->first();
         $this->assertEquals($redteam->id, $bonus->team_id);
         $this->assertEquals($blueteam->id, $bonus->target_id);
