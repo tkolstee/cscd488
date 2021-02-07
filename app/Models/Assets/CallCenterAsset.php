@@ -18,10 +18,10 @@ class CallCenterAsset extends Asset
     public function onPreAttack($attack)
     {
         if (in_array('RequiresUserAction', $attack->tags)){
-            $attack->changeDifficulty(-.2);
+            $attack->changeDifficulty(.2);
         }
         if (in_array('PhysicalAttack', $attack->tags)){
-            $attack->changeDifficulty(-.1);
+            $attack->changeDifficulty(.1);
         }
     }
 }
