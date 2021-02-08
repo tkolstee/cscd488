@@ -8,7 +8,7 @@ use App\Models\Attack;
 class EndpointProtectionAsset extends Asset {
 
     public $_name    = "Endpoint Protection";
-    public $_class_name = "Endpoint Protection";
+    public $_class_name = "EndpointProtection";
     public $_tags    = [];
     public $_blue = 1;
     public $_buyable = 1;
