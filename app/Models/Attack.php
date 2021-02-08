@@ -324,6 +324,13 @@ class Attack extends Model
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
 
+        if ( $redteam->getEnergy() < $this->energy_cost ) {
+            $this->possible = false;
+            $this->detection_level = 0;
+            $this->errormsg = "Not enough energy available.";
+            Attack::updateAttack($this);
+            return $this;
+        }
         // Get all assets in both attacker's and target's inventories
         $blueInv = $blueteam->inventories();
         $redInv = $redteam->inventories();
@@ -345,6 +352,16 @@ class Attack extends Model
             $have[] = $asset->class_name;
             foreach ( $asset->tags as $tag ) { $have[] = $tag; }
         }
+        if (!Game::prereqsDisabled()) {
+            $unmet_prereqs = array_diff($this->prereqs, $have);
+            if ( count($unmet_prereqs) > 0 ) {
+                $this->possible = false;
+                $this->detection_level = 0;
+                $this->errormsg = "Unsatisfied prereqs for this attack";
+                Attack::updateAttack($this);
+                return $this;
+            }
+        }
         $bonuses = $this->getBonuses();
         foreach ($bonuses as $bonus){
             if(in_array("DifficultyDeduction", $bonus->tags)){
@@ -355,20 +372,6 @@ class Attack extends Model
             }
         }
         $this->calculated_difficulty = round($this->calculated_difficulty);
-
-        if (!Game::prereqsDisabled()) {
-            $unmet_prereqs = array_diff($this->prereqs, $have);
-            if ( count($unmet_prereqs) > 0 ) {
-                $this->possible = false;
-                $this->detection_level = 0;
-                $this->errormsg = "Unsatisfied prereqs for this attack";
-            }
-        }
-        if ( $redteam->getEnergy() < $this->energy_cost ) {
-            $this->possible = false;
-            $this->detection_level = 0;
-            $this->errormsg = "Not enough energy available.";
-        }
         $this->checkTokens();
         Attack::updateAttack($this);
         return $this;
