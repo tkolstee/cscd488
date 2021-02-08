@@ -34,6 +34,7 @@ class Asset //extends Model
     public $_purchase_cost = 100;
     public $_ownership_cost = 0;
     public $_upgrade_cost = 50;
+    public $_description = "Abstract class";
 
     function __construct() {
         $this->name           = $this->_name;
@@ -44,6 +45,7 @@ class Asset //extends Model
         $this->purchase_cost        = $this->_purchase_cost;
         $this->ownership_cost       = $this->_ownership_cost;
         $this->upgrade_cost         = $this->_upgrade_cost;
+        $this->description          = $this->_description;
     }
 
     public function onPreAttack($attack) {}
@@ -80,6 +82,11 @@ class Asset //extends Model
 
     public function hasTag($targetTag) {
         return in_array($targetTag, $this->tags);
+    }
+
+    public static function getDescription($name){
+        $asset = Asset::get($name);
+        return $asset->description;
     }
 
     public static function get($name){

@@ -16,6 +16,7 @@ class HeightenedAwarenessAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 150;
     public $_ownership_cost = 0;
+    public $_description = "Protects by 10% and increases Detection Chance by 20% against selected target. One consumed per turn.";
 
     public function onPreAttack($attack)
     {

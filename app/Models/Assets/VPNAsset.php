@@ -15,6 +15,8 @@ class VPNAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 100;
     public $_ownership_cost = 0;
+    public $_description = "Allows users to send and receive data across shared networks as if 
+        they were directly connected to the private network.";
 
     public function onPreAttack($attack)
     {

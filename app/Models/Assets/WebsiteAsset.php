@@ -15,6 +15,7 @@ class WebsiteAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 200;
     public $_ownership_cost = -500;
+    public $_description = "A website for your company that generates revenue.";
 
     public function onPreAttack($attack)
     {
