@@ -32,13 +32,13 @@ class PayloadTest extends TestCase {
 
     public function testPayloadOnPreAttackCanIncreaseSuccess() {
         $attack = $this->createTeamsAndAttack();
-        $initialDiff = $attack->difficulty;
+        $initialDiff = $attack->calculated_difficulty;
         $this->assertEquals(2, $attack->calculated_difficulty);
-
         $payload = new Payload;
         $payload->percentIncreasedSuccess = .2;
         $payload->onPreAttack($attack);
-        $this->assertEquals($initialDiff * .8, $attack->calulcated_difficulty);
+        $attack->fresh();
+        $this->assertEquals($initialDiff * .8, $attack->calculated_difficulty);
     }
 
     public function testGetPayloadByTag() {

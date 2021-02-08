@@ -98,7 +98,7 @@ class Bonus extends Model
             }
         }
         if(in_array("ChanceToRemove", $this->tags)){
-            $rand = rand(0, 100);
+            $rand = rand(1, 100);
             if ($rand <= $this->removalChance) {
                 $this->destroy($this->id);
                 return;
