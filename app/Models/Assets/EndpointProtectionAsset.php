@@ -14,6 +14,7 @@ class EndpointProtectionAsset extends Asset {
     public $_buyable = 1;
     public $_purchase_cost = 100;
     public $_ownership_cost = 200;
+    public $_description = "Protects and helps detect attacks with AttackOnEndpoint tag by 100%.";
 
     function onPreAttack($attack) {
         if (in_array("AttackOnEndpoint", $attack->tags)) {

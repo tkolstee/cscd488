@@ -15,6 +15,7 @@ class SQLDatabaseAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 100;
     public $_ownership_cost = -1000;
+    public $_description = "Database to store information. Generates revenue but is vulnerable to SQL Database attack.";
 
     public function onPreAttack($attack)
     {

@@ -10,7 +10,11 @@
         $inArray = in_array("Action",$invAsset->tags); ?>
             <tr>
                 <td class="blueInvTd"><input type="checkbox" name="results[]" value="{{ $inv->id }}"></td>
-                <td>{{ $invAsset->name }}</td>
+                <td 
+                    title="{{$invAsset->description}}
+                    <?php if($invAsset->ownership_cost > 0) echo " Ownership Cost: " . $invAsset->ownership_cost;
+                    else echo "Revenue Gained Per Turn: " . (-1 * $invAsset->ownership_cost); ?>"
+                    >{{ $invAsset->name }}</td>
                 <td>{{$inv->quantity }}</td>
                 @if(in_array("Targeted", $invAsset->tags)) 
                     @if($inv->info != null)

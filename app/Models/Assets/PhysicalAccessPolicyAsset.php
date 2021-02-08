@@ -14,6 +14,7 @@ class PhysicalAccessPolicyAsset extends Asset {
     public $_buyable = 1;
     public $_purchase_cost = 100;
     public $_ownership_cost = 100;
+    public $_description = "Protects against attacks with PhysicalAttack tag by 20%.";
 
     function onPreAttack($attack) {
         if (in_array("PhysicalAttack", $attack->tags)) {

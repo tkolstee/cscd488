@@ -15,6 +15,7 @@ class AccessAuditAsset extends Asset {
     public $_buyable = 1;
     public $_purchase_cost = 500;
     public $_ownership_cost = 0;
+    public $_description = "Action: 60% chance to remove Access Tokens targeting you, 80% chance to identify team.";
 
     function onPreAttack($attack) {
         

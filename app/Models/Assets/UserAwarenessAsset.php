@@ -14,6 +14,8 @@ class UserAwarenessAsset extends Asset {
     public $_buyable = 1;
     public $_purchase_cost = 100;
     public $_ownership_cost = 100;
+    public $_description = "Protects against attacks containing tag TargetsEndpoints by 20%, PhysicalAttack by 10%,
+        and SocialEngineering by 30%. Also increases chance of detection and analysis for SocialEngineering by 10%.";
 
     function onPreAttack($attack) {
         if (in_array("TargetsEndpoints", $attack->tags)) {
