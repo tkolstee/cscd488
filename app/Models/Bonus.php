@@ -30,6 +30,7 @@ class Bonus extends Model
     public $_removalChance = 0;
     public $_removalCostFactor = 1;
     public $_attack_id = null;
+    public $_revenue_generated = 0;
 
     function __construct() {
        $this->tags = $this->_tags;
@@ -46,6 +47,7 @@ class Bonus extends Model
        $this->removalCostFactor = $this->_removalCostFactor;
        $this->attack_id = $this->_attack_id;
        $this->percentRevToRemove = $this->_percent_rev_remove;
+       $this->revenueGenerated = $this->_revenue_generated;
     }
 
     public static function createBonus($team_id, $tags){
@@ -82,6 +84,9 @@ class Bonus extends Model
             $blueteam->changeBalance(-1* $amount);
             $redteam->changeBalance($amount);
         }
+        if(in_array("RevenueGeneration", $this->tags)){
+            $redteam->changeBalance($this->revenueGenerated);
+        }
         if(in_array("OneTurnOnly", $this->tags)){
             $this->destroy($this->id);
             return;
@@ -93,7 +98,7 @@ class Bonus extends Model
             }
         }
         if(in_array("ChanceToRemove", $this->tags)){
-            $rand = rand(0, 100);
+            $rand = rand(1, 100);
             if ($rand <= $this->removalChance) {
                 $this->destroy($this->id);
                 return;
@@ -123,6 +128,8 @@ class Bonus extends Model
         $desc = "";
         if(in_array("RevenueSteal",$this->tags)) $desc += 
             "Steals 10% of target's revenue made each turn. ";
+        if(in_array("RevenueGeneration", $this->tags)) $desc = $desc .
+            "Your team generates $" . $this->revenueGenerated . " each turn. ";
         if(in_array("RevenueDeduction", $this->tags))  $desc = $desc .  
             "Target loses " . $this->percentRevDeducted . "% of revenue made this turn. ";
         if(in_array("ReputationDeduction", $this->tags))  $desc = $desc . 
@@ -140,7 +147,7 @@ class Bonus extends Model
         if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
             "Target can pay you ". $this->removalCostFactor . " times their per turn revenue to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
-            "Bonus lasts until the target analyze the attack.";
+            "Bonus lasts until the target analyzes the attack.";
         else  $desc = $desc .  "Decrements by 5% each turn.";
         return $desc;
     }
@@ -149,6 +156,8 @@ class Bonus extends Model
         $desc = "";
         if(in_array("RevenueSteal",$this->tags)) $desc += 
             "Attacker steals 10% of your revenue made each turn. ";
+        if(in_array("RevenueGeneration", $this->tags)) $desc = $desc .
+            "The attacking team generates $" . $this->revenueGenerated . " each turn. This is not stolen. ";
         if(in_array("RevenueDeduction", $this->tags))  $desc = $desc .  
             "You lose " . $this->percentRevDeducted . "% of revenue made this turn. ";
         if(in_array("ReputationDeduction", $this->tags))  $desc = $desc . 
@@ -173,6 +182,9 @@ class Bonus extends Model
 
     public function checkDelete(){
         if (in_array("ChanceToRemove", $this->tags)){
+            return;
+        }
+        if (in_array("UntilAnalyzed", $this->tags)){
             return;
         }
         if($this->percentDiffDeducted > 0){

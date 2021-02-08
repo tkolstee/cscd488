@@ -219,4 +219,21 @@ class BonusTest extends TestCase {
         $team->refresh();
         $this->assertEquals($cost, $team->balance);
     }
+
+    public function testRevenueGenerationOnTurnChange(){
+        $team = $this->createTeams();
+        $blueteam = Team::all()->where('blue','=',1)->first();
+        $tags = ['RevenueGeneration'];
+        $bonus = $this->createBonus($team->id, $tags);
+        $bonus->revenueGenerated = 100;
+        $bonus->update();
+
+        $this->assertEquals(0, $team->balance);
+        $bonus->onTurnChange();
+        $team->refresh();
+        $this->assertEquals(100, $team->balance);
+        $bonus->onTurnChange();
+        $team->refresh();
+        $this->assertEquals(200, $team->balance);
+    }
 }

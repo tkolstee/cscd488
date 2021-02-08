@@ -6,15 +6,10 @@ use App\Models\Team;
 use App\Models\Asset;
 use App\Models\Inventory;
 use App\Models\Attack;
+use App\Models\Payload;
 use Auth;
-use App\Exceptions\AssetNotFoundException;
 use App\Exceptions\AttackNotFoundException;
 use App\Exceptions\TeamNotFoundException;
-use App\Models\AttackLog;
-use Error;
-use Exception;
-
-use App\Models\Attacks\SQLInjectionAttack;
 
 class RedTeamController extends Controller {
 
@@ -157,6 +152,8 @@ class RedTeamController extends Controller {
         $attack = Attack::find($request->attID);
         $attack->payload_choice = $request->result;
         Attack::updateAttack($attack);
+        $payload = Payload::get($this->payload_choice);
+        $payload->onPreAttack($attack);
         return $this->minigameStart($attack);
     }
 
