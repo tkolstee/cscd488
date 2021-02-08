@@ -12,7 +12,7 @@ class IDSAsset extends Asset {
     public $_blue = 1;
     public $_buyable = 1;
     public $_purchase_cost = 200;
-    public $_ownership_cost = 0;
+    public $_ownership_cost = -200;
 
     function onPreAttack($attack) {
         
