@@ -7,7 +7,8 @@ use App\Models\Attack;
 use App\Models\Team;
 use App\Exceptions\AttackNotFoundException;
 use Exception;
-use Auth;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class AttackController extends Controller
 {
@@ -97,5 +98,28 @@ class AttackController extends Controller
     
         return $this->attackComplete($attack, $attMsg);
     }
-    
+
+    public function sqlSetUp(){
+        $connect = 'sql_minigame';
+        Schema::connection($connect)->dropIfExists('users');
+        Schema::connection($connect)->dropIfExists('products');
+
+        Schema::connection($connect)->create('users', function($table){
+            $table->increments('id');
+            $table->text('username');
+            $table->text('password');
+        });
+        Schema::connection($connect)->create('products', function($table){
+            $table->increments('id');
+            $table->text('product_name');
+        });
+        
+        DB::connection($connect)->table('users')->insert([
+            'username' => 'admin',
+            'password' => 'password',
+        ]);
+        DB::connection($connect)->table('products')->insert([
+            'product_name' => 'product1',
+        ]);
+    }
 }

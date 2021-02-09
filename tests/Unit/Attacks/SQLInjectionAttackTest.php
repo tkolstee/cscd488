@@ -13,6 +13,7 @@ use App\Models\Inventory;
 use Tests\TestCase;
 use App\Models\Team;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 
 class SQLInjectionAttackTest extends TestCase {
     use RefreshDatabase;
@@ -26,6 +27,13 @@ class SQLInjectionAttackTest extends TestCase {
         $user->update();
         $sqlAttack = new SQLInjectionAttack;
         return Attack::create($sqlAttack->class_name, $red->id, $blue->id);
+    }
+
+    public function testSqlServerGameSetUp() {
+        $controller = new AttackController;
+        $controller->sqlSetUp();
+        $this->assertTrue(Schema::connection('sql_minigame')->hasTable('users'));
+        $this->assertTrue(Schema::connection('sql_minigame')->hasTable('products'));
     }
 
     public function testSqlInjectionNoAssets() {
