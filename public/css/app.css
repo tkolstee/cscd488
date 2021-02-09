@@ -59,11 +59,13 @@ h4{
 
 .pagination{
     overflow: hidden;
+    margin-top:5%;
 }
 
 .select-pagination{
-    background-color: #00CC99;
+    background-color:  white;
     width:10%;
+    color:black;
 }
 
 .btn.btn-pagination-prev {
@@ -105,6 +107,9 @@ h4{
 .p-pagination{
     color: white;
     display: inline-block;
+    margin-left:53%;
+    margin-top:1%;
+    
 }
 .wrapper{
     width: 100%;
@@ -464,6 +469,13 @@ h4{
 }
 .learnHome button:hover {
     background-color: #00FFCC;
+    text-decoration: none !important;
+   
+}
+.learnHome a{
+   
+    text-decoration: none;
+   
 }
 .rLogin a{
     color:#00CC99;
@@ -992,5 +1004,19 @@ color:#00CC99;
     color:#00FFCC;
 }
 .synFloodForm{
+    color:white;
+}
+.pagination-left-container {
+    float:left;
+    width: 50%;
+}
+.pagination-right-container {
+    float:right;
+    width: 50%;
+}
+.btn.btn-pagination-next{
+    color:white;
+}
+.btn.btn.btn-pagination-prev{
     color:white;
 }
