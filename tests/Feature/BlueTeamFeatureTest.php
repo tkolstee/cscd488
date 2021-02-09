@@ -80,7 +80,7 @@ class BlueTeamFeatureTest extends TestCase
         ]);
         $response = $this->actingAs($user)->get('/blueteam/store');
         $response->assertViewIs('blueteam.store');
-        $response->assertSee("Firewall");
+        $response->assertSee("Access Control Audit");
     }
 
     public function testBlueTeamCanAddToCart()

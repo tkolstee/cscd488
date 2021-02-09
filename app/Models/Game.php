@@ -50,7 +50,7 @@ class Game extends Model
                     //Reputation stuff
                 }
             }
-            $team->balance += $revGained;
+            $team->changeBalance($revGained);
         }
         $bonuses = Bonus::all();
         foreach($bonuses as $bonus){
