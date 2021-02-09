@@ -152,7 +152,7 @@ class RedTeamController extends Controller {
         $attack = Attack::find($request->attID);
         $attack->payload_choice = $request->result;
         Attack::updateAttack($attack);
-        $payload = Payload::get($this->payload_choice);
+        $payload = Payload::get($attack->payload_choice);
         $payload->onPreAttack($attack);
         return $this->minigameStart($attack);
     }
