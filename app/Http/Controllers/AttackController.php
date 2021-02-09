@@ -7,6 +7,7 @@ use App\Models\Attack;
 use App\Models\Team;
 use App\Exceptions\AttackNotFoundException;
 use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
@@ -82,18 +83,24 @@ class AttackController extends Controller
         $blueteam = Team::find($attack->blueteam);
         $url = $request->url;
         $success = false;
+        $attMsg = "";
+        $users = [];
+        
         $attMsg = "There was an application error and you were unsuccessful.";
-        switch($attack->difficulty){
-            case 1: $success = true; 
-                $attMsg = "There were no security measures so you were successful."; break;
-            case 2: if($url == "'") $success = true;
-                $attMsg = "There was a SQL error, so you were successful in testing if ".$blueteam->name." is vulnerable to SQL injection."; break;
-            case 3: if($url == "'--") $success = true;
-                $attMsg = "You were successful in getting past user validation."; break;
-            case 4: if($url == "' or 1=1--") $success = true;
-                $attMsg = "You were successful in getting past user validation and you see all products."; break;
-            default: break;
+
+        try {
+            $users = DB::connection('sql_minigame')->select( DB::raw("SELECT * FROM users WHERE username = '$url'"));
         }
+        catch (QueryException $e) {
+            $success = true;
+            $attMsg = "You discovered a SQL Injection vulnerability!";
+        }
+
+        if (count($users) > 1) { 
+            $success = true;
+            $attMsg = "You were able to view the admin's credentials!";
+        }
+
         $attack->setSuccess($success);
     
         return $this->attackComplete($attack, $attMsg);
@@ -116,6 +123,10 @@ class AttackController extends Controller
         
         DB::connection($connect)->table('users')->insert([
             'username' => 'admin',
+            'password' => 'adminpassword',
+        ]);
+        DB::connection($connect)->table('users')->insert([
+            'username' => 'user',
             'password' => 'password',
         ]);
         DB::connection($connect)->table('products')->insert([
