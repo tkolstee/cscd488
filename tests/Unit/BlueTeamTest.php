@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\Inventory;
 use App\Models\Asset;
+use App\Models\Assets\FirewallAsset;
 use App\Models\Assets\HeightenedAwarenessAsset;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
@@ -285,17 +286,18 @@ class BlueTeamTest extends TestCase
         $this->assertEquals(0, count($newSellCart));
     }
 
-    public function testEndTurnNotEnoughMoneyError(){
+    public function testEndTurnNotEnoughMoney(){
         $controller = new BlueTeamController();
         $team = $this->assignTeam();
         $team->balance = 0;
         $team->update();
-        $buyCart[] = "Firewall";
+        $asset = new FirewallAsset;
+        $buyCart[] = $asset->name;
         session(['buyCart' => $buyCart]);
         $response = $controller->endTurn();
-        $this->assertEquals('not-enough-money', $response->error);
+        $this->assertEquals($asset->purchase_cost, $response->totalCost);
         $newBuyCart = session('buyCart');
-        $this->assertEquals(0, count($newBuyCart));
+        $this->assertEquals(1, count($newBuyCart));
     }
 
     public function testEndTurnBuyOne(){

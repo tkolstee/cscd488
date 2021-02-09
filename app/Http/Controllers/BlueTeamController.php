@@ -61,7 +61,7 @@ class BlueTeamController extends Controller {
                 case 'leaderboard': return $this->leaderboard(); break;
                 case 'endturn': return $this->endTurn(); break;
                 case 'cancel': return $this->cancel($request); break;
-                
+                case 'removecartitem': return $this->removeCartItem($request); break;
                 default: return $this->home(); break;
             }
         }
@@ -197,6 +197,15 @@ class BlueTeamController extends Controller {
         $buyCart = session('buyCart');
         $targeted = [];
         if (!empty($buyCart)){
+            $totalCost = 0;
+            foreach($buyCart as $assetName){
+                $asset = Asset::getByName($assetName);
+                $totalCost += $asset->purchase_cost;
+            }
+            if($totalCost > $blueteam->balance){
+                $request = Request::create('/endturn','POST',[]);
+                return $this->removeCartItem($request, $totalCost);
+            }
             foreach($buyCart as $assetName){
                 $asset = Asset::getByName($assetName);
                 $success = $blueteam->buyAsset($asset);
@@ -228,6 +237,23 @@ class BlueTeamController extends Controller {
         $turn = 1;
         $endTime = Setting::get('turn_end_time');
         return $this->home()->with(compact('turn', 'endTime'));
+    }
+
+    public function removeCartItem(request $request,$totalCost = 0){
+        $blueteam = Auth::user()->getBlueTeam();
+        if(isset($_POST['results']) && is_array($_POST['results'])){
+            $assetNames = $_POST['results'];
+        }
+        if(empty($assetNames)){
+            return view('blueteam.removecart')->with(compact('blueteam','totalCost'));
+        }
+        $buyCart = session('buyCart');
+        foreach($assetNames as $assetName){
+            $key = array_search($assetName, $buyCart);
+            unset($buyCart[$key]);
+        }
+        session(['buyCart' => $buyCart]);
+        return $this->endTurn();
     }
 
     public function pickTarget(Request $request){

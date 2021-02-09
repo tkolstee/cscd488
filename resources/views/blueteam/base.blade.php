@@ -66,7 +66,7 @@
                     <td>{{ $item }} </td>
                    <form  method="POST" action="/blueteam/cancel">
                         @csrf
-                        <input type="hidden" name="currentPage" value="{{$currentPage}}">
+                        <input type="hidden" name="currentPage" value="{{$currentPage ?? 0}}">
                         <input type="hidden" name="cart" value="buy">
                         <td><button type="submit" formaction="/blueteam/cancel" 
                             class="btn btn-primary4" 
