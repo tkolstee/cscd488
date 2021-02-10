@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use App\Models\Inventory;
 use App\Models\Asset;
+use App\Models\Assets\FirewallAsset;
 use App\Models\Assets\HeightenedAwarenessAsset;
 use Auth;
 use App\Exceptions\AssetNotFoundException;
@@ -43,6 +44,81 @@ class BlueTeamTest extends TestCase
     private function buyManyAssets(){
         $inventory = Inventory::factory()->many()->make();
         $inventory->save();
+    }
+
+    //Remove Cart Item tests
+    //Should return endTurn if no cart
+    //RemoveCart view if no results
+    //Remove item and endturn if valid
+
+    public function testRemoveCartItemNoCartNoResult(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team->balance = 0;
+        $team->update();
+        $request = Request::create('/removecartitem','POST',([
+            'results' => []
+        ]));
+        $response = $controller->removeCartItem($request);
+        $this->assertEquals(0, $response->totalCost);
+    }
+
+    public function testRemoveCartItemWithCostNoResult(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team->balance = 0;
+        $team->update();
+        $request = Request::create('/removecartitem','POST');
+        $response = $controller->removeCartItem($request, 100);
+        $this->assertEquals(100, $response->totalCost);
+    }
+
+    public function testRemoveCartItemNoCartWithResult(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $team->balance = 0;
+        $team->update();
+        $request = Request::create('/removecartitem','POST',([
+            'results' => ['Firewall']
+        ]));
+        $response = $controller->removeCartItem($request);
+        $this->assertEquals(1, $response->turn);
+        $invs = $team->inventories();
+        $this->assertNull($invs->first());
+    }
+
+    public function testRemoveCartItemWithCartInvalidResult(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $asset = new FirewallAsset;
+        $team->balance = $asset->purchase_cost;
+        $team->update();
+        session(['buyCart' => [$asset->name, $asset->name]]);
+        $request = Request::create('/removecartitem','POST',([
+            'results' => ['invalid']
+        ]));
+        $response = $controller->removeCartItem($request);
+        $buyCartAfter = session('buyCart');
+        $this->assertEquals(2, count($buyCartAfter));
+        $this->assertEquals($asset->purchase_cost * 2, $response->totalCost);
+    }
+
+    public function testRemoveCartItemValid(){
+        $controller = new BlueTeamController();
+        $team = $this->assignTeam();
+        $asset = new FirewallAsset;
+        $team->balance = $asset->purchase_cost;
+        $team->update();
+        session(['buyCart' => [$asset->name, $asset->name]]);
+        $request = Request::create('/removecartitem','POST',([
+            'results' => [$asset->name]
+        ]));
+        $response = $controller->removeCartItem($request);
+        $buyCartAfter = session('buyCart');
+        $this->assertNull($buyCartAfter);
+        $invs = $team->inventories();
+        $this->assertEquals($asset->class_name, $invs->first()->asset_name);
+        $this->assertEquals(1, $response->turn);
     }
 
     //Home tests
@@ -285,17 +361,18 @@ class BlueTeamTest extends TestCase
         $this->assertEquals(0, count($newSellCart));
     }
 
-    public function testEndTurnNotEnoughMoneyError(){
+    public function testEndTurnNotEnoughMoney(){
         $controller = new BlueTeamController();
         $team = $this->assignTeam();
         $team->balance = 0;
         $team->update();
-        $buyCart[] = "Firewall";
+        $asset = new FirewallAsset;
+        $buyCart[] = $asset->name;
         session(['buyCart' => $buyCart]);
         $response = $controller->endTurn();
-        $this->assertEquals('not-enough-money', $response->error);
         $newBuyCart = session('buyCart');
-        $this->assertEquals(0, count($newBuyCart));
+        $this->assertNull($newBuyCart);
+        $this->assertEquals('no-money', $response->error);
     }
 
     public function testEndTurnBuyOne(){
