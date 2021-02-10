@@ -203,6 +203,12 @@ class BlueTeamController extends Controller {
                 $totalCost += $asset->purchase_cost;
             }
             if($totalCost > $blueteam->balance){
+                if($blueteam->balance == 0){
+                    $error = "no-money";
+                    session(['buyCart' => null]);
+                    //if balance 0 team didn't sell so it is okay to not end turn
+                    return $this->home()->with(compact('error'));
+                }
                 $request = Request::create('/endturn','POST',[]);
                 return $this->removeCartItem($request, $totalCost);
             }
@@ -238,19 +244,25 @@ class BlueTeamController extends Controller {
         $endTime = Setting::get('turn_end_time');
         return $this->home()->with(compact('turn', 'endTime'));
     }
-
+ 
     public function removeCartItem(request $request,$totalCost = 0){
         $blueteam = Auth::user()->getBlueTeam();
-        if(isset($_POST['results']) && is_array($_POST['results'])){
-            $assetNames = $_POST['results'];
+        $results = $request->results;
+        if(isset($results) && is_array($results)){
+            $assetNames = $results;
+            //throw new Exception($assetNames[0]);
         }
         if(empty($assetNames)){
             return view('blueteam.removecart')->with(compact('blueteam','totalCost'));
         }
         $buyCart = session('buyCart');
         foreach($assetNames as $assetName){
-            $key = array_search($assetName, $buyCart);
-            unset($buyCart[$key]);
+            $key = array_search($assetName, $buyCart ?? []);
+            if(!is_int($key)){
+                return $this->endTurn();
+            }else{
+                unset($buyCart[$key]);
+            }
         }
         session(['buyCart' => $buyCart]);
         return $this->endTurn();
