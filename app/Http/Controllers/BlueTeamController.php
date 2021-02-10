@@ -253,7 +253,8 @@ class BlueTeamController extends Controller {
         }
         $turn = 1;
         $endTime = Setting::get('turn_end_time');
-        return $this->home()->with(compact('turn', 'endTime'));
+        if(empty($error)) $error = "";
+        return $this->home()->with(compact('turn', 'endTime','error'));
     }
  
     public function removeCartItem(request $request,$totalCost = 0){
@@ -383,6 +384,10 @@ class BlueTeamController extends Controller {
         $results = $request->results;
         $blueteam = Auth::user()->getBlueTeam();
         $sellCart = session('sellCart');
+        if(count($results) == 0){
+            $error = "no-asset-selected";
+            return $this->inventory($request)->with(compact('error'));
+        }
         foreach($results as $invId=>$quantity){
             for($i = 0; $i < $quantity; $i++){
                 if(Inventory::find($invId) == null) {

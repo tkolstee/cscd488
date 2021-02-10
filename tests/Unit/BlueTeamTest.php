@@ -296,8 +296,10 @@ class BlueTeamTest extends TestCase
             'quantity' => 1,
         ]);
         $controller = new BlueTeamController();
+        $results = [];
+        $results += [$inventory->id => 1];
         $request = Request::create('/sell','POST',[
-            'results' => [$inventory->id]
+            'results' => $results
         ]);
         $response = $controller->sell($request);
         $sellCart = session('sellCart');
@@ -318,8 +320,10 @@ class BlueTeamTest extends TestCase
     public function testSellInvalidName(){
         $this->assignTeam();
         $controller = new BlueTeamController();
+        $results = [];
+        $results += [-1 => 1];
         $request = Request::create('/sell','POST',[
-            'results' => ["Invalid"]
+            'results' => $results
         ]);
         $this->expectException(InventoryNotFoundException::class);
         $controller->sell($request);
@@ -359,7 +363,7 @@ class BlueTeamTest extends TestCase
         $response = $controller->endTurn();
         $this->assertEquals('not-enough-owned', $response->error);
         $newSellCart = session('sellCart');
-        $this->assertEquals(0, count($newSellCart));
+        $this->assertNull($newSellCart);
     }
 
     public function testEndTurnInvalidAssetInBuyCart(){
@@ -379,7 +383,7 @@ class BlueTeamTest extends TestCase
         $response = $controller->endTurn();
         $this->assertEquals('not-enough-owned', $response->error);
         $newSellCart = session('sellCart');
-        $this->assertEquals(0, count($newSellCart));
+        $this->assertNull($newSellCart);
     }
 
     public function testEndTurnNotEnoughMoney(){
