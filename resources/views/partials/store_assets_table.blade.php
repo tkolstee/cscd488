@@ -11,7 +11,7 @@
     <tbody>
         @foreach ($assets as $asset)
             <tr>
-                <td class="blueStoreTd"><input type="checkbox" name="results[]" value="{{ $asset->class_name }}"></td>
+                <td class="blueStoreTd"><input type="number" min="0" name="results[{{$asset->class_name}}]" ></td>
                 <td>{{$asset->name}}</td>
                 <td>{{$asset->purchase_cost}}</td>
                 <td>

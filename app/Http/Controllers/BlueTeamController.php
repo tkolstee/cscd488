@@ -413,20 +413,21 @@ class BlueTeamController extends Controller {
     }
 
     public function buy(request $request){
-        $assetNames = $request->input('results');
+        $results = $request->results;
         $blueteam = Auth::user()->getBlueTeam();
-        if($assetNames == null){
+        if(count($results) == 0){
             $error = "no-asset-selected";
             return $this->store()->with(compact('error'));
         }
         $blueteam->balance = 1000; $blueteam->update(); //DELETE THIS IS FOR TESTING PURPOSES
         $buyCart = session('buyCart');
-        foreach($assetNames as $asset){
-            $actAsset = Asset::get($asset);
-            $buyCart[] = $actAsset->name;
+        foreach($results as $assetName=>$quantity){
+            $actAsset = Asset::get($assetName);
+            for($i = 0; $i < $quantity; $i++){  
+                $buyCart[] = $actAsset->name;
+            }
         }
         session(['buyCart' => $buyCart]);
-        $currentPage = $request->currentPage;
         return $this->store($request);
     }
 
