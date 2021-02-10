@@ -5,11 +5,16 @@
         <th>Quantity</th>
     </thead>
     <tbody>
+        <?php $currentCart = array_count_values(session('sellCart')); ?>
         @foreach ($inventory ?? [] as $inv)
         <?php $invAsset = App\Models\Asset::get($inv->asset_name); 
         $inArray = in_array("Action",$invAsset->tags); ?>
             <tr>
-                <td class="blueInvTd"><input type="checkbox" name="results[]" value="{{ $inv->id }}"></td>
+                <td class="blueInvTd">
+                @if(!isset($currentCart[$inv->id]) || (isset($currentCart[$inv->id]) && $inv->quantity < $currentCart[$inv->id]))
+                <input type="checkbox" name="results[]" value="{{ $inv->id }}">
+                @endif
+                </td>
                 <td 
                     title="{{$invAsset->description}}
                     <?php if($invAsset->ownership_cost > 0) echo " Ownership Cost: " . $invAsset->ownership_cost;

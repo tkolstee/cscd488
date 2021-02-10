@@ -121,10 +121,14 @@
                 @foreach ($list as $id=>$nameQuantity)
                 <tr>
                     <?php $asset = App\Models\Asset::getByName($nameQuantity[0]); ?>
-                    <td>{{$nameQuantity[0]}}</td>
+                    <?php $inv = App\Models\Inventory::find($id); ?>
+                    <td>{{$nameQuantity[0]}}
+                    @if($inv->level > 1)
+                        Level {{$inv->level}}
+                    @endif
+                    </td>
                     <td>{{$nameQuantity[1]}}</td>
                     <td>Total: <?php echo $nameQuantity[1] * $asset->purchase_cost; ?></td>
-                    <?php $inv = App\Models\Inventory::find($id); ?>
                     @if(in_array("Targeted", $asset->tags) && $inv->info != null)
                     <td>Target: {{$inv->info}}</td>
                     @endif
