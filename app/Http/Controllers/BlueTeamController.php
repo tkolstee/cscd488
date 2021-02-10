@@ -284,11 +284,14 @@ class BlueTeamController extends Controller {
         $count = $request->invCount;
         for($i = 1; $i < $count + 1; $i++){
             $result = "result".$i;
-            $redteam = Team::get($request->$result);
-            $name = "name" . $count;
-            $asset = Asset::get($request->$name);
-            $inv = $blueteam->inventory($asset, 1);
-            $inv->setInfo($redteam->name);
+            $redteamId = $request->$result;
+            if($redteamId != null){
+                $redteam = Team::get($redteamId);
+                $name = "name" . $count;
+                $asset = Asset::get($request->$name);
+                $inv = $blueteam->inventory($asset, 1);
+                $inv->setInfo($redteam->name);
+            }
         }
         if($request->endTurn){
             $turn = 1;

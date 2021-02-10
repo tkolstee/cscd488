@@ -50,7 +50,6 @@ class Inventory extends Model
         if($inv == null){
             if($this->quantity == 1){
                 $this->info = $string;
-                $this->update();
             }else{
                 $inv = new Inventory();
                 $inv->asset_name = $this->asset_name;
@@ -58,6 +57,7 @@ class Inventory extends Model
                 $inv->level = $this->level;
                 $inv->info = $string;
                 $inv->save();
+                $this->quantity--;
             }
         }else{
             $inv->quantity++;
@@ -66,7 +66,6 @@ class Inventory extends Model
                 $this->destroy($this->id);
             else{
                 $this->quantity--;
-                $this->update();
             }
         }
         $this->update();
