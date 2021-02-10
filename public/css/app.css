@@ -638,8 +638,9 @@ h2{
 }
 .storeFormCancel{
     color:white;
-    width:33%;
-    margin-left:36%;
+    width:66%;
+    margin-left:15%;
+    text-align:center;
 }
 #tagFilter{
     color:white;
