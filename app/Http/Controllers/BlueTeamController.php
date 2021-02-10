@@ -198,7 +198,6 @@ class BlueTeamController extends Controller {
                     $key = array_search($sellItem, $sellCart);
                     unset($sellCart[$key]);
                     session(['sellCart' => $sellCart]);
-                    return $this->store()->with(compact('error'));
                 }
                 $key = array_search($sellItem, $sellCart);
                 unset($sellCart[$key]);
@@ -381,17 +380,16 @@ class BlueTeamController extends Controller {
     }
 
     public function sell(request $request){
-        $invIds = $request->input('results');
-        if($invIds == null){
-            $error = "no-asset-selected";
-            return $this->inventory()->with(compact('error'));
-        }
+        $results = $request->results;
+        $blueteam = Auth::user()->getBlueTeam();
         $sellCart = session('sellCart');
-        foreach($invIds as $inv){
-            if(Inventory::find($inv) == null) {
-                throw new InventoryNotFoundException();
+        foreach($results as $invId=>$quantity){
+            for($i = 0; $i < $quantity; $i++){
+                if(Inventory::find($invId) == null) {
+                    throw new InventoryNotFoundException();
+                }
+                $sellCart[] = $invId;
             }
-            $sellCart[] = $inv;
         }
         session(['sellCart' => $sellCart]);
         return $this->inventory($request);

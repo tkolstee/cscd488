@@ -224,18 +224,20 @@ class RedTeamController extends Controller {
     }
 
     public function sell(request $request){
-        $invIds = $request->input('results');
-        if($invIds == null){
+        $results = $request->results;
+        $redteam = Auth::user()->getRedTeam();
+        if(count($results) == 0){
             $error = "no-asset-selected";
             return $this->inventory()->with(compact('error'));
         }
-        $redteam = Auth::user()->getRedTeam();
-        foreach($invIds as $invId){
+        foreach($results as $invId=>$quantity){//buy the items
             $inv = Inventory::find($invId);
-            $success = $redteam->sellInventory($inv);
-            if (!$success) {
-                $error = "not-enough-owned";
-                return $this->inventory()->with(compact('error'));
+            for($i = 0; $i < $quantity; $i++){
+                $success = $redteam->sellInventory($inv);
+                if(!$success){
+                    $error = "not-enough-owned";
+                    return $this->inventory()->with(compact('error'));
+                }
             }
         }
         return $this->inventory($request);
@@ -249,6 +251,7 @@ class RedTeamController extends Controller {
             return $this->store()->with(compact('error'));
         }
         $totalCost = 0;
+        $redteam->changeBalance(1000);
         foreach($results as $assetName=>$quantity){//check total price first
             $actAsset = Asset::get($assetName);
             $totalCost += $actAsset->purchase_cost * $quantity;

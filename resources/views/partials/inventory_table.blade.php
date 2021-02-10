@@ -1,6 +1,6 @@
 <table class="table table-bordered">
     <thead>
-        <th class="blueInvTd"></th>
+        <th class="blueInvTd">Sell</th>
         <th>Name</th>
         <th>Quantity</th>
     </thead>
@@ -11,8 +11,16 @@
         $inArray = in_array("Action",$invAsset->tags); ?>
             <tr>
                 <td class="blueInvTd">
-                @if(!isset($currentCart[$inv->id]) || (isset($currentCart[$inv->id]) && $inv->quantity > $currentCart[$inv->id]))
-                <input type="checkbox" name="results[]" value="{{ $inv->id }}">
+                <?php if(isset($currentCart[$inv->id])){
+                    $inCart = true;
+                    $amountInCart = $currentCart[$inv->id];
+                }else{
+                    $inCart = false;
+                    $amountInCart = 0;
+                }
+                    ?>
+                @if($inv->quantity > $amountInCart)
+                    <input type="number" min="0" name="results[{{$inv->id}}]" max="{{$inv->quantity - $amountInCart}}">
                 @endif
                 </td>
                 <td 
