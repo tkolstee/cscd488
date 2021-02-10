@@ -76,6 +76,18 @@ class BlueTeamController extends Controller {
         
     }
  
+    public static function removeSellItem($id){
+        $removed = false;
+        $sellCart = session('sellCart');
+        $key = array_search($id, $sellCart ?? []);
+        if(is_int($key)){
+            unset($sellCart[$key]);
+            $removed = true;
+        }
+        session(['sellCart' => $sellCart]);
+        return $removed;
+    }
+
     public function status(){
         $blueteam = Auth::user()->getBlueTeam();
         $bonuses = $blueteam->getBonusesByTarget();
@@ -250,7 +262,6 @@ class BlueTeamController extends Controller {
         $results = $request->results;
         if(isset($results) && is_array($results)){
             $assetNames = $results;
-            //throw new Exception($assetNames[0]);
         }
         if(empty($assetNames)){
             return view('blueteam.removecart')->with(compact('blueteam','totalCost'));
@@ -291,6 +302,7 @@ class BlueTeamController extends Controller {
                 $asset = Asset::get($request->$name);
                 $inv = $blueteam->inventory($asset, 1);
                 $inv->setInfo($redteam->name);
+                $this->removeSellItem($inv->id);
             }
         }
         if($request->endTurn){
@@ -361,6 +373,7 @@ class BlueTeamController extends Controller {
         $result = $request->submit;
         $inv = Inventory::find($result);
         if($inv == null) throw new InventoryNotFoundException();
+        $this->removeSellItem($inv->id);
         $success = $inv->upgrade();
         if($success == false) $error = "unsuccessful";
         else $error = null;
