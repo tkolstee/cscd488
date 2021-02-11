@@ -78,13 +78,14 @@ class AttackController extends Controller
     }
 
     public function sqlInjection(request $request){
-        $this->sqlSetUp();
         $attack = Attack::find($request->attID);
         if($attack == null) throw new AttackNotFoundException();
         $url = $request->url;
-        $pass = $request->pass;
+        $passIn = $request->pass;
+        if (empty($url) && empty($passIn)) {$this->sqlSetUp();}
 
-        if ($pass == 'adminpassword') {
+        $adminPass = DB::connection('sql_minigame')->select(DB::raw("SELECT password FROM users WHERE username = 'admin'"));
+        if ($passIn == $adminPass) {
             $success = true;
             $attMsg = "You successfully discovered the admin's password!";
             $attack->setSuccess($success);
@@ -127,11 +128,11 @@ class AttackController extends Controller
         
         DB::connection($connect)->table('users')->insert([
             'username' => 'admin',
-            'password' => 'adminpassword',
+            'password' => generateRandomString(),
         ]);
         DB::connection($connect)->table('users')->insert([
             'username' => 'user',
-            'password' => 'password',
+            'password' => generateRandomString(),
         ]);
         DB::connection($connect)->table('products')->insert([
             'product_name' => 'product1',
