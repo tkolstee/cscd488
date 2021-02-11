@@ -16,6 +16,7 @@ class AttackController extends Controller
     public function page($page, Request $request) {
         switch($page){
             case 'sqlinjection': return $this->sqlInjection($request); break;
+            case 'sqlinjectioncheck': return $this->sqlInjectionCheckAnswer($request); break;
             case 'synflood': return $this->synFlood($request); break;
             case 'malvertise': return $this->malvertise($request); break;
             default: return (new RedTeamController)->home(); break;
@@ -81,34 +82,33 @@ class AttackController extends Controller
         $attack = Attack::find($request->attID);
         if($attack == null) throw new AttackNotFoundException();
         $url = $request->url;
-        $passIn = $request->pass;
-        if (empty($url) && empty($passIn)) {$this->sqlSetUp();}
+        $this->sqlSetUp();
 
-        $adminPass = DB::connection('sql_minigame')->select(DB::raw("SELECT password FROM users WHERE username = 'admin'"));
+        $result = "";
+        try {
+            $result = DB::connection('sql_minigame')->select(DB::raw("SELECT * FROM users WHERE username = '$url'"));
+        }
+        catch (QueryException $e) {
+            $result = "You caused a query error!";
+        }
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        return view('minigame.sqlinjection')->with(compact('attack', 'blueteam', 'redteam', 'result'));
+    }
+
+    public function sqlInjectionCheckAnswer($request){
+        $attack = Attack::find($request->attID);
+        $passIn = $request->pass;
+        $adminPass = DB::connection('sql_minigame')->table('users')->where('username', 'admin')->first()->password;
+
+        $success = false;
+        $attMsg = "You did not guess the admin's password correctly.";
         if ($passIn == $adminPass) {
             $success = true;
             $attMsg = "You successfully discovered the admin's password!";
-            $attack->setSuccess($success);
-            return $this->attackComplete($attack, $attMsg);
         }
-        elseif (empty($pass)) {
-            $result = "nothing";
-            try {
-                $result = DB::connection('sql_minigame')->select(DB::raw("SELECT * FROM users WHERE username = '$url'"));
-            }
-            catch (QueryException $e) {
-                $result = "You caused a query error!";
-            }
-            $redteam = Team::find($attack->redteam);
-            $blueteam = Team::find($attack->blueteam);
-            return view('minigame.sqlinjection')->with(compact('attack', 'blueteam', 'redteam', 'result'));
-        }
-        else {
-            $success = false;
-            $attMsg = "You did not guess the admin's password correctly.";
-            $attack->setSuccess($success);
-            return $this->attackComplete($attack, $attMsg);
-        }
+        $attack->setSuccess($success);
+        return $this->attackComplete($attack, $attMsg);
     }
 
     public function sqlSetUp(){
