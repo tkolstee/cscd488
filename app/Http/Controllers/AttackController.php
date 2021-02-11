@@ -78,32 +78,36 @@ class AttackController extends Controller
     }
 
     public function sqlInjection(request $request){
+        $this->sqlSetUp();
         $attack = Attack::find($request->attID);
         if($attack == null) throw new AttackNotFoundException();
-        $blueteam = Team::find($attack->blueteam);
         $url = $request->url;
-        $success = false;
-        $attMsg = "";
-        $users = [];
-        
-        $attMsg = "There was an application error and you were unsuccessful.";
+        $pass = $request->pass;
 
-        try {
-            $users = DB::connection('sql_minigame')->select( DB::raw("SELECT * FROM users WHERE username = '$url'"));
-        }
-        catch (QueryException $e) {
+        if ($pass == 'adminpassword') {
             $success = true;
-            $attMsg = "You discovered a SQL Injection vulnerability!";
+            $attMsg = "You successfully discovered the admin's password!";
+            $attack->setSuccess($success);
+            return $this->attackComplete($attack, $attMsg);
         }
-
-        if (count($users) > 1) { 
-            $success = true;
-            $attMsg = "You were able to view the admin's credentials!";
+        elseif (empty($pass)) {
+            $result = "nothing";
+            try {
+                $result = DB::connection('sql_minigame')->select(DB::raw("SELECT * FROM users WHERE username = '$url'"));
+            }
+            catch (QueryException $e) {
+                $result = "You caused a query error!";
+            }
+            $redteam = Team::find($attack->redteam);
+            $blueteam = Team::find($attack->blueteam);
+            return view('minigame.sqlinjection')->with(compact('attack', 'blueteam', 'redteam', 'result'));
         }
-
-        $attack->setSuccess($success);
-    
-        return $this->attackComplete($attack, $attMsg);
+        else {
+            $success = false;
+            $attMsg = "You did not guess the admin's password correctly.";
+            $attack->setSuccess($success);
+            return $this->attackComplete($attack, $attMsg);
+        }
     }
 
     public function sqlSetUp(){

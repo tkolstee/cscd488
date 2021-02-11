@@ -3,26 +3,27 @@
 @section('title', 'SQL Injection Attack')
 
 @section('pagecontent')
-@if ($attack->difficulty == 1)
-<h2>View {{ $blueteam->name }} products for sale.</h2>
-@elseif ($attack->difficulty == 2)
-<h2>See if {{ $blueteam->name }} has SQL Injection vulnerability</h2>
-@elseif ($attack->difficulty == 3)
-<h2>Get past user validation to access the products for sale.</h2>
-@elseif ($attack->difficulty == 4)
-<h2>Get past user validation to access all products (for sale or not).</h2>
+@if ($attack->difficulty < 5)
+<h2>Attempt to find the admin's password using sql injection!</h2>
 @elseif ($attack->difficulty == 5)
-<h2>Sadly attempt to break {{ $blueteam->name }}'s indestructable firewall.</h2>
+<h2>Attempt to find the admin's password using sql injection!</h2>
 @endif
 
 <strong>Difficulty: {{ $attack->difficulty }}</strong>
+
+@if (!empty($result))
+    Result = {{var_dump($result)}}    
+@endif
+
 <form method="POST" action="/attack/sqlinjection">
     @csrf
-
     <div class="form-group row">
         <label for="url" class="col-md-4 col-form-label text-md-right">
             http://{{ $blueteam->name }}.com/user?username=</label>
         <input type="text" id="url" name="url" >
+        <label for="pass" class="col-md-4 col-form-label text-md-right">
+            Enter admin's password: </label>
+        <input type="text" id="pass" name="pass" >
         <input type="hidden" name="attID" value="{{$attack->id}}">
     </div>
 
@@ -30,9 +31,7 @@
         <div class="col-md-8 offset-md-4">
             <button type="submit" class="btn btn-primary">
                 Enter URL
-            </button>
-
-            
+            </button>            
         </div>
     </div>
 </form>
