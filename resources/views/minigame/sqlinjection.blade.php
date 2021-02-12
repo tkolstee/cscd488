@@ -19,7 +19,7 @@
     @csrf
     <div class="form-group row">
         <label for="url" class="col-md-4 col-form-label text-md-right">
-            http://{{ $blueteam->name }}.com/user?username=</label>
+            user ID = </label>
         <input type="text" id="url" name="url" >
         <input type="hidden" name="attID" value="{{$attack->id}}">
     </div>
@@ -27,7 +27,7 @@
     <div class="form-group row mb-0">
         <div class="col-md-8 offset-md-4">
             <button type="submit" class="btn btn-primary">
-                Enter URL
+                Enter Search
             </button>            
         </div>
     </div>
