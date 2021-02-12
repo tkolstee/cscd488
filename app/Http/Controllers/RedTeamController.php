@@ -251,7 +251,6 @@ class RedTeamController extends Controller {
             return $this->store()->with(compact('error'));
         }
         $totalCost = 0;
-        $redteam->changeBalance(1000);
         foreach($results as $assetName=>$quantity){//check total price first
             $actAsset = Asset::get($assetName);
             $totalCost += $actAsset->purchase_cost * $quantity;
