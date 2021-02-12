@@ -3,10 +3,10 @@
 @section('title', 'SQL Injection Attack')
 
 @section('pagecontent')
-@if ($attack->difficulty < 5)
-<h2>Attempt to find the admin's password using sql injection!</h2>
-@elseif ($attack->difficulty == 5)
-<h2>Attempt to find the admin's password using sql injection!</h2>
+@if ($attack->difficulty <= 1)
+    <h2>Attempt to cause a SQL error!</h2>
+@elseif ($attack->difficulty > 1)
+    <h2>Attempt to find the admin's password using sql injection!</h2>
 @endif
 
 <strong>Difficulty: {{ $attack->difficulty }}</strong>
@@ -33,22 +33,24 @@
     </div>
 </form>
 
-<form method="POST" action="/attack/sqlinjectioncheck">
-    @csrf
-    <div class="form-group row">
-        <label for="pass" class="col-md-4 col-form-label text-md-right">
-            Enter admin's password: </label>
-        <input type="text" id="pass" name="pass" >
-        <input type="hidden" name="attID" value="{{$attack->id}}">
-    </div>
-
-    <div class="form-group row mb-0">
-        <div class="col-md-8 offset-md-4">
-            <button type="submit" class="btn btn-primary">
-                Submit Answer
-            </button>            
+@if($attack->difficulty > 1)
+    <form method="POST" action="/attack/sqlinjectioncheck">
+        @csrf
+        <div class="form-group row">
+            <label for="pass" class="col-md-4 col-form-label text-md-right">
+                Enter admin's password: </label>
+            <input type="text" id="pass" name="pass" >
+            <input type="hidden" name="attID" value="{{$attack->id}}">
         </div>
-    </div>
-</form>
+
+        <div class="form-group row mb-0">
+            <div class="col-md-8 offset-md-4">
+                <button type="submit" class="btn btn-primary">
+                    Submit Answer
+                </button>            
+            </div>
+        </div>
+    </form>
+@endif
 
 @endsection

@@ -90,6 +90,11 @@ class AttackController extends Controller
         }
         catch (QueryException $e) {
             $result = "You caused a query error!";
+            if ($attack->difficult <= 1) {
+                $attMsg = $result;
+                $attack->setSuccess(true);
+                return $this->attackComplete($attack, $attMsg);
+            }
         }
         $redteam = Team::find($attack->redteam);
         $blueteam = Team::find($attack->blueteam);
