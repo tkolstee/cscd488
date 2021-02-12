@@ -20,6 +20,13 @@ class AssetController extends Controller
 
     public function useAction(Request $request){
         $action = $request->submit;
+        $asset = Asset::get($action);
+        $team = Auth::user()->getBlueTeam();
+        if($asset->blue == 0)
+            $team = Auth::user()->getRedTeam();
+        $inv = $team->inventory($asset, 1);
+        if($inv == null) throw new InventoryNotFoundException();
+        BlueTeamController::removeSellItem($inv->id);
         switch($action){
             case ("AccessAudit"): return $this->accessAudit(); break;
             default: $error = "Invalid Action";

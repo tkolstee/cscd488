@@ -58,20 +58,40 @@
             @yield('pagecontent')
             @if (!empty(session('buyCart')))
                 <h3 class="shoppingCart">Shopping Cart: </h3>
-                <?php $cart = session('buyCart'); ?>
+                <?php $cart = session('buyCart'); 
+                    $list = array();
+                    foreach($cart as $item){
+                        if(!isset($list[$item])){
+                            $list += [$item => 1];
+                        }else{
+                            $list[$item]++;
+                        }
+                    }
+                ?>
                 <table class="storeFormCancel">
+                <thead>
+                    <th>Asset</th>
+                    <th>Quantity</th>
+                    <th>Total Cost</th>
+                </thead>
                 <tbody >
-                @foreach ($cart as $item)
+                @foreach ($list as $name => $quantity)
                 <tr>
-                    <td>{{ $item }} </td>
+                    <td style="width:30%;">{{$name}}</td>
+                    <td>{{$quantity}}</td>
+                    <td>Total: <?php echo $quantity * (App\Models\Asset::getByName($name)->purchase_cost); ?></td>
                    <form  method="POST" action="/blueteam/cancel">
                         @csrf
                         <input type="hidden" name="currentPage" value="{{$currentPage ?? 0}}">
                         <input type="hidden" name="cart" value="buy">
                         <td><button type="submit" formaction="/blueteam/cancel" 
                             class="btn btn-primary4" 
-                            name="{{"cancel[" . $item . "]"}}">
-                            Cancel</button></td>
+                            name="{{"cancel[" . $name . "]"}}">
+                            Remove 
+                            @if($quantity > 1)
+                            One
+                            @endif
+                        </button></td>
                     </form>
                 </tr>
                 @endforeach
@@ -80,20 +100,50 @@
             @endif
             @if (!empty(session('sellCart')))
                 <h3 class="shoppingCart">Sell Cart</h3>
-                <?php $cart = session('sellCart'); ?>
+                <?php $cart = session('sellCart'); 
+                     $list = array();
+                     foreach($cart as $item){
+                         $name = App\Models\Asset::get(App\Models\Inventory::find($item)->asset_name)->name;
+                         if(!isset($list[$item])){
+                             $list += [$item => [$name, 1]];
+                         }else{
+                             $list[$item][1]++;
+                         }
+                     }
+                ?>
                 <table class="storeFormCancel">
+                <thead>
+                    <th>Asset</th>
+                    <th>Quantity</th>
+                    <th>Total Cost</th>
+                </thead>
                 <tbody>
-                @foreach ($cart as $item)
+                @foreach ($list as $id=>$nameQuantity)
                 <tr>
-                    <td>{{ App\Models\Asset::get(App\Models\Inventory::find($item)->asset_name)->name }} </td> 
+                    <?php $asset = App\Models\Asset::getByName($nameQuantity[0]); ?>
+                    <?php $inv = App\Models\Inventory::find($id); ?>
+                    <td>{{$nameQuantity[0]}}
+                    @if($inv->level > 1)
+                        Level {{$inv->level}}
+                    @endif
+                    </td>
+                    <td>{{$nameQuantity[1]}}</td>
+                    <td>Total: <?php echo $nameQuantity[1] * $asset->purchase_cost; ?></td>
+                    @if(in_array("Targeted", $asset->tags) && $inv->info != null)
+                    <td>Target: {{$inv->info}}</td>
+                    @endif
                     <form  method="POST" action="/blueteam/cancel">
                         @csrf
                         <input type="hidden" name="cart" value="sell">
-                        <input type="hidden" name="currentPage" value="{{$currentPage}}">
+                        <input type="hidden" name="currentPage" value="{{$currentPage ?? 0}}">
                         <td > <button  type="submit" formaction="/blueteam/cancel" 
                             class="btn btn-primary4" 
-                            name="{{"cancel[" . $item . "]"}}">
-                            Cancel</button></td>
+                            name="{{"cancel[" . $id . "]"}}">
+                            Remove 
+                            @if($nameQuantity[1] > 1)
+                            One
+                            @endif
+                            </button></td>
                     </form>
                 </tr>
                 @endforeach

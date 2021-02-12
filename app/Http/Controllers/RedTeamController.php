@@ -10,6 +10,7 @@ use App\Models\Payload;
 use Auth;
 use App\Exceptions\AttackNotFoundException;
 use App\Exceptions\TeamNotFoundException;
+use Illuminate\Pagination\Paginator;
 
 class RedTeamController extends Controller {
 
@@ -152,7 +153,7 @@ class RedTeamController extends Controller {
         $attack = Attack::find($request->attID);
         $attack->payload_choice = $request->result;
         Attack::updateAttack($attack);
-        $payload = Payload::get($this->payload_choice);
+        $payload = Payload::get($attack->payload_choice);
         $payload->onPreAttack($attack);
         return $this->minigameStart($attack);
     }
@@ -223,44 +224,46 @@ class RedTeamController extends Controller {
     }
 
     public function sell(request $request){
-        $invIds = $request->input('results');
-        if($invIds == null){
+        $results = $request->results;
+        $redteam = Auth::user()->getRedTeam();
+        if(count($results) == 0){
             $error = "no-asset-selected";
             return $this->inventory()->with(compact('error'));
         }
-        $redteam = Auth::user()->getRedTeam();
-        foreach($invIds as $invId){
+        foreach($results as $invId=>$quantity){//buy the items
             $inv = Inventory::find($invId);
-            $success = $redteam->sellInventory($inv);
-            if (!$success) {
-                $error = "not-enough-owned";
-                return $this->inventory()->with(compact('error'));
+            for($i = 0; $i < $quantity; $i++){
+                $success = $redteam->sellInventory($inv);
+                if(!$success){
+                    $error = "not-enough-owned";
+                    return $this->inventory()->with(compact('error'));
+                }
             }
         }
         return $this->inventory($request);
     }//end sell
 
     public function buy(request $request){
-        $assetNames = $request->input('results');
-        if($assetNames == null){
+        $results = $request->results;
+        $redteam = Auth::user()->getRedTeam();
+        if(count($results) == 0){
             $error = "no-asset-selected";
             return $this->store()->with(compact('error'));
         }
-        $redteam = Auth::user()->getRedTeam();
         $totalCost = 0;
-        //check total price
-        foreach($assetNames as $assetName){
-            $asset = Asset::get($assetName);
-            $totalCost += $asset->purchase_cost;
+        foreach($results as $assetName=>$quantity){//check total price first
+            $actAsset = Asset::get($assetName);
+            $totalCost += $actAsset->purchase_cost * $quantity;
         }
         if($redteam->balance < $totalCost){
             $error = "not-enough-money";
             return $this->store()->with(compact('error'));
         }
-        //buy if you have enough
-        foreach($assetNames as $assetName){
-            $asset = Asset::get($assetName);
-            $redteam->buyAsset($asset);
+        foreach($results as $assetName=>$quantity){//buy the items
+            $actAsset = Asset::get($assetName);
+            for($i = 0; $i < $quantity; $i++){
+                $redteam->buyAsset($actAsset);
+            }
         }
         return $this->store($request);
     }

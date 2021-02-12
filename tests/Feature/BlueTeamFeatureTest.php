@@ -91,8 +91,10 @@ class BlueTeamFeatureTest extends TestCase
         $user = User::factory()->create([
             'blueteam' => $team->id
         ]);
+        $results = [];
+        $results += ["Firewall" => 1];
         $response = $this->actingAs($user)->post('/blueteam/buy', [
-            'results' => ["Firewall"],
+            'results' => $results,
         ]);
         $response->assertViewIs('blueteam.store');
         $response->assertSee("Firewall");
@@ -107,8 +109,10 @@ class BlueTeamFeatureTest extends TestCase
             'blueteam' => $team->id,
             'leader' => 1,
         ]);
+        $results = [];
+        $results += ["Firewall" => 1];
         $this->actingAs($user)->post('/blueteam/buy', [
-            'results' => ["Firewall"],
+            'results' => $results,
         ]);
         $expectedBalance = $team->balance - Asset::get("Firewall")->purchase_cost;
         $response = $this->actingAs($user)->get('/blueteam/endturn');

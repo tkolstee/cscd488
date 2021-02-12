@@ -76,6 +76,18 @@ class BlueTeamController extends Controller {
         
     }
  
+    public static function removeSellItem($id){
+        $removed = false;
+        $sellCart = session('sellCart');
+        $key = array_search($id, $sellCart ?? []);
+        if(is_int($key)){
+            unset($sellCart[$key]);
+            $removed = true;
+        }
+        session(['sellCart' => $sellCart]);
+        return $removed;
+    }
+
     public function status(){
         $blueteam = Auth::user()->getBlueTeam();
         $bonuses = $blueteam->getBonusesByTarget();
@@ -186,7 +198,6 @@ class BlueTeamController extends Controller {
                     $key = array_search($sellItem, $sellCart);
                     unset($sellCart[$key]);
                     session(['sellCart' => $sellCart]);
-                    return $this->store()->with(compact('error'));
                 }
                 $key = array_search($sellItem, $sellCart);
                 unset($sellCart[$key]);
@@ -242,7 +253,8 @@ class BlueTeamController extends Controller {
         }
         $turn = 1;
         $endTime = Setting::get('turn_end_time');
-        return $this->home()->with(compact('turn', 'endTime'));
+        if(empty($error)) $error = "";
+        return $this->home()->with(compact('turn', 'endTime','error'));
     }
  
     public function removeCartItem(request $request,$totalCost = 0){
@@ -250,7 +262,6 @@ class BlueTeamController extends Controller {
         $results = $request->results;
         if(isset($results) && is_array($results)){
             $assetNames = $results;
-            //throw new Exception($assetNames[0]);
         }
         if(empty($assetNames)){
             return view('blueteam.removecart')->with(compact('blueteam','totalCost'));
@@ -291,6 +302,7 @@ class BlueTeamController extends Controller {
                 $asset = Asset::get($request->$name);
                 $inv = $blueteam->inventory($asset, 1);
                 $inv->setInfo($redteam->name);
+                $this->removeSellItem($inv->id);
             }
         }
         if($request->endTurn){
@@ -361,6 +373,7 @@ class BlueTeamController extends Controller {
         $result = $request->submit;
         $inv = Inventory::find($result);
         if($inv == null) throw new InventoryNotFoundException();
+        $this->removeSellItem($inv->id);
         $success = $inv->upgrade();
         if($success == false) $error = "unsuccessful";
         else $error = null;
@@ -368,17 +381,20 @@ class BlueTeamController extends Controller {
     }
 
     public function sell(request $request){
-        $invIds = $request->input('results');
-        if($invIds == null){
-            $error = "no-asset-selected";
-            return $this->inventory()->with(compact('error'));
-        }
+        $results = $request->results;
+        $blueteam = Auth::user()->getBlueTeam();
         $sellCart = session('sellCart');
-        foreach($invIds as $inv){
-            if(Inventory::find($inv) == null) {
-                throw new InventoryNotFoundException();
+        if(count($results) == 0){
+            $error = "no-asset-selected";
+            return $this->inventory($request)->with(compact('error'));
+        }
+        foreach($results as $invId=>$quantity){
+            for($i = 0; $i < $quantity; $i++){
+                if(Inventory::find($invId) == null) {
+                    throw new InventoryNotFoundException();
+                }
+                $sellCart[] = $invId;
             }
-            $sellCart[] = $inv;
         }
         session(['sellCart' => $sellCart]);
         return $this->inventory($request);
@@ -400,20 +416,21 @@ class BlueTeamController extends Controller {
     }
 
     public function buy(request $request){
-        $assetNames = $request->input('results');
+        $results = $request->results;
         $blueteam = Auth::user()->getBlueTeam();
-        if($assetNames == null){
+        if(count($results) == 0){
             $error = "no-asset-selected";
             return $this->store()->with(compact('error'));
         }
         $blueteam->balance = 1000; $blueteam->update(); //DELETE THIS IS FOR TESTING PURPOSES
         $buyCart = session('buyCart');
-        foreach($assetNames as $asset){
-            $actAsset = Asset::get($asset);
-            $buyCart[] = $actAsset->name;
+        foreach($results as $assetName=>$quantity){
+            $actAsset = Asset::get($assetName);
+            for($i = 0; $i < $quantity; $i++){  
+                $buyCart[] = $actAsset->name;
+            }
         }
         session(['buyCart' => $buyCart]);
-        $currentPage = $request->currentPage;
         return $this->store($request);
     }
 

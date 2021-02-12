@@ -75,9 +75,11 @@ class RedTeamFeatureTest extends TestCase
         $user = User::factory()->create([
             'redteam' => $team->id,
         ]);
+        $results = [];
+        $results += [$asset->class_name => 1];
         $expectedBalance = $team->balance - $asset->purchase_cost;
         $response = $this->actingAs($user)->post('/redteam/buy', [
-            'results' => [$asset->class_name],
+            'results' => $results,
         ]);
         $response->assertViewIs('redteam.store');
         $response->assertSee('Cash: ' . $expectedBalance);
@@ -93,8 +95,10 @@ class RedTeamFeatureTest extends TestCase
             'redteam' => $team->id,
         ]);
         $expectedBalance = $team->balance;
+        $results = [];
+        $results += [$asset->class_name => 1];
         $response = $this->actingAs($user)->post('/redteam/buy', [
-            'results' => [$asset->class_name],
+            'results' => $results,
         ]);
         $response->assertViewIs('redteam.store');
         $response->assertSee('Cash: ' . $expectedBalance);
