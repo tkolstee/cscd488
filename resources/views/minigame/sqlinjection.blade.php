@@ -6,7 +6,7 @@
 @if ($attack->difficulty <= 1)
     <h2>Attempt to cause a SQL error!</h2>
 @elseif ($attack->difficulty > 1)
-    <h2>Attempt to find the admin's password using sql injection!</h2>
+    <h2>Attempt to find the admins password using sql injection!</h2>
 @endif
 
 <strong>Difficulty: {{ $attack->difficulty }}</strong>
@@ -38,7 +38,7 @@
         @csrf
         <div class="form-group row">
             <label for="pass" class="col-md-4 col-form-label text-md-right">
-                Enter admin's password: </label>
+                Enter admins password: </label>
             <input type="text" id="pass" name="pass" >
             <input type="hidden" name="attID" value="{{$attack->id}}">
         </div>
