@@ -3,13 +3,13 @@
 @section('title', 'SQL Injection Attack')
 
 @section('pagecontent')
-@if ($attack->difficulty <= 1)
+@if ($attack->calculated_difficulty <= 1)
     <h2>Attempt to cause a SQL error!</h2>
-@elseif ($attack->difficulty > 1)
+@elseif ($attack->calculated_difficulty > 1)
     <h2>Attempt to find the admins password using sql injection!</h2>
 @endif
 
-<strong>Difficulty: {{ $attack->difficulty }}</strong>
+<strong>Difficulty: {{ $attack->calculated_difficulty }}</strong>
 
 @if (!empty($result))
     Result = {{var_dump($result)}}    
@@ -33,7 +33,7 @@
     </div>
 </form>
 
-@if($attack->difficulty > 1)
+@if($attack->calculated_difficulty > 1)
     <form method="POST" action="/attack/sqlinjectioncheck">
         @csrf
         <div class="form-group row">

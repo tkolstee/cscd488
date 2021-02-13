@@ -90,7 +90,7 @@ class AttackController extends Controller
         }
         catch (QueryException $e) {
             $result = "You caused a query error!";
-            if ($attack->difficulty <= 1) {
+            if ($attack->calculated_difficulty <= 1) {
                 $attMsg = $result;
                 $attack->setSuccess(true);
                 return $this->attackComplete($attack, $attMsg);
