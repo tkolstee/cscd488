@@ -85,7 +85,7 @@ class AttackController extends Controller
         $this->sqlSetUp();
 
         try {
-            $result = DB::connection('sql_minigame')->select(DB::raw("SELECT * FROM users WHERE username = '$url'"));
+            $result = DB::connection('sql_minigame')->select(DB::raw("SELECT * FROM users WHERE id = '$url'"));
             if ($result == null) { $result = "Nothing happened!"; }
         }
         catch (QueryException $e) {
@@ -122,7 +122,7 @@ class AttackController extends Controller
         Schema::connection($connect)->dropIfExists('products');
 
         Schema::connection($connect)->create('users', function($table){
-            $table->increments('id');
+            $table->integer('id');
             $table->text('username');
             $table->text('password');
         });
@@ -132,10 +132,12 @@ class AttackController extends Controller
         });
         
         DB::connection($connect)->table('users')->insert([
+            'id' => rand(0, 999),
             'username' => 'admin',
             'password' => generateRandomString(),
         ]);
         DB::connection($connect)->table('users')->insert([
+            'id' => rand(0, 999),
             'username' => 'user',
             'password' => generateRandomString(),
         ]);
