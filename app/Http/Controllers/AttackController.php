@@ -84,9 +84,9 @@ class AttackController extends Controller
         $url = $request->url;
         $this->sqlSetUp();
 
-        $result = "";
         try {
             $result = DB::connection('sql_minigame')->select(DB::raw("SELECT * FROM users WHERE username = '$url'"));
+            if ($result == null) { $result = "Nothing happened!"; }
         }
         catch (QueryException $e) {
             $result = "You caused a query error!";

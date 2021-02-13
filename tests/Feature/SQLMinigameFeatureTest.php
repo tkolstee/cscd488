@@ -22,6 +22,18 @@ class SQLMinigameFeatureTest extends TestCase {
         return $attack;
     }
 
+    public function testSqlNonInjectionInput(){
+        $attack = $this->createAttack();
+        $attack->calculated_difficulty = 2;
+        Attack::updateAttack($attack);
+        $response = $this->post('/attack/sqlinjection', [
+            'attID' => $attack->id,
+            'url' => "username",
+        ]);
+        $response->assertViewIs('minigame.sqlinjection');
+        $response->assertSee("Nothing happened!");
+    }
+
     public function testSqlInjectionLevel1Display(){
         $attack = $this->createAttack();
         $attack->calculated_difficulty = 1;
