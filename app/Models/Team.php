@@ -75,12 +75,14 @@ class Team extends Model
     public function getPerTurnRevenue(){
         if($this->blue != 1) throw new TeamNotFoundException();
         $revGained = 0;
+        $revBonus = 0;
         $inventories = $this->inventories();
         foreach($inventories as $inv){
             $asset = Asset::get($inv->asset_name);
             $revGained -= $asset->ownership_cost;
+            $revBonus += $asset->percentRevBonus;
         }
-        return $revGained;
+        return $revGained * ($revBonus*0.01 + 1);
     }
 
     public function getBonuses(){

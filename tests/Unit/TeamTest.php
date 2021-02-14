@@ -258,6 +258,13 @@ class TeamTest extends TestCase {
         $this->assertEquals(50, $revGained);
     }
 
+    public function testGetPerTurnRevWithAssetBonuses(){
+        $team = Team::factory()->create();
+        Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'RemoteAccess']);
+        //RemoteAccess gives 200 each turn. With 10% bonus, should be 220
+        $this->assertEquals(220, $team->getPerTurnRevenue());
+    }
+
     public function testChangeBalanceRounding(){
         $team = Team::factory()->create();
         $balChange = 370.6;

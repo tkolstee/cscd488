@@ -3,11 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\AssetNotFoundException;
-use Exception;
 
-class Asset //extends Model
+class Asset
 {
     use HasFactory;
     /**
@@ -34,6 +32,7 @@ class Asset //extends Model
     public $_purchase_cost = 100;
     public $_ownership_cost = 0;
     public $_upgrade_cost = 50;
+    public $_percent_revenue_bonus = 0;
     public $_description = "Abstract class";
 
     function __construct() {
@@ -45,6 +44,7 @@ class Asset //extends Model
         $this->purchase_cost        = $this->_purchase_cost;
         $this->ownership_cost       = $this->_ownership_cost;
         $this->upgrade_cost         = $this->_upgrade_cost;
+        $this->percentRevBonus      = $this->_percent_revenue_bonus;
         $this->description          = $this->_description;
     }
 
