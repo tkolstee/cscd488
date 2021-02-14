@@ -88,7 +88,7 @@ class RedTeamTest extends TestCase
     }
 
     public function testRedBuyMultipleValid(){
-        $asset = Asset::getBuyableRed()[0];
+        $asset = Asset::getBuyableRed()[1];
         $this->assignTeam();
         $controller = new RedTeamController();
         $results = [];
