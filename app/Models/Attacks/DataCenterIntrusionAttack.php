@@ -4,7 +4,7 @@ namespace App\Models\Attacks;
 
 use App\Models\Attack;
 
-class DosAttack extends Attack {
+class DataCenterIntrusionAttack extends Attack {
 
     public $_name                   = "DataCenterIntrusion";
     public $_class_name             = "Datacenter Intrusion";
