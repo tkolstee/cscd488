@@ -9,7 +9,7 @@ class RemoteWorkPolicyAsset extends Asset
 
     public $_name    = "Remote Work Policy";
     public $_class_name = "RemoteWorkPolicy";
-    public $_tags    = [];
+    public $_tags    = ['ExternalNetworkService'];
     public $_blue = 1;
     public $_buyable = 1;
     public $_purchase_cost = 500;
