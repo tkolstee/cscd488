@@ -16,6 +16,7 @@ use App\Models\Payloads\BasicAccess;
 use App\Models\Payloads\Confusion;
 use App\Models\Payloads\PrivAccess;
 use App\Models\Payloads\Evasion;
+use App\Models\Payloads\InformationStealing;
 use App\Models\Payloads\WebsiteDefacement;
 use App\Models\Payloads\Keylogger;
 use App\Models\Payloads\Ransomware;
@@ -227,5 +228,22 @@ class PayloadTest extends TestCase {
         $this->assertTrue(in_array("RevenueGeneration", $bonus->tags));
         $this->assertTrue(in_array("UntilAnalyzed", $bonus->tags));
         $this->assertEquals(100, $bonus->revenueGenerated);
+    }
+
+    public function testInformationStealingPayload() {
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new InformationStealing;
+
+        $payload->onAttackComplete($attack);
+
+        $bonus = $redteam->getBonuses()->first();
+        $this->assertEquals($redteam->id, $bonus->team_id);
+        $this->assertEquals($blueteam->id, $bonus->target_id);
+        $this->assertTrue(in_array("DifficultyDeduction", $bonus->tags));
+        $this->assertTrue(in_array("DetectionDeduction", $bonus->tags));
+        $this->assertEquals(20, $bonus->percentDiffDeducted);
+        $this->assertEquals(20, $bonus->percentDetDeducted);
     }
 }
