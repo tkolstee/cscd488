@@ -14,6 +14,7 @@ class FakeLoginSiteAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 200;
     public $_ownership_cost = 0;
+    public $_description = "Create a fake login site to redirect victims to. Often used for phishing attacks.";
 
     public function onPreAttack($attack)
     {
