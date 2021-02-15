@@ -4,7 +4,7 @@ namespace App\Models\Assets;
 
 use App\Models\Asset;
 
-class FakeLoginSite extends Asset 
+class FakeLoginSiteAsset extends Asset 
 {
 
     public $_name    = "Fake Login Website";
