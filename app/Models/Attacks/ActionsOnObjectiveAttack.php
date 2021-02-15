@@ -7,7 +7,7 @@ use App\Models\Attack;
 class ActionsOnObjectiveAttack extends Attack {
 
     public $_name                   = "Actions on Objectives";
-    public $_class_name             = "ActivesOnObjective";
+    public $_class_name             = "ActionsOnObjective";
     public $_tags                   = [];
     public $_prereqs                = ['PwnedAccess'];
     public $_payload_choice         = 'StealRevenue';

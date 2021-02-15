@@ -5,5 +5,6 @@ composer install
 npm install
 npm run dev
 touch database/database.sqlite
-php artisan migrate:fresh
+touch database/database_minigame.sqlite
+php artisan migrate:fresh --seed
 

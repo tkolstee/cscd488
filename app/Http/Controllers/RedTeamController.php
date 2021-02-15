@@ -141,7 +141,7 @@ class RedTeamController extends Controller {
         
         //if the view doesn't exist return by chance
         $rand = rand(0,500)/100;
-        if($rand >= $attack->difficulty){
+        if($rand >= $attack->calculated_difficulty){
             $attack->setSuccess(true);
         }else{
             $attack->setSuccess(false);
