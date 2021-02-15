@@ -3,6 +3,7 @@
 namespace App\Models\Payloads;
 
 use App\Models\Payload;
+use App\Models\Inventory;
 
 class MaliciousInsider extends Payload 
 {
@@ -13,6 +14,17 @@ class MaliciousInsider extends Payload
 
     public function onAttackComplete($attack){
         parent::onAttackComplete($attack);
-        
+        Inventory::create([
+            'quantity' => 1,
+            'team_id' => $attack->redteam,
+            'asset_name' => 'PhysicalAccess',
+            'level' => 1
+        ]);
+        Inventory::create([
+            'quantity' => 1,
+            'team_id' => $attack->redteam,
+            'asset_name' => 'ValidAccount',
+            'level' => 1
+        ]);
     }
 }
