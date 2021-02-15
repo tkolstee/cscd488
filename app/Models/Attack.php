@@ -343,7 +343,9 @@ class Attack extends Model
             $asset = Asset::get($inv->asset_name);
             $asset->onPreAttack($this);
             $have[] = $asset->class_name;
-            $have[] = $asset->tags; 
+            foreach ($asset->tags as $tag) {
+                $have[] = $tag;
+            }
         }
         if (!Game::prereqsDisabled()) {
             $unmet_prereqs = array_diff($this->prereqs, $have);
