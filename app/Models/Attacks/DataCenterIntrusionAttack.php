@@ -6,8 +6,8 @@ use App\Models\Attack;
 
 class DataCenterIntrusionAttack extends Attack {
 
-    public $_name                   = "DataCenterIntrusion";
-    public $_class_name             = "Datacenter Intrusion";
+    public $_name                   = "Datacenter Intrusion";
+    public $_class_name             = "DataCenterIntrusion";
     public $_tags                   = ['PhysicalAttack'];
     public $_prereqs                = ['PhysicalAccess'];
     public $_payload_choice           = "Dos";
