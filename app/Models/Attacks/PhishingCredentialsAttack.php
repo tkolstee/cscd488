@@ -15,7 +15,7 @@ class PhishingCredentialsAttack extends Attack {
     public $_initial_detection_risk = 0.5;
     public $_initial_analysis_risk  = 4;
     public $_initial_attribution_risk = 1;
-    public $_initial_energy_cost    = 50;
+    public $_initial_energy_cost    = 100;
     public $_help_text              = "Get employee to use a fake login page.";
 
     public $learn_page              = true;
