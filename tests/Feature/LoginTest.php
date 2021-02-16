@@ -78,4 +78,14 @@ class LoginTest extends TestCase
         $response = $this->get('/home/chooseteam');
         $response->assertRedirect('/login');
     }
+
+    public function testUnauthAndAuthCanViewAbout(){
+       $response = $this->get('/home/about');
+       $response->assertViewIs('about'); 
+       $user = User::factory()->create();
+       $this->be($user);
+       $response = $this->get('/home/about');
+       $response->assertViewIs('about');
+    }
+    
 }
