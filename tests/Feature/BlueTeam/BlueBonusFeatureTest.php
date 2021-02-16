@@ -6,11 +6,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Team;
 use App\Models\Attack;
-use App\Models\Asset;
 use App\Models\Bonus;
 use App\Models\Game;
 use Tests\TestCase;
-use App\Models\Inventory;
 use Auth;
 
 class BlueBonusFeatureTest extends TestCase
@@ -58,7 +56,7 @@ class BlueBonusFeatureTest extends TestCase
         $bonus3->attack_id = $attack3->id;
         $bonus3->payload_name = "DosPayload";
         $bonus3->update();
-        $response = $this->get('blueteam/status');
+        $response = $this->get('/blueteam/status');
         $response->assertViewIs('blueteam.status');
         $response->assertSeeInOrder([
             "?", "?", 
@@ -82,7 +80,7 @@ class BlueBonusFeatureTest extends TestCase
         $bonus->payload_name = "PayloadName";
         $bonus->update();
 
-        $this->get('blueteam/status')->assertSee("Pay To Remove");
+        $this->get('/blueteam/status')->assertSee("Pay To Remove");
         $response = $this->post('/blueteam/removeBonus', [
             'bonusID' => $bonus->id,
         ]);

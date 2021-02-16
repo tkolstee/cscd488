@@ -5,12 +5,8 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Team;
-use App\Models\Attack;
-use App\Models\Asset;
-use App\Models\Bonus;
 use App\Models\Game;
 use Tests\TestCase;
-use App\Models\Inventory;
 use Auth;
 
 class BlueMiscFeatureTest extends TestCase

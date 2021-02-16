@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Team;
-use App\Models\Attack;
 use App\Models\Asset;
 use App\Models\Game;
 use Tests\TestCase;
