@@ -11,8 +11,9 @@ use App\Models\Bonus;
 use App\Models\Game;
 use Tests\TestCase;
 use App\Models\Inventory;
+use Auth;
 
-class BlueTeamFeatureTest extends TestCase
+class BlueMiscFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -22,7 +23,11 @@ class BlueTeamFeatureTest extends TestCase
             $game = new Game();
             $game->save();
         }
-        $user = User::factory()->create();
+        $team = Team::factory()->create();
+        $user = User::factory()->create([
+            'blueteam' => $team->id,
+            'leader' => 1,
+        ]);
         $this->be($user);
     }
 
@@ -46,7 +51,6 @@ class BlueTeamFeatureTest extends TestCase
             'leader' => 1,
         ]);
         $this->be($user);
-
         $response = $this->get('blueteam/leaderboard');
         $response->assertSeeInOrder([$blue1->name, $blue1->reputation, 
                                     $blue2->name, $blue2->reputation,
@@ -55,13 +59,8 @@ class BlueTeamFeatureTest extends TestCase
 
     public function testReputationGain()
     {
-        $team = Team::factory()->create();
-        $user = User::factory()->create([
-            'blueteam' => $team->id,
-            'leader' => 1,
-        ]);
+        $team = Auth::user()->getBlueTeam();
         $game = Game::find(1);
-        $this->be($user);
         $this->get('blueteam/home')->assertSee("Reputation: 0");
         
         $team->created_at = $team->created_at->subDays(1);
@@ -75,28 +74,11 @@ class BlueTeamFeatureTest extends TestCase
         $this->get('blueteam/home')->assertSee("Reputation: 150");//+100
     }
 
-    public function testPayToRemoveBonus() {
-        $blue = Team::factory()->create();
-        $user = User::factory()->create([
-            'blueteam' => $blue->id,
-            'leader' => 1,
-        ]);
-        $this->be($user);
-        $red = Team::factory()->red()->create();
-
-        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
-        $tags = ["PayToRemove"];
-        $bonus = Bonus::createBonus($red->id, $tags);
-        $bonus->target_id = $blue->id;
-        $bonus->attack_id = $attack->id;
-        $bonus->removalCostFactor = 2;
-        $bonus->payload_name = "PayloadName";
-        $bonus->update();
-
-        $this->get('blueteam/status')->assertSee("Pay To Remove");
-        $response = $this->post('/blueteam/removeBonus', [
-            'bonusID' => $bonus->id,
-        ]);
-        $response->assertViewIs('blueteam.status')->assertDontSee("Pay To Remove");
+    public function testEndTurn(){
+        $team = Auth::user()->getBlueTeam();
+        $response = $this->post('/blueteam/endturn');
+        $response->assertViewIs('blueteam.home');
+        $response->assertSeeInOrder(["Wait until", 'next turn']);
     }
+
 }

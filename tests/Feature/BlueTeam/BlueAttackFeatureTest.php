@@ -34,10 +34,10 @@ class BlueAttackFeatureTest extends TestCase
         ]);
         $red = Team::factory()->red()->create();
         $attack1 = Attack::create('SQLInjection', $red->id, $blue->id);
-        $attack1->detection_level = 2;
+        $attack1->detection_level = 3;
         $attack1->setNotified(false);
         $attack2 = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack2->detection_level = 2;
+        $attack2->detection_level = 3;
         $attack2->setNotified(false);
         $response = $this->actingAs($user)->get('/blueteam/home');
         $response->assertSeeInOrder([$attack1->name, $attack2->name]);
@@ -59,6 +59,7 @@ class BlueAttackFeatureTest extends TestCase
         $attack2->setNotified(false);
         $response = $this->actingAs($user)->get('/blueteam/home');
         $response->assertSeeInOrder([$attack1->name, $attack2->name]);
+        $response->assertDontSee($red->name);
     }
 
     public function testBlueTeamAttackNotificationsLevel1()
