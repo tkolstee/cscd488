@@ -50,36 +50,6 @@ class BlueInventoryFeatureTest extends TestCase
         $response->assertSeeInOrder([$asset->name, "5"]);
     }
 
-    public function testBlueCanViewInventoryButtons(){
-        $team = Auth::user()->getBlueTeam();
-        //Pick target button
-        $inv = Inventory::factory()->create([
-            'asset_name' => "HeightenedAwareness",
-            'team_id' => $team->id,
-            'quantity' => 1,
-        ]);
-        $response = $this->get('/blueteam/inventory');
-        $response->assertSeeInOrder(["Heightened Awareness", "Pick Target"]);
-        Inventory::destroy($inv->id);
-        //Use Action button
-        $inv = Inventory::factory()->create([
-            'asset_name' => "AccessControlAudit",
-            'team_id' => $team->id,
-            'quantity' => 1,
-        ]);
-        $response = $this->get('/blueteam/inventory');
-        $response->assertSeeInOrder(["Access Control Audit", "Use"]);
-        Inventory::destroy($inv->id);
-        //Upgrade Button
-        $inv = Inventory::factory()->create([
-            'asset_name' => "SQLDatabase",
-            'team_id' => $team->id,
-            'quantity' => 1,
-        ]);
-        $response = $this->get('/blueteam/inventory');
-        $response->assertSeeInOrder(["SQL Database", "Upgrade"]);
-    }
-
     //Sell Tests
 
     public function testBlueAddToSellCart(){
@@ -129,6 +99,127 @@ class BlueInventoryFeatureTest extends TestCase
         $expectedBalance = $team->balance + $asset->purchase_cost;
         $response->assertViewIs('blueteam.home');
         $response->assertSeeInOrder(['Revenue', $expectedBalance]);
+    }
+
+    public function testBlueCanCancelSellCart(){
+        $team = Auth::user()->getBlueTeam();
+        $asset = new SQLDatabaseAsset;
+        $inv = Inventory::factory()->create([
+            'asset_name' => $asset->class_name,
+            'team_id' => $team->id,
+            'quantity' => 1,
+        ]);
+        session(['sellCart' => [$asset->name]]);
+        $response = $this->post('/blueteam/cancel',[
+            'cart' => "sell",
+            'cancel' => $inv->id
+        ]);
+        $response->assertViewIs('blueteam.inventory');
+        $cart = session('sellCart');
+        $this->assertEmpty($cart);
+    }
+
+    //Asset Button tests
+
+    public function testBlueCanViewInventoryButtons(){
+        $team = Auth::user()->getBlueTeam();
+        //Pick target button
+        $inv = Inventory::factory()->create([
+            'asset_name' => "HeightenedAwareness",
+            'team_id' => $team->id,
+            'quantity' => 1,
+        ]);
+        $response = $this->get('/blueteam/inventory');
+        $response->assertSeeInOrder(["Heightened Awareness", "Pick Target"]);
+        Inventory::destroy($inv->id);
+        //Use Action button
+        $inv = Inventory::factory()->create([
+            'asset_name' => "AccessControlAudit",
+            'team_id' => $team->id,
+            'quantity' => 1,
+        ]);
+        $response = $this->get('/blueteam/inventory');
+        $response->assertSeeInOrder(["Access Control Audit", "Use"]);
+        Inventory::destroy($inv->id);
+        //Upgrade Button
+        $inv = Inventory::factory()->create([
+            'asset_name' => "SQLDatabase",
+            'team_id' => $team->id,
+            'quantity' => 1,
+        ]);
+        $response = $this->get('/blueteam/inventory');
+        $response->assertSeeInOrder(["SQL Database", "Upgrade"]);
+    }
+
+    public function testPickTargetButton(){
+        $team = Auth::user()->getBlueTeam();
+        $inv = Inventory::factory()->create([
+            'asset_name' => "HeightenedAwareness",
+            'team_id' => $team->id,
+            'quantity' => 1,
+        ]);
+        $response = $this->post('/blueteam/picktarget', [
+            'submit' => $inv->id
+        ]);
+        $response->assertViewIs('blueteam.target');
+        $response->assertSee("There are no teams to target right now.");
+        $targetTeam = Team::factory()->red()->create();
+        $response = $this->post('/blueteam/picktarget', [
+            'submit' => $inv->id
+        ]);
+        $response->assertViewIs('blueteam.target');
+        $response->assertSee($targetTeam->name);
+    }
+
+    public function testPickTargetForm(){
+        $team = Auth::user()->getBlueTeam();
+        $targetTeam = Team::factory()->red()->create();
+        $inv = Inventory::factory()->create([
+            'asset_name' => "HeightenedAwareness",
+            'team_id' => $team->id,
+            'quantity' => 1,
+        ]);
+        $response = $this->post('/blueteam/picktarget', [
+            'invCount' => 1,
+            'result1' => $targetTeam->name,
+            'name1' => "HeightenedAwareness",
+        ]);
+        $response->assertViewIs('blueteam.inventory');
+    }
+
+    public function testUseActionButton(){
+        $team = Auth::user()->getBlueTeam();
+        $inv = Inventory::factory()->create([
+            'asset_name' => "AccessAudit",
+            'team_id' => $team->id,
+            'quantity' => 1,
+        ]);
+        $response = $this->post('/asset', [
+            'submit' => $inv->asset_name
+        ]);
+        $response->assertViewIs('blueteam.home');
+        $response->assertSeeInOrder(["You managed to remove", "access tokens that were targeting your team"]);
+    }
+
+    public function testUpgradeButton(){
+        $team = Auth::user()->getBlueTeam();
+        $inv = Inventory::factory()->create([
+            'asset_name' => "SQLDatabase",
+            'team_id' => $team->id,
+            'quantity' => 1,
+        ]);
+        $response = $this->post('/blueteam/upgrade', [
+            'submit' => $inv->id
+        ]);
+        $response->assertViewIs('blueteam.inventory');
+        $response->assertSeeInOrder(["SQL Database", "Level: 2", "Upgrade"]);
+        $inv = $team->inventories()->first();
+        $response = $this->post('/blueteam/upgrade', [
+            'submit' => $inv->id
+        ]);
+        $response->assertViewIs('blueteam.inventory');
+        $response->assertSeeInOrder(["SQL Database", "Level: 3"]);
+        $response->assertDontSee("Upgrade");
     }
 
 }

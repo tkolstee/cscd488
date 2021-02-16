@@ -98,6 +98,19 @@ class BlueStoreFeatureTest extends TestCase
         $response->assertSee('Revenue: ' . $expectedBalance);
     }
 
+    public function testBlueCanCancelBuyCart(){
+        $team = Auth::user()->getBlueTeam();
+        $asset = new SQLDatabaseAsset;
+        session(['buyCart' => [$asset->name]]);
+        $response = $this->post('/blueteam/cancel',[
+            'cart' => "buy",
+            'cancel' => $asset->name
+        ]);
+        $response->assertViewIs('blueteam.store');
+        $cart = session('buyCart');
+        $this->assertEmpty($cart);
+    }
+
     public function testBluePickTargetOnEndTurn(){
         $team = Auth::user()->getBlueTeam();
         $targetTeam = Team::factory()->red()->create();
@@ -110,6 +123,28 @@ class BlueStoreFeatureTest extends TestCase
         $response = $this->get('/blueteam/endturn');
         $response->assertViewIs('blueteam.target');
         $response->assertSee($targetTeam->name);
+    }
+
+    public function testRemoveCartItem(){
+        $team = Auth::user()->getBlueTeam();
+        $response = $this->post('/blueteam/removecartitem');
+        $response->assertViewIs('blueteam.removecart');
+        $response->assertSee("You have enough money");
+        $asset = new SQLDatabaseAsset;
+        session(['buyCart' => [$asset->name]]);
+        $response = $this->post('/blueteam/removecartitem');
+        $response->assertViewIs('blueteam.removecart');
+        $response->assertSee("You have enough money");
+        $team->balance = 0;
+        $team->update();
+        $response = $this->post('/blueteam/removecartitem');
+        $response->assertViewIs('blueteam.removecart');
+        $response->assertSeeInOrder(["Total Cost: ". $asset->purchase_cost , $asset->name, $asset->purchase_cost]);
+        $response = $this->post('/blueteam/removecartitem', [
+            'results' => [$asset->name]
+        ]);
+        $this->assertEquals(null, session('buyCart'));
+        $response->assertViewIs('blueteam.home');
     }
 
 }
