@@ -7,16 +7,23 @@ use Auth;
 use App\Models\User;
 use App\Models\Team;
 use App\Models\Attack;
+use App\Models\Game;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class AttackFeatureTest extends TestCase
+class RedAttackFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function setUp(): void {
+    public function setUp(): void{
         parent::setUp();
-        $redteam = Team::factory()->red()->create();
-        $user = User::factory()->create(['redteam' => $redteam->id]);
+        if(Game::all()->isEmpty()){
+            $game = new Game();
+            $game->save();
+        }
+        $team = Team::factory()->red()->create();
+        $user = User::factory()->create([
+            'redteam' => $team->id,
+        ]);
         $this->be($user);
     }
 
@@ -33,7 +40,7 @@ class AttackFeatureTest extends TestCase
         $response = $this->get('/redteam/home');
         $response->assertSee("Start Attack");
         $response = $this->get('/redteam/startattack');
-        $response->assertStatus(200)->assertViewIs('redteam.startAttack');
+        $response->assertViewIs('redteam.startAttack');
         $response->assertSee("Select a blue team to attack:");
     }
 
@@ -98,11 +105,14 @@ class AttackFeatureTest extends TestCase
     public function testViewPreviousAttacks() {
         $blueteam = Team::factory()->create();
         $attack1 = Attack::create('SynFlood', Auth::user()->redteam, $blueteam->id);
+        $attack1->detection_level = 1;
+        Attack::updateAttack($attack1);
         $attack2 = Attack::create('SynFlood', Auth::user()->redteam, $blueteam->id);
-
+        $attack2->detection_level = 2;
+        Attack::updateAttack($attack2);
         $response = $this->get('redteam/attacks');
         $response->assertViewIs('redteam.attacks');
-        $response->assertSeeInOrder([$attack1->name, $attack1->success, $attack1->detected, $attack1->created_at,
-            $attack2->name, $attack2->success, $attack2->detected, $attack2->created_at]);
+        $response->assertSeeInOrder([$attack1->name, $attack1->success, "True", "False", "False", $attack1->created_at,
+            $attack2->name, $attack2->success, "True", "True", "False", $attack2->created_at]);
     }
 }
