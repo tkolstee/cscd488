@@ -86,7 +86,7 @@
                         <input type="hidden" name="cart" value="buy">
                         <td><button type="submit" formaction="/blueteam/cancel" 
                             class="btn btn-primary4" 
-                            name="{{"cancel[" . $name . "]"}}">
+                            name="cancel" value="{{$name}}">
                             Remove 
                             @if($quantity > 1)
                             One
@@ -138,7 +138,7 @@
                         <input type="hidden" name="currentPage" value="{{$currentPage ?? 0}}">
                         <td > <button  type="submit" formaction="/blueteam/cancel" 
                             class="btn btn-primary4" 
-                            name="{{"cancel[" . $id . "]"}}">
+                            name="cancel" value="{{$inv->id}">
                             Remove 
                             @if($nameQuantity[1] > 1)
                             One

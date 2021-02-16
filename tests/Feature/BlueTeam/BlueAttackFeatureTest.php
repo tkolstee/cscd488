@@ -6,13 +6,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Team;
 use App\Models\Attack;
-use App\Models\Asset;
-use App\Models\Bonus;
 use App\Models\Game;
 use Tests\TestCase;
-use App\Models\Inventory;
 
-class BlueTeamFeatureTest extends TestCase
+class BlueAttackFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -26,118 +23,22 @@ class BlueTeamFeatureTest extends TestCase
         $this->be($user);
     }
 
-    public function testUserCanViewBlueTeamPages()
+    public function testBlueTeamCanViewAttackNotificationsLevel3()
     {
-        $response = $this->get('/blueteam/home');
-        $response->assertStatus(200);
-        $response = $this->get('/blueteam/status');
-        $response->assertStatus(200);
-        $response = $this->get('/blueteam/store');
-        $response->assertStatus(200);
-    }
-
-    public function testUserCanCreateBlueTeam()
-    {
-        $response = $this->post('/blueteam/create', [
-            'name' => 'blueteamname',
-        ]);
-        $response->assertViewIs('blueteam.home');
-        $response->assertSee('blueteamname');
-    }
-
-    public function testUserCanJoinBlueTeam()
-    {
-        $team = Team::factory()->create();
-        $leaderUser = User::factory()->create([
-            'leader' => 1,
-            'blueteam' => $team->id,
-        ]);
-        $user = User::factory()->create();
-        $response = $this->actingAs($user)->post('/blueteam/join', [
-            'result' => $team->name,
-        ]);
-        $response->assertViewIs('blueteam.home');
-        $response->assertSee([$team->name, $team->balance, $leaderUser->username, $user->username]);
-    }
-
-    public function testBlueTeamHomePageDisplaysTeamInfo()
-    {
-        $team = Team::factory()->create();
-        $leaderUser = User::factory()->create([
-            'blueteam' => $team->id,
-            'leader' => 1,
-        ]);
-        $response = $this->actingAs($leaderUser)->get('/blueteam/home');
-        $response->assertViewIs('blueteam.home');
-        $response->assertSee([$team->name, $team->balance, $leaderUser->name]);
-    }
-
-    public function testBlueTeamCanViewAssetsInStore()
-    {
-        $team = Team::factory()->create();
+        $blue = Team::factory()->create();
         $user = User::factory()->create([
-            'blueteam' => $team->id
+            'blueteam' => $blue->id,
         ]);
-        $response = $this->actingAs($user)->get('/blueteam/store');
-        $response->assertViewIs('blueteam.store');
-        $response->assertSee("Access Control Audit");
-    }
-
-    public function testBlueTeamCanAddToCart()
-    {
-        $team = Team::factory()->create([
-            'balance' => 1000,
-        ]);
-        $user = User::factory()->create([
-            'blueteam' => $team->id
-        ]);
-        $results = [];
-        $results += ["Firewall" => 1];
-        $response = $this->actingAs($user)->post('/blueteam/buy', [
-            'results' => $results,
-        ]);
-        $response->assertViewIs('blueteam.store');
-        $response->assertSee("Firewall");
-    }
-
-    public function testBlueTeamCanBuyAssets()
-    {
-        $team = Team::factory()->create([
-            'balance' => 1000,
-        ]);
-        $user = User::factory()->create([
-            'blueteam' => $team->id,
-            'leader' => 1,
-        ]);
-        $results = [];
-        $results += ["Firewall" => 1];
-        $this->actingAs($user)->post('/blueteam/buy', [
-            'results' => $results,
-        ]);
-        $expectedBalance = $team->balance - Asset::get("Firewall")->purchase_cost;
-        $response = $this->actingAs($user)->get('/blueteam/endturn');
-        $response->assertViewIs('blueteam.home');
-        $response->assertSee('Revenue: ' . $expectedBalance);
-    }
-
-    public function testBlueTeamCanViewAssetsInInventory()
-    {
-        $asset = Asset::getBuyableBlue()[0];
-        $team = Team::factory()->create();
-        $user = User::factory()->create([
-            'blueteam' => $team->id,
-        ]);
-        $this->be($user);
-        $response = $this->get('/blueteam/inventory');
-        $response->assertSee("You have no assets.");
-
-        Inventory::factory()->create([
-            'asset_name' => $asset->name,
-            'team_id' => $team->id,
-            'quantity' => 5,
-        ]);
-        $response = $this->get('/blueteam/inventory');
-        $response->assertSeeInOrder([$asset->name, "5"]);
+        $red = Team::factory()->red()->create();
+        $attack1 = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack1->detection_level = 3;
+        $attack1->setNotified(false);
+        $attack2 = Attack::create('SynFlood', $red->id, $blue->id);
+        $attack2->detection_level = 3;
+        $attack2->setNotified(false);
+        $response = $this->actingAs($user)->get('/blueteam/home');
+        $response->assertSeeInOrder([$attack1->name, $attack2->name]);
+        $response->assertSee($red->name);
     }
 
     public function testBlueTeamCanViewAttackNotificationsLevel2()
@@ -147,16 +48,15 @@ class BlueTeamFeatureTest extends TestCase
             'blueteam' => $blue->id,
         ]);
         $red = Team::factory()->red()->create();
-        Inventory::factory()->create(['team_id' => $blue->id, 'asset_name' => 'Security Analyst']);
         $attack1 = Attack::create('SQLInjection', $red->id, $blue->id);
         $attack1->detection_level = 2;
         $attack1->setNotified(false);
         $attack2 = Attack::create('SynFlood', $red->id, $blue->id);
         $attack2->detection_level = 2;
         $attack2->setNotified(false);
-
         $response = $this->actingAs($user)->get('/blueteam/home');
         $response->assertSeeInOrder([$attack1->name, $attack2->name]);
+        $response->assertDontSee($red->name);
     }
 
     public function testBlueTeamAttackNotificationsLevel1()
@@ -353,23 +253,6 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertDontSee($attack1->name);
     }
 
-    public function testLeaderboardDisplaysInfo()
-    {
-        $blue1 = Team::factory()->create(['reputation' => 10000]);
-        $blue2 = Team::factory()->create(['reputation' => 500]);
-        $blue3 = Team::factory()->create(['reputation' => 100]);
-        $user = User::factory()->create([
-            'blueteam' => $blue1->id,
-            'leader' => 1,
-        ]);
-        $this->be($user);
-
-        $response = $this->get('blueteam/leaderboard');
-        $response->assertSeeInOrder([$blue1->name, $blue1->reputation, 
-                                    $blue2->name, $blue2->reputation,
-                                    $blue3->name, $blue3->reputation]);
-    }
-
     public function testAttacksPageDisplaysCorrectInfo()
     {
         $blue = Team::factory()->create();
@@ -390,50 +273,4 @@ class BlueTeamFeatureTest extends TestCase
         $response->assertSee($attack2->name);
     }
 
-    public function testReputationGain()
-    {
-        $team = Team::factory()->create();
-        $user = User::factory()->create([
-            'blueteam' => $team->id,
-            'leader' => 1,
-        ]);
-        $game = Game::find(1);
-        $this->be($user);
-        $this->get('blueteam/home')->assertSee("Reputation: 0");
-        
-        $team->created_at = $team->created_at->subDays(1);
-        $team->update();
-        $game->endTurn();
-        $this->get('blueteam/home')->assertSee("Reputation: 50");//+50
-
-        $team->created_at = $team->created_at->subDays(1);
-        $team->update();
-        $game->endTurn();
-        $this->get('blueteam/home')->assertSee("Reputation: 150");//+100
-    }
-
-    public function testPayToRemoveBonus() {
-        $blue = Team::factory()->create();
-        $user = User::factory()->create([
-            'blueteam' => $blue->id,
-            'leader' => 1,
-        ]);
-        $this->be($user);
-        $red = Team::factory()->red()->create();
-
-        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
-        $tags = ["PayToRemove"];
-        $bonus = Bonus::createBonus($red->id, $tags);
-        $bonus->target_id = $blue->id;
-        $bonus->attack_id = $attack->id;
-        $bonus->removalCostFactor = 2;
-        $bonus->payload_name = "PayloadName";
-        $bonus->update();
-
-        $this->get('blueteam/status')->assertSee("Pay To Remove");
-        $response = $this->post('/blueteam/removeBonus', [
-            'bonusID' => $bonus->id,
-        ]);
-        $response->assertViewIs('blueteam.status')->assertDontSee("Pay To Remove");
-    }
 }

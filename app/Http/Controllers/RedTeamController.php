@@ -317,7 +317,7 @@ class RedTeamController extends Controller {
             $assets = $assets->sortBy($sort);
         }
         $assets = $assets->paginate(5);
-        $assets->setPath('/blueteam/filter');
+        $assets->setPath('/redteam/filter');
         return view('redteam.store')->with(compact('redteam', 'assets', 'tags', 'ownedAssets'));
     }
 

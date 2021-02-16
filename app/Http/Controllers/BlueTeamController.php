@@ -164,8 +164,9 @@ class BlueTeamController extends Controller {
     }
 
     public function cancel(Request $request){
-        if(empty($_POST['cancel'])) return $this->store($request);
-        $result = array_keys($_POST['cancel'])[0];
+        if(empty($request->cancel)) return $this->store($request);
+        //throw new Exception($_POST['cancel']['Access Control Audit']);
+        $result = $request->cancel;
         $view = $this->store($request);
         if($request->cart == "buy"){
             $session = session('buyCart');
@@ -264,6 +265,13 @@ class BlueTeamController extends Controller {
             $assetNames = $results;
         }
         if(empty($assetNames)){
+            if($totalCost == 0){
+                $cart = session('buyCart');
+                foreach($cart ?? [] as $assetName){
+                    $asset = Asset::getByName($assetName);
+                    $totalCost += $asset->purchase_cost;
+                }
+            }
             return view('blueteam.removecart')->with(compact('blueteam','totalCost'));
         }
         $buyCart = session('buyCart');
@@ -295,9 +303,9 @@ class BlueTeamController extends Controller {
         $count = $request->invCount;
         for($i = 1; $i < $count + 1; $i++){
             $result = "result".$i;
-            $redteamId = $request->$result;
-            if($redteamId != null){
-                $redteam = Team::get($redteamId);
+            $redteamName = $request->$result;
+            if($redteamName != null){
+                $redteam = Team::get($redteamName);
                 $name = "name" . $count;
                 $asset = Asset::get($request->$name);
                 $inv = $blueteam->inventory($asset, 1);
