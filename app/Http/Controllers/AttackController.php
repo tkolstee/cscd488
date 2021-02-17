@@ -19,6 +19,7 @@ class AttackController extends Controller
             case 'sqlinjectioncheck': return $this->sqlInjectionCheckAnswer($request); break;
             case 'synflood': return $this->synFlood($request); break;
             case 'malvertise': return $this->malvertise($request); break;
+            case 'xss': return $this->xss($request); break;
             default: return (new RedTeamController)->home(); break;
         }
     }
@@ -27,6 +28,16 @@ class AttackController extends Controller
         $redteam = Team::find($attack->redteam);
         $attack->onAttackComplete();
         return (new RedTeamController)->home()->with(compact('attMsg'));
+    }
+
+    public function xss(request $request){
+        /*$attack = Attack::find($request->attID);
+        if($attack == null) throw new AttackNotFoundException();
+        $blueteam = Team::find($attack->blueteam);
+        $redteam = Team::find($attack->redteam);*/
+        $script = $request->script;
+        return view('minigame.xss')->with(compact('script'));
+        return view('minigame.xss')->with(compact('redteam','blueteam','attack','script'));
     }
 
     public function malvertise(request $request){
