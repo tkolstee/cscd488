@@ -29,7 +29,7 @@ class RedStoreTest extends TestCase
 
     public function assignTeam(){
         $team = Team::factory()->red()->create([
-            'balance' => 1000,
+            'balance' => 5000,
         ]);
         $user = Auth::user();
         $user->redteam = $team->id;

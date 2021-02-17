@@ -10,7 +10,7 @@ class WebsiteAsset extends Asset
 
     public $_name    = "Website";
     public $_class_name = "Website";
-    public $_tags    = [];
+    public $_tags    = ['ExternalNetworkService'];
     public $_blue = 1;
     public $_buyable = 1;
     public $_purchase_cost = 200;

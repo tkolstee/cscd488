@@ -15,7 +15,7 @@ class DDosAttack extends Attack {
     public $_initial_detection_risk = 5;
     public $_initial_analysis_risk  = 4.5;
     public $_initial_attribution_risk = 1;
-    public $_initial_energy_cost    = 200;
+    public $_initial_energy_cost    = 400;
     public $_help_text              = "Like DoS, but involving hundreds of servers. Hard to recover from.";
 
     public $learn_page              = true;

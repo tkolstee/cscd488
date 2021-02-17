@@ -15,7 +15,7 @@ class PhishingLinkAttack extends Attack {
     public $_initial_detection_risk = 1;
     public $_initial_analysis_risk  = 2.5;
     public $_initial_attribution_risk = 2.5;
-    public $_initial_energy_cost    = 50;
+    public $_initial_energy_cost    = 150;
     public $_help_text              = "Get an employee to click on a malicious link.";
 
     public $learn_page              = true;
