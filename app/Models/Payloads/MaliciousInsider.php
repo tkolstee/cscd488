@@ -4,6 +4,7 @@ namespace App\Models\Payloads;
 
 use App\Models\Payload;
 use App\Models\Inventory;
+use App\Models\Team;
 
 class MaliciousInsider extends Payload 
 {

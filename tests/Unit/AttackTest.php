@@ -396,7 +396,7 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         $attack = Attack::create('SQLInjection', $red->id, $blue->id);
         $attack->detection_risk = 0; //Shouldn't be detected
-        $attack->difficult = 0; //Attack will succeed
+        $attack->difficulty = 0; //Attack will succeed
         Attack::updateAttack($attack);
         $attack->onPreAttack();
         
@@ -410,4 +410,7 @@ class AttackTest extends TestCase {
         $attack->onAttackComplete();
         $this->assertEquals(1, $attack->detection_level);
     }
+
+    
+
 }
