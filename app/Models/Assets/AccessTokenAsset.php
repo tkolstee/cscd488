@@ -14,7 +14,7 @@ class AccessTokenAsset extends Asset
      */
     public $_name    = "Access Token";
     public $_class_name = "AccessToken";
-    public $_tags    = [];
+    public $_tags    = ['Targeted'];
     public $_blue = 0;
     public $_buyable = 0;
     public $_purchase_cost = 0;
