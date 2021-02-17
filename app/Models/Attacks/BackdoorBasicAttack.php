@@ -11,8 +11,8 @@ class BackdoorBasicAttack extends Attack {
     public $_class_name             = "BackdoorBasic";
     public $_tags                   = ['Internal'];
     public $_prereqs                = [];
-    public $_initial_difficulty     = 2;
-    public $_initial_detection_risk = 2;
+    public $_initial_success_chance  = 2;
+    public $_initial_detection_chance = 2;
     public $_initial_energy_cost    = 100;
     public $_help_text              = "Use existing access tokens to secure more, ensuring you will maintain access to the company.";
 

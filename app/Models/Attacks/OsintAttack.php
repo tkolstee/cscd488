@@ -11,10 +11,10 @@ class OsintAttack extends Attack {
     public $_tags                   = [];
     public $_prereqs                = [];
     public $_payload_choice           = "SecInfo";
-    public $_initial_difficulty     = 4;
-    public $_initial_detection_risk = 0;
-    public $_initial_analysis_risk  = 0;
-    public $_initial_attribution_risk = 0;
+    public $_initial_success_chance = 4;
+    public $_initial_detection_chance = 0;
+    public $_initial_analysis_chance  = 0;
+    public $_initial_attribution_chance = 0;
     public $_initial_energy_cost    = 30;
     public $_help_text              = "Recon from public information.";
 

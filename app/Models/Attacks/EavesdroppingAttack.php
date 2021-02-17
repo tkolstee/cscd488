@@ -11,10 +11,10 @@ class EavesdroppingAttack extends Attack {
     public $_tags                   = [];
     public $_prereqs                = ['Internal', 'PrivilegedAccess'];
     public $_payload_choice         = 'Eavesdropping';
-    public $_initial_difficulty     = 1.5;
-    public $_initial_detection_risk = 1;
-    public $_initial_analysis_risk  = 3.5;
-    public $_initial_attribution_risk = 1;
+    public $_initial_success_chance = 1.5;
+    public $_initial_detection_chance = 1;
+    public $_initial_analysis_chance  = 3.5;
+    public $_initial_attribution_chance = 1;
     public $_initial_energy_cost    = 400;
     public $_help_text              = "Spy on network traffic for credentials or info.";
 

@@ -11,10 +11,10 @@ class PhishingLinkAttack extends Attack {
     public $_tags                   = ['RequiresUserAction','TargetsEndpoints','CodeExecution'];
     public $_prereqs                = ['MaliciousWebsite'];
     public $_payload_tag          = 'EndpointExecutable';
-    public $_initial_difficulty     = 3.5;
-    public $_initial_detection_risk = 1;
-    public $_initial_analysis_risk  = 2.5;
-    public $_initial_attribution_risk = 2.5;
+    public $_initial_success_chance = 3.5;
+    public $_initial_detection_chance = 1;
+    public $_initial_analysis_chance  = 2.5;
+    public $_initial_attribution_chance = 2.5;
     public $_initial_energy_cost    = 150;
     public $_help_text              = "Get an employee to click on a malicious link.";
 

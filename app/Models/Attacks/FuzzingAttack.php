@@ -11,10 +11,10 @@ class FuzzingAttack extends Attack {
     public $_tags                   = [];
     public $_prereqs                = ['ExternalNetworkService'];
     public $_payload_choice         = 'Fuzzing';
-    public $_initial_difficulty     = 3.5;
-    public $_initial_detection_risk = 3;
-    public $_initial_analysis_risk  = 1;
-    public $_initial_attribution_risk = 0.5;
+    public $_initial_success_chance = 3.5;
+    public $_initial_detection_chance = 3;
+    public $_initial_analysis_chance = 1;
+    public $_initial_attribution_chance = 0.5;
     public $_initial_energy_cost    = 200;
     public $_help_text              = "Exploit a service using randomized data.";
 

@@ -11,10 +11,10 @@ class DDosAttack extends Attack {
     public $_tags                   = [];
     public $_prereqs                = ['BotNet'];
     public $_payload_choice           = "Dos";
-    public $_initial_difficulty     = 1.25;
-    public $_initial_detection_risk = 5;
-    public $_initial_analysis_risk  = 4.5;
-    public $_initial_attribution_risk = 1;
+    public $_initial_success_chance = 1.25;
+    public $_initial_detection_chance = 5;
+    public $_initial_analysis_chance  = 4.5;
+    public $_initial_attribution_chance = 1;
     public $_initial_energy_cost    = 400;
     public $_help_text              = "Like DoS, but involving hundreds of servers. Hard to recover from.";
 

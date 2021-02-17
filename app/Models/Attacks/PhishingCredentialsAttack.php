@@ -11,10 +11,10 @@ class PhishingCredentialsAttack extends Attack {
     public $_tags                   = ['RequiresUserAction'];
     public $_prereqs                = ['FakeLoginSite'];
     public $_payload_choice           = 'BasicAccess';
-    public $_initial_difficulty     = 3.5;
-    public $_initial_detection_risk = 0.5;
-    public $_initial_analysis_risk  = 4;
-    public $_initial_attribution_risk = 1;
+    public $_initial_success_chance = 3.5;
+    public $_initial_detection_chance = 0.5;
+    public $_initial_analysis_chance  = 4;
+    public $_initial_attribution_chance = 1;
     public $_initial_energy_cost    = 100;
     public $_help_text              = "Get employee to use a fake login page.";
 
