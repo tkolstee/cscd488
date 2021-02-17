@@ -408,4 +408,16 @@ class AttackTest extends TestCase {
         $attack->onAttackComplete();
         $this->assertEquals(1, $attack->detection_level);
     }
+
+    public function testGetDifficulty() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack->calculated_success_chance = 0.20;
+        $this->assertEquals(4, $attack->getDifficulty());
+        $attack->calculated_success_chance = 0;
+        $this->assertEquals(5, $attack->getDifficulty());
+        $attack->calculated_success_chance = 1;
+        $this->assertEquals(0, $attack->getDifficulty());
+    }
 }
