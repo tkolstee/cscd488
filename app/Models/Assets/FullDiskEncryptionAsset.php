@@ -26,7 +26,7 @@ class FullDiskEncryptionAsset extends Asset {
                     $attack->calculated_difficulty = 4.94;
                 }
             }
-            $attack->updateAttack();
+            Attack::updateAttack($attack);
         }
     }
 }
