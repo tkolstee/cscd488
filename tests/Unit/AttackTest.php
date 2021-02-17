@@ -182,7 +182,7 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
-        $attack->calculated_detection_chance = 5;
+        $attack->calculated_detection_chance = 1;
         Attack::updateAttack($attack);
         $attack->calculateDetected();
         $this->assertTrue($attack->detection_level >= 1);
@@ -205,7 +205,7 @@ class AttackTest extends TestCase {
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
         $attack->success = true;
-        $attack->calculated_detection_chance = 5;
+        $attack->calculated_detection_chance = 1;
         Attack::updateAttack($attack);
         $attack->calculateDetected();
         $this->assertNotEquals(0, $attack->detection_level);
@@ -220,13 +220,13 @@ class AttackTest extends TestCase {
 
         $this->assertEquals($baseAttack->success_chance, $attack->success_chance);
         $attack->changeDifficulty(10);
-        $this->assertEquals(5, $attack->calculated_success_chance);
-        $attack->changeDifficulty(-10);
         $this->assertEquals(1, $attack->calculated_success_chance);
-        $attack->success_chance = 5;
-        $attack->calculated_success_chance = 5;
+        $attack->changeDifficulty(-10);
+        $this->assertEquals(0.01, $attack->calculated_success_chance);
+        $attack->success_chance = 1;
+        $attack->calculated_success_chance = 1;
         $attack->changeDifficulty(-.2);
-        $this->assertEquals(4, $attack->calculated_success_chance);
+        $this->assertEquals(.8, $attack->calculated_success_chance);
     }
 
     public function testChangeDetectionRisk() {
@@ -236,13 +236,13 @@ class AttackTest extends TestCase {
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
         $attack->changeDetectionRisk(10);
-        $this->assertEquals(5, $attack->calculated_detection_chance);
+        $this->assertEquals(1, $attack->calculated_detection_chance);
         $attack->changeDetectionRisk(-10);
-        $this->assertEquals(0, $attack->calculated_detection_chance);
-        $attack->detection_chance = 5;
-        $attack->calculated_detection_chance = 5;
+        $this->assertEquals(0.01, $attack->calculated_detection_chance);
+        $attack->detection_chance = 1;
+        $attack->calculated_detection_chance = 1;
         $attack->changeDetectionRisk(-.2);
-        $this->assertEquals(4, $attack->calculated_detection_chance);
+        $this->assertEquals(0.8, $attack->calculated_detection_chance);
     }
 
     public function testCreateAttack() {
@@ -307,9 +307,9 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         Inventory::factory()->create(['asset_name' => 'SecurityAnalyst', 'team_id' => $blue->id]);
         $attack = Attack::create('SynFlood', $red->id, $blue->id);
-        $attack->calculated_detection_chance = 5;
-        $attack->analysis_chance = 2;
-        $attack->calculated_analysis_chance = 2;
+        $attack->calculated_detection_chance = 1;
+        $attack->analysis_chance = 0.4;
+        $attack->calculated_analysis_chance = 0.4;
         $analysis_risk = $attack->calculated_analysis_chance;
         $attack->onPreAttack();
         $this->assertEquals($analysis_risk + (.3 * $analysis_risk), $attack->calculated_analysis_chance);
@@ -394,7 +394,7 @@ class AttackTest extends TestCase {
         $blue = Team::factory()->create();
         $attack = Attack::create('SQLInjection', $red->id, $blue->id);
         $attack->detection_chance = 0; //Shouldn't be detected
-        $attack->success_chance = 0; //Attack will succeed
+        $attack->success_chance = 1; //Attack will succeed
         Attack::updateAttack($attack);
         $attack->onPreAttack();
         

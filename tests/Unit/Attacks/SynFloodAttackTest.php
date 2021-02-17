@@ -42,7 +42,7 @@ class SynFloodAttackTest extends TestCase {
         $firewall = new FirewallAsset;
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $firewall->class_name]);
         $expected = $attack;
-        $expected->success_chance += 2;
+        $expected->success_chance -= 0.4;
         $attack->onPreAttack();
         $this->assertEquals($expected, $attack);
     }

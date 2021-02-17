@@ -62,7 +62,7 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $vpn->class_name]);
         $expected = $attack;
         $expected->possible = true;
-        $expected->success_chance = 1;
+        $expected->success_chance = 0.8;
         $attack->onPreAttack();
         $attack = Attack::get($attack->class_name, $attack->redteam, $attack->blueteam);
         $this->assertEquals($expected->possible, $attack->possible);
@@ -71,7 +71,7 @@ class SQLInjectionAttackTest extends TestCase {
 
     public function testMinigameDifficultyFiveAlwaysFails(){
         $attack = $this->createAttackAndTeams();
-        $attack->success_chance = 5;
+        $attack->success_chance = 0;
         Attack::updateAttack($attack);
         $attack->onPreAttack();
         $sqldatabase = new SQLDatabaseAsset;
