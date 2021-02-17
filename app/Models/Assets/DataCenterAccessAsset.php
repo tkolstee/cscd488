@@ -8,7 +8,7 @@ class DataCenterAccessAsset extends Asset {
 
     public $_name    = "Datacenter Access";
     public $_class_name = "DataCenterAccess";
-    public $_tags    = [];
+    public $_tags    = ['Targeted'];
     public $_blue = 0;
     public $_buyable = 0;
     public $_purchase_cost = 0;

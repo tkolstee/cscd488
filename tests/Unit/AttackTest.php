@@ -411,6 +411,43 @@ class AttackTest extends TestCase {
         $this->assertEquals(1, $attack->detection_level);
     }
 
-    
+    public function testTargetedPrereqNoPrereq(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('ImplantedHWOffice', $red->id, $blue->id);
+        $attack->onPreAttack();
+        $this->assertFalse($attack->possible);
+    }
+
+    public function testTargetedPrereqWrongTeam(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $blue2 = Team::factory()->create();
+        $inv = Inventory::create([
+            'asset_name' => 'PhysicalAccess',
+            'team_id' => $red->id,
+            'quantity' => 1,
+            'level' => 1,
+            'info' => $blue2->name,
+        ]);
+        $attack = Attack::create('ImplantedHWOffice', $red->id, $blue->id);
+        $attack->onPreAttack();
+        $this->assertFalse($attack->possible);
+    }
+
+    public function testTargetedPrereqValid(){
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $inv = Inventory::create([
+            'asset_name' => 'PhysicalAccess',
+            'team_id' => $red->id,
+            'quantity' => 1,
+            'level' => 1,
+            'info' => $blue->name,
+        ]);
+        $attack = Attack::create('ImplantedHWOffice', $red->id, $blue->id);
+        $attack->onPreAttack();
+        $this->assertTrue($attack->possible);
+    }
 
 }

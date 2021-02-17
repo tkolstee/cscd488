@@ -10,7 +10,7 @@ class InsiderAsset extends Asset
 
     public $_name    = "Insider";
     public $_class_name = "Insider";
-    public $_tags    = ['AccessToken'];
+    public $_tags    = ['AccessToken','Targeted'];
     public $_blue = 0;
     public $_buyable = 0;
 

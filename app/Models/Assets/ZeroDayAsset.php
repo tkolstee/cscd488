@@ -9,7 +9,7 @@ class ZeroDayAsset extends Asset
 
     public $_name    = "0-day Exploit";
     public $_class_name = "ZeroDay";
-    public $_tags    = [];
+    public $_tags    = ['Targeted'];
     public $_blue = 0;
     public $_buyable = 1;
     public $_purchase_cost = 2000;
