@@ -31,12 +31,11 @@ class AttackController extends Controller
     }
 
     public function xss(request $request){
-        /*$attack = Attack::find($request->attID);
+        $attack = Attack::find($request->attID);
         if($attack == null) throw new AttackNotFoundException();
         $blueteam = Team::find($attack->blueteam);
-        $redteam = Team::find($attack->redteam);*/
+        $redteam = Team::find($attack->redteam);
         $script = $request->script;
-        return view('minigame.xss')->with(compact('script'));
         return view('minigame.xss')->with(compact('redteam','blueteam','attack','script'));
     }
 
