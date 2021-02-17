@@ -62,16 +62,16 @@ class SQLInjectionAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $vpn->class_name]);
         $expected = $attack;
         $expected->possible = true;
-        $expected->difficulty = 1;
+        $expected->success_chance = 1;
         $attack->onPreAttack();
         $attack = Attack::get($attack->class_name, $attack->redteam, $attack->blueteam);
         $this->assertEquals($expected->possible, $attack->possible);
-        $this->assertEquals($expected->difficulty, $attack->difficulty);
+        $this->assertEquals($expected->success_chance, $attack->success_chance);
     }
 
     public function testMinigameDifficultyFiveAlwaysFails(){
         $attack = $this->createAttackAndTeams();
-        $attack->difficulty = 5;
+        $attack->success_chance = 5;
         Attack::updateAttack($attack);
         $attack->onPreAttack();
         $sqldatabase = new SQLDatabaseAsset;
@@ -84,7 +84,7 @@ class SQLInjectionAttackTest extends TestCase {
         $response = $controller->sqlInjection($request);
         $attackAfter = Attack::find(1);
         $this->assertEquals($attack->name, $attackAfter->name);
-        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals($attack->success_chance, $attackAfter->success_chance);
         $this->assertEquals(0, $attackAfter->success);
     }
 }

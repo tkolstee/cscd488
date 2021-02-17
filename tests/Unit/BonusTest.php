@@ -142,10 +142,10 @@ class BonusTest extends TestCase {
         $bonus->target_id = $blueteam->id;
         $bonus->update();
         $attack = Attack::create('SynFlood', $team->id, $blueteam->id);
-        $diffBefore = $attack->calculated_difficulty;
+        $diffBefore = $attack->calculated_success_chance;
         $attack->onPreAttack();
         $this->assertTrue($attack->possible);
-        $this->assertEquals($diffBefore - 1, $attack->calculated_difficulty);
+        $this->assertEquals($diffBefore - 1, $attack->calculated_success_chance);
     }
 
     public function testChanceToRemove(){

@@ -59,7 +59,7 @@ class MalvertiseAttackTest extends TestCase {
         $response = $controller->malvertise($request);
         $attackAfter = Attack::find($attack->id);
         $this->assertEquals($attack->name, $attackAfter->name);
-        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals($attack->success_chance, $attackAfter->success_chance);
         $this->assertEquals(1, $attackAfter->success);
     }
 
@@ -74,7 +74,7 @@ class MalvertiseAttackTest extends TestCase {
         $response = $controller->malvertise($request);
         $attackAfter = Attack::find($attack->id);
         $this->assertEquals($attack->name, $attackAfter->name);
-        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals($attack->success_chance, $attackAfter->success_chance);
         $this->assertEquals(0, $attackAfter->success);
     }
 }
