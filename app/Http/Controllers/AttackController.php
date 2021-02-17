@@ -7,13 +7,16 @@ use App\Models\Attack;
 use App\Models\Team;
 use App\Exceptions\AttackNotFoundException;
 use Exception;
-use Auth;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class AttackController extends Controller
 {
     public function page($page, Request $request) {
         switch($page){
             case 'sqlinjection': return $this->sqlInjection($request); break;
+            case 'sqlinjectioncheck': return $this->sqlInjectionCheckAnswer($request); break;
             case 'synflood': return $this->synFlood($request); break;
             case 'malvertise': return $this->malvertise($request); break;
             default: return (new RedTeamController)->home(); break;
@@ -78,24 +81,68 @@ class AttackController extends Controller
     public function sqlInjection(request $request){
         $attack = Attack::find($request->attID);
         if($attack == null) throw new AttackNotFoundException();
-        $blueteam = Team::find($attack->blueteam);
         $url = $request->url;
+        $this->sqlSetUp();
+
+        try {
+            $result = DB::connection('sql_minigame')->select(DB::raw("SELECT * FROM users WHERE id = '$url'"));
+            if ($result == null) { $result = "Nothing happened!"; }
+        }
+        catch (QueryException $e) {
+            $result = "You caused a query error!";
+            if ($attack->calculated_difficulty <= 1) {
+                $attMsg = $result;
+                $attack->setSuccess(true);
+                return $this->attackComplete($attack, $attMsg);
+            }
+        }
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        return view('minigame.sqlinjection')->with(compact('attack', 'blueteam', 'redteam', 'result'));
+    }
+
+    public function sqlInjectionCheckAnswer($request){
+        $attack = Attack::find($request->attID);
+        $passIn = $request->pass;
+        $adminPass = DB::connection('sql_minigame')->table('users')->where('username', 'admin')->first()->password;
+
         $success = false;
-        $attMsg = "There was an application error and you were unsuccessful.";
-        switch($attack->difficulty){
-            case 1: $success = true; 
-                $attMsg = "There were no security measures so you were successful."; break;
-            case 2: if($url == "'") $success = true;
-                $attMsg = "There was a SQL error, so you were successful in testing if ".$blueteam->name." is vulnerable to SQL injection."; break;
-            case 3: if($url == "'--") $success = true;
-                $attMsg = "You were successful in getting past user validation."; break;
-            case 4: if($url == "' or 1=1--") $success = true;
-                $attMsg = "You were successful in getting past user validation and you see all products."; break;
-            default: break;
+        $attMsg = "You did not guess the admin's password correctly.";
+        if ($passIn == $adminPass) {
+            $success = true;
+            $attMsg = "You successfully discovered the admin's password!";
         }
         $attack->setSuccess($success);
-    
         return $this->attackComplete($attack, $attMsg);
     }
-    
+
+    public function sqlSetUp(){
+        $connect = 'sql_minigame';
+        Schema::connection($connect)->dropIfExists('users');
+        Schema::connection($connect)->dropIfExists('products');
+
+        Schema::connection($connect)->create('users', function($table){
+            $table->integer('id');
+            $table->text('username');
+            $table->text('password');
+        });
+        Schema::connection($connect)->create('products', function($table){
+            $table->increments('id');
+            $table->text('product_name');
+        });
+        
+        DB::connection($connect)->table('users')->insert([
+            'id' => rand(0, 999),
+            'username' => 'admin',
+            'password' => generateRandomString(),
+        ]);
+        DB::connection($connect)->table('users')->insert([
+            'id' => rand(0, 999),
+            'username' => 'user',
+            'password' => generateRandomString(),
+        ]);
+        DB::connection($connect)->table('products')->insert([
+            'product_name' => 'product1',
+        ]);
+    }
 }

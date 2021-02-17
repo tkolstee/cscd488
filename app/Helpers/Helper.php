@@ -10,3 +10,19 @@ if (!function_exists('attack_broadcastable')) {
         return (!$attack->isNews && $attack->created_at->diffInDays() <= 3);
     }
 }
+
+if (!function_exists('generateRandomString')) {
+    /**
+     * Generates a 'random' alphanumeric string of length 10
+     * Intended for use in sql injection minigame to generate fake passwords in plain text.
+     */
+    function generateRandomString($length = 10) {
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charsLength = strlen($chars);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $chars[rand(0, $charsLength - 1)];
+        }
+        return $randomString;
+    }
+}

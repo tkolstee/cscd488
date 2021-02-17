@@ -17,10 +17,10 @@
         {{ $actionMsg }}
         @endif
         <h3>Team Members:</h3>
-        <p class="userName">{{ $leader->username }}</p<br>
+        <p class="userName">{{ $leader->username ?? ''}}</p<br>
         
         @foreach ($members ?? [] as $member)
-        {{ $member->username }}<br>
+        {{ $member->username ?? ''}}<br>
         @endforeach
         
         @if (($turn ?? 0) == 1)
