@@ -23,7 +23,7 @@ class FullDiskEncryptionAsset extends Asset {
             $invs = $blueteam->inventories();
             foreach($invs as $inv){
                 if($inv->asset_name == "StrongPassword"){
-                    $attack->calculated_difficulty = 4.94;
+                    $attack->calculated_difficulty = 4.85;
                 }
             }
             Attack::updateAttack($attack);
