@@ -34,7 +34,7 @@ class PayloadTest extends TestCase {
     public function testPayloadOnPreAttackCanIncreaseSuccess() {
         $attack = $this->createTeamsAndAttack();
         $initialDiff = $attack->calculated_success_chance;
-        $this->assertEquals(0.4, $attack->calculated_success_chance);
+        $this->assertEquals(0.6, $attack->calculated_success_chance);
         $payload = new Payload;
         $payload->percentIncreasedSuccess = 20;
         $payload->onPreAttack($attack);

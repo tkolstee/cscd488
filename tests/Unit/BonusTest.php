@@ -145,7 +145,7 @@ class BonusTest extends TestCase {
         $diffBefore = $attack->calculated_success_chance;
         $attack->onPreAttack();
         $this->assertTrue($attack->possible);
-        $this->assertEquals($diffBefore/2, $attack->calculated_success_chance);
+        $this->assertEquals($diffBefore * 0.5, $attack->calculated_success_chance);
     }
 
     public function testChanceToRemove(){

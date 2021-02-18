@@ -222,7 +222,7 @@ class AttackTest extends TestCase {
         $attack->changeDifficulty(10);
         $this->assertEquals(1, $attack->calculated_success_chance);
         $attack->changeDifficulty(-10);
-        $this->assertEquals(0.01, $attack->calculated_success_chance);
+        $this->assertEquals(0.2, $attack->calculated_success_chance);
         $attack->success_chance = 1;
         $attack->calculated_success_chance = 1;
         $attack->changeDifficulty(-.2);
@@ -238,7 +238,7 @@ class AttackTest extends TestCase {
         $attack->changeDetectionRisk(10);
         $this->assertEquals(1, $attack->calculated_detection_chance);
         $attack->changeDetectionRisk(-10);
-        $this->assertEquals(0.01, $attack->calculated_detection_chance);
+        $this->assertEquals(0.2, $attack->calculated_detection_chance);
         $attack->detection_chance = 1;
         $attack->calculated_detection_chance = 1;
         $attack->changeDetectionRisk(-.2);
