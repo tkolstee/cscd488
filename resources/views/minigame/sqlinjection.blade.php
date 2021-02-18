@@ -9,7 +9,7 @@
     <h2>Attempt to find the admins password using sql injection!</h2>
 @endif
 
-<strong>Difficulty: {{ $attack->getDifficulty() }}</strong>
+<strong>Difficulty: {{ $attack->getDifficulty() }}/5</strong>
 
 @if (!empty($result))
     Result = {{var_dump($result)}}    
