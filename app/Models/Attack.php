@@ -241,17 +241,17 @@ class Attack extends Model
 
     public function calculateDetected() {
         $rand = rand(0, 100)/100;
-        if ($rand > $this->calculated_detection_chance) {
+        if ($rand >= $this->calculated_detection_chance) {
             $this->detection_level = 0;
         }
         else {
             $this->detection_level = 1;
             $rand = rand(0, 100)/100;
-            if ($rand < $this->calculated_analysis_chance){
+            if ($rand <= $this->calculated_analysis_chance){
                 $this->detection_level = 2;
                 $this->checkAnalysisBonus();
                 $rand = rand(0, 100)/100;
-                if($rand < $this->calculated_attribution_chance){
+                if($rand <= $this->calculated_attribution_chance){
                     $this->detection_level = 3;
                 }
             }
