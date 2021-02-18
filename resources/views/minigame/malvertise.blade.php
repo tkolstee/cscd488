@@ -8,7 +8,7 @@
     <?php function random($attack){
         $randInt = rand(1,4);
         $val = 0;
-        if($randInt > $attack->difficulty - 1){
+        if($randInt > $attack->getDifficulty() - 1){
             $val = 1;
         }
         return $val;

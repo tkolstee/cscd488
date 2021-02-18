@@ -3,13 +3,13 @@
 @section('title', 'SQL Injection Attack')
 
 @section('pagecontent')
-@if ($attack->calculated_success_chance <= 1)
+@if ($attack->getDifficulty() <= 1)
     <h2>Attempt to cause a SQL error!</h2>
-@elseif ($attack->calculated_success_chance > 1)
+@elseif ($attack->getDifficulty() > 1)
     <h2>Attempt to find the admins password using sql injection!</h2>
 @endif
 
-<strong>Difficulty: {{ $attack->calculated_success_chance }}</strong>
+<strong>Difficulty: {{ $attack->getDifficulty() }}</strong>
 
 @if (!empty($result))
     Result = {{var_dump($result)}}    
