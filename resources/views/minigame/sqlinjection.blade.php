@@ -33,7 +33,7 @@
     </div>
 </form>
 
-@if($attack->calculated_success_chance > 1)
+@if($attack->getDifficulty() > 1)
     <form method="POST" action="/attack/sqlinjectioncheck">
         @csrf
         <div class="form-group row">
