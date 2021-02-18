@@ -116,6 +116,35 @@ class Team extends Model
         return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $assetName)->where('level', '=', $level)->where('info' ,'=', $info)->first();
     }
 
+    public function createTrade($inv_id, $price){
+        $inv = Inventory::find($inv_id);
+        if($inv == null)
+            throw new InventoryNotFoundException();
+        if($inv->team_id != $this->id)
+            throw new InventoryNotFoundException();
+        $asset = Asset::get($inv->asset_name);
+        if($asset->buyable == 0)
+            return false;
+        if(in_array("Targeted", $asset->tags) && $inv->info != null){
+            return false;
+        }
+        $trade = Trade::createTrade($this->id, $inv_id, $price);
+        if($trade != false)
+            return $trade;
+        else   
+            return false;
+    }
+
+    public function getCurrentTrades(){
+        $trades = Trade::all()->where('seller_id','=',$this->id)->where('buyer','=',null);
+        return $trades;
+    }
+
+    public function getCompletedTrades(){
+        $trades = Trade::all()->where('seller_id','=',$this->id)->where('buyer','!=',null);
+        return $trades;
+    }
+
     public function assets() {
         $inventories = Inventory::all()->where('team_id', '=', $this->id);
         $assets_arr = [];
