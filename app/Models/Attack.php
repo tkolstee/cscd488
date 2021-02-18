@@ -26,8 +26,8 @@ class Attack extends Model
     public $_prereqs = [];
     public $_payload_tag = null;
     public $_payload_choice = null;
-    public $_initial_success_chance = 3;
-    public $_initial_detection_chance = 3;
+    public $_initial_success_chance = 0.5;
+    public $_initial_detection_chance = 0.5;
     public $_initial_detection = 0;
     public $_initial_energy_cost = 100;
     public $_possible = true;

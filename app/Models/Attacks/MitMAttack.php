@@ -11,10 +11,10 @@ class MitMAttack extends Attack {
     public $_tags                   = [];
     public $_prereqs                = [];
     public $_payload_choice           = "BasicAccess";
-    public $_initial_success_chance = 3.5;
-    public $_initial_detection_chance = 1;
-    public $_initial_analysis_chance  = 3.5;
-    public $_initial_attribution_chance = 0.5;
+    public $_initial_success_chance = 0.3;
+    public $_initial_detection_chance = 0.2;
+    public $_initial_analysis_chance  = 0.7;
+    public $_initial_attribution_chance = 0.1;
     public $_initial_energy_cost    = 50;
     public $_help_text              = "Be a middleman for traffic between employees and the company.";
 

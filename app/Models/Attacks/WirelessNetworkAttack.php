@@ -11,10 +11,10 @@ class WirelessNetworkAttack extends Attack {
     public $_tags                   = [];
     public $_prereqs                = [];
     public $_payload_choice           = "BasicAccess";
-    public $_initial_success_chance = 2;
-    public $_initial_detection_chance = 1;
-    public $_initial_analysis_chance = 3;
-    public $_initial_attribution_chance = 0.5;
+    public $_initial_success_chance = 0.6;
+    public $_initial_detection_chance = 0.2;
+    public $_initial_analysis_chance = 0.6;
+    public $_initial_attribution_chance = 0.1;
     public $_initial_energy_cost    = 400;
     public $_help_text              = "Access the company's wireless network.";
 

@@ -11,10 +11,10 @@ class MaliciousInsiderAttack extends Attack {
     public $_tags                   = ['PhysicalAttack'];
     public $_prereqs                = [];
     public $_payload_choice         = 'MaliciousInsider';
-    public $_initial_success_chance = 2;
-    public $_initial_detection_chance = 2.5;
-    public $_initial_analysis_chance  = 5;
-    public $_initial_attribution_chance = 4;
+    public $_initial_success_chance = 0.6;
+    public $_initial_detection_chance = 0.6;
+    public $_initial_analysis_chance  = 1;
+    public $_initial_attribution_chance = 0.2;
     public $_initial_energy_cost    = 1000;
     public $_help_text              = "Get hired as an employee.";
 

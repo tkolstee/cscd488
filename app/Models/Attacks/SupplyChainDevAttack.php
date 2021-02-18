@@ -11,10 +11,10 @@ class SupplyChainDevAttack extends Attack {
     public $_tags                   = [];
     public $_prereqs                = ['SecInfo'];
     public $_payload_tag           = 'ServerExecutable';
-    public $_initial_success_chance = 4.5;
-    public $_initial_detection_chance = 2.5;
-    public $_initial_analysis_chance  = 3.5;
-    public $_initial_attribution_chance = 3;
+    public $_initial_success_chance = 0.1;
+    public $_initial_detection_chance = 0.5;
+    public $_initial_analysis_chance  = 0.75;
+    public $_initial_attribution_chance = 0.6;
     public $_initial_energy_cost    = 500;
     public $_help_text              = "Compromise a tool or dependency used by the company's software developement team.";
 

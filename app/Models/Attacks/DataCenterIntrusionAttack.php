@@ -10,10 +10,10 @@ class DataCenterIntrusionAttack extends Attack {
     public $_class_name             = "DataCenterIntrusion";
     public $_tags                   = ['PhysicalAttack'];
     public $_prereqs                = ['PhysicalAccess'];
-    public $_initial_success_chance = 3.25; //35% chance of success
-    public $_initial_detection_chance = 3.5; //30%
-    public $_initial_analysis_chance  = 1.5; //70%
-    public $_initial_attribution_chance = 3.75; //25%
+    public $_initial_success_chance = 0.35;
+    public $_initial_detection_chance = 0.3;
+    public $_initial_analysis_chance  = 0.70;
+    public $_initial_attribution_chance = 0.25;
     public $_initial_energy_cost    = 200;
     public $_help_text              = "Perform a physical attack on the target's data center. Requires physical access.";
 

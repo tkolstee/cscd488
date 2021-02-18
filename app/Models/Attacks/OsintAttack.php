@@ -11,7 +11,7 @@ class OsintAttack extends Attack {
     public $_tags                   = [];
     public $_prereqs                = [];
     public $_payload_choice           = "SecInfo";
-    public $_initial_success_chance = 4;
+    public $_initial_success_chance = 0.8;
     public $_initial_detection_chance = 0;
     public $_initial_analysis_chance  = 0;
     public $_initial_attribution_chance = 0;

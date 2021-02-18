@@ -11,8 +11,8 @@ class MalvertiseAttack extends Attack {
     public $_class_name             = "Malvertise";
     public $_tags                   = [];
     public $_prereqs                = ['AdDept'];
-    public $_initial_success_chance = 3;
-    public $_initial_detection_chance = 4;
+    public $_initial_success_chance = 0.4;
+    public $_initial_detection_chance = 0.8;
     public $_initial_energy_cost    = 100;
 
     public $learn_page              = true;

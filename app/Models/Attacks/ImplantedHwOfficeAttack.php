@@ -11,10 +11,10 @@ class ImplantedHwOfficeAttack extends Attack {
     public $_tags                   = ['HardwareAttack','PhysicalAttack'];
     public $_prereqs                = ['PhysicalAccess'];
     public $_payload_tag           = 'OfficeHW';
-    public $_initial_success_chance = 4.5;
-    public $_initial_detection_chance = 1.25;
-    public $_initial_analysis_chance = 2;
-    public $_initial_attribution_chance = 1.5;
+    public $_initial_success_chance = 0.1;
+    public $_initial_detection_chance = 0.25;
+    public $_initial_analysis_chance = 0.4;
+    public $_initial_attribution_chance = 0.3;
     public $_initial_energy_cost    = 300;
     public $_help_text              = "Plant a piece of hardware in the office.";
 
