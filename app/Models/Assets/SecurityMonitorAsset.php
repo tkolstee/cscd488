@@ -3,7 +3,6 @@
 namespace App\Models\Assets;
 
 use App\Models\Asset;
-use App\Models\Attack;
 
 class SecurityMonitorAsset extends Asset 
 {
@@ -15,10 +14,11 @@ class SecurityMonitorAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 50;
     public $_ownership_cost = 10;
+    public $_description = "Guarantee an attack will be detected if detection chance was at least 50%.";
 
     public function onPreAttack($attack)
     {
-        if($attack->calculated_detection_risk > 3){
+        if($attack->calculated_detection_risk > 0.5){
             $attack->changeDetectionChance(1);
         }
     }

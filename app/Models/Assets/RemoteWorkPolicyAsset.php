@@ -14,6 +14,7 @@ class RemoteWorkPolicyAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 500;
     public $_ownership_cost = -200;
+    public $_description = "Gives passive income each turn, and resist RequiresUserAction attacks. 10% weaker to physical attacks.";
 
     public function onPreAttack($attack)
     {

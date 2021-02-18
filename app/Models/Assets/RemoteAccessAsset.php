@@ -14,6 +14,7 @@ class RemoteAccessAsset extends Asset {
     public $_purchase_cost = 100;
     public $_ownership_cost = -200;
     public $_percent_revenue_bonus = 10;
+    public $_description = "Gives passive income each turn, but 10% weaker to all attacks.";
 
     function onPreAttack($attack) {
         $attack->changeSuccessChance(.1);

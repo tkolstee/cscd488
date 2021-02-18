@@ -14,10 +14,11 @@ class PRDeptAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 200;
     public $_ownership_cost = 20;
+    public $_description = "Decreases chance of success for easy to detect attacks.";
 
     public function onPreAttack($attack)
     {
-        if($attack->calculated_detection_risk > 3){
+        if($attack->calculated_detection_chance > 0.6){
             $attack->changeSuccessChance(-.1);
         }
     }

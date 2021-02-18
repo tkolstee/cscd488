@@ -14,6 +14,7 @@ class CallCenterAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 2000;
     public $_ownership_cost = -1500;
+    public $_description = "Open a call center that helps defend against various types of attacks.";
 
     public function onPreAttack($attack)
     {

@@ -14,6 +14,7 @@ class OnPremDataCenterAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 10000;
     public $_ownership_cost = -1000;
+    public $_description = "Helps detect, analyze, and attribute attacks, but makes you slightly weaker to physical attacks.";
 
     public function onPreAttack($attack)
     {

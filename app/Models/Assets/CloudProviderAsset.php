@@ -14,6 +14,7 @@ class CloudProviderAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 300;
     public $_ownership_cost = -200;
+    public $_description = "Use cloud services provider. Raises chance of detection, analysis, and attribution, but weak to physical attacks.";
 
     public function onPreAttack($attack)
     {
