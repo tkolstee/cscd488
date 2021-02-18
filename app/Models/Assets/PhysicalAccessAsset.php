@@ -8,7 +8,7 @@ class PhysicalAccessAsset extends Asset {
 
     public $_name    = "Physical Access";
     public $_class_name = "PhysicalAccess";
-    public $_tags    = [];
+    public $_tags    = ['Targeted'];
     public $_blue = 0;
     public $_buyable = 0;
     public $_purchase_cost = 0;

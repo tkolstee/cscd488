@@ -8,7 +8,7 @@ class ValidAccountAsset extends Asset {
 
     public $_name    = "Valid Account";
     public $_class_name = "ValidAccount";
-    public $_tags    = [];
+    public $_tags    = ['Targeted'];
     public $_blue = 0;
     public $_buyable = 0;
     public $_purchase_cost = 0;

@@ -20,6 +20,7 @@ use App\Models\Payloads\InformationStealing;
 use App\Models\Payloads\WebsiteDefacement;
 use App\Models\Payloads\Keylogger;
 use App\Models\Payloads\Ransomware;
+use App\Models\Payloads\MaliciousInsider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PayloadTest extends TestCase {
@@ -246,4 +247,19 @@ class PayloadTest extends TestCase {
         $this->assertEquals(20, $bonus->percentDiffDeducted);
         $this->assertEquals(20, $bonus->percentDetDeducted);
     }
+    
+    public function testMaliciousInsiderPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new MaliciousInsider;
+        $payload->onAttackComplete($attack);
+        $inventories = $redteam->inventories();
+        $this->assertEquals(2, count($inventories));
+        $account = $inventories->where('asset_name', '=', 'ValidAccount')->first();
+        $access = $inventories->where('asset_name', '=', 'PhysicalAccess')->first();
+        $this->assertEquals($blueteam->name, $account->info);
+        $this->assertEquals($blueteam->name, $access->info);
+    }
+
 }

@@ -1,3 +1,4 @@
+@if($paginator->lastPage() > 1)
 <div class="pagination">
     <div class="pagination-left-container">
         @if($paginator->currentPage() > 1)
@@ -18,3 +19,4 @@
         @endif
     </div><!--end pagination-right-container-->
 </div>
+@endif

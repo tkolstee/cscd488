@@ -347,9 +347,21 @@ class Attack extends Model
         foreach ($inventories as $inv) {
             $asset = Asset::get($inv->asset_name);
             $asset->onPreAttack($this);
-            $have[] = $asset->class_name;
-            foreach ($asset->tags as $tag) {
-                $have[] = $tag;
+            $validAsset = true;
+            if(in_array("Targeted", $asset->tags)){
+                if($asset->blue == 1)
+                    $expectedInfo = $redteam->name;
+                else   
+                    $expectedInfo = $blueteam->name;
+                if($expectedInfo != $inv->info)
+                    $validAsset = false;
+            }
+            if($validAsset){
+                $have[] = $asset->class_name;
+                foreach ($asset->tags as $tag) {
+                    if($tag != "Targeted")
+                        $have[] = $tag;
+                }
             }
         }
         if (!Game::prereqsDisabled()) {
