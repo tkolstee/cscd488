@@ -415,10 +415,10 @@ class Attack extends Model
 
     private function applyBonus($bonus){
         if(in_array("DifficultyDeduction", $bonus->tags)){
-            $this->changeDifficulty(-1 * 0.01 * $bonus->percentDiffDeducted);
+            $this->changeSuccessChance(-1 * 0.01 * $bonus->percentDiffDeducted);
         }
         if(in_array("DetectionDeduction", $bonus->tags)){
-            $this->changeDetectionRisk(-1 * 0.01 * $bonus->percentDetDeducted);
+            $this->changeDetectionChance(-1 * 0.01 * $bonus->percentDetDeducted);
         }
     }
 }
