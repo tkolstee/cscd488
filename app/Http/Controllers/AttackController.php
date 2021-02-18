@@ -36,6 +36,9 @@ class AttackController extends Controller
         $blueteam = Team::find($attack->blueteam);
         $redteam = Team::find($attack->redteam);
         $script = $request->script;
+        if($attack->calculated_difficulty >= 2){
+            $script = str_replace(array("<script>","</script>"), "", $script);
+        }
         return view('minigame.xss')->with(compact('redteam','blueteam','attack','script'));
     }
 
