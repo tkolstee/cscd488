@@ -14,14 +14,15 @@ class CloudProviderAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 300;
     public $_ownership_cost = -200;
+    public $_description = "Use cloud services provider. Raises chance of detection, analysis, and attribution, but weak to physical attacks.";
 
     public function onPreAttack($attack)
     {
-        $attack->changeDetectionRisk(0.25);
-        $attack->changeAnalysisRisk(0.25);
-        $attack->changeAttributionRisk(0.25);
+        $attack->changeDetectionChance(0.25);
+        $attack->changeAnalysisChance(0.25);
+        $attack->changeAttributionChance(0.25);
         if (in_array('PhysicalAttack', $attack->tags)){
-            $attack->changeDifficulty(-.5);
+            $attack->changeSuccessChance(.5);
         }
     }
 }

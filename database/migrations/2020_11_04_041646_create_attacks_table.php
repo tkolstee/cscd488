@@ -23,14 +23,14 @@ class CreateAttacksTable extends Migration
             $table->text('payload_choice')->nullable();
             $table->foreignId('blueteam')->constrained('teams')->onDelete('cascade');
             $table->foreignId('redteam')->constrained('teams')->onDelete('cascade');
-            $table->decimal('difficulty'); // 0.0 - 5.0, 0 always succeeds, 5 always fails.
-            $table->decimal('detection_risk');    // 0.0 - 5.0, 0 is never detected, 5 is always detected
-            $table->decimal('analysis_risk')->nullable();
-            $table->decimal('attribution_risk')->nullable();
-            $table->decimal('calculated_difficulty');
-            $table->decimal('calculated_detection_risk');
-            $table->decimal('calculated_analysis_risk')->nullable();
-            $table->decimal('calculated_attribution_risk')->nullable();
+            $table->decimal('success_chance'); // 0.0 - 5.0, 0 always succeeds, 5 always fails.
+            $table->decimal('detection_chance');    // 0.0 - 5.0, 0 is never detected, 5 is always detected
+            $table->decimal('analysis_chance')->nullable();
+            $table->decimal('attribution_chance')->nullable();
+            $table->decimal('calculated_success_chance');
+            $table->decimal('calculated_detection_chance');
+            $table->decimal('calculated_analysis_chance')->nullable();
+            $table->decimal('calculated_attribution_chance')->nullable();
             $table->boolean('possible')->default('true');
             $table->boolean('success')->nullable();
             $table->integer('detection_level')->nullable(); //0 = unseen, 1 = detected, 2 = analyzed by sec. analyst, etc.

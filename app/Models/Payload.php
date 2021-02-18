@@ -37,8 +37,7 @@ class Payload //extends Model
     public function onPreAttack($attack){
         //Handle changes to attack success rate here
         if ($this->percentIncreasedSuccess != 0){
-            $difficultyChange = -1 * $this->percentIncreasedSuccess;
-            $attack->changeDifficulty($difficultyChange);
+            $attack->changeSuccessChance($this->percentIncreasedSuccess/100);
         }
     }
     

@@ -24,7 +24,7 @@ class SQLMinigameFeatureTest extends TestCase {
 
     public function testSqlNonInjectionInput(){
         $attack = $this->createAttack();
-        $attack->calculated_difficulty = 2;
+        $attack->calculated_success_chance = 0.6;
         Attack::updateAttack($attack);
         $response = $this->post('/attack/sqlinjection', [
             'attID' => $attack->id,
@@ -36,7 +36,7 @@ class SQLMinigameFeatureTest extends TestCase {
 
     public function testSqlInjectionLevel1Display(){
         $attack = $this->createAttack();
-        $attack->calculated_difficulty = 1;
+        $attack->calculated_success_chance = 0.8;
         Attack::updateAttack($attack);
         $response = $this->post('/redteam/savePayload', [
             'attID' => $attack->id,
@@ -49,7 +49,7 @@ class SQLMinigameFeatureTest extends TestCase {
 
     public function testSqlInjectionLevel1(){
         $attack = $this->createAttack();
-        $attack->calculated_difficulty = 1;
+        $attack->calculated_success_chance = 0.8;
         Attack::updateAttack($attack);
         $response = $this->post('/attack/sqlinjection', [
             'attID' => $attack->id,
@@ -61,7 +61,7 @@ class SQLMinigameFeatureTest extends TestCase {
 
     public function testSqlInjectionLevel2Display(){
         $attack = $this->createAttack();
-        $attack->calculated_difficulty = 2;
+        $attack->calculated_success_chance = 0.6;
         Attack::updateAttack($attack);
         $response = $this->post('/redteam/savePayload', [
             'attID' => $attack->id,
@@ -74,7 +74,7 @@ class SQLMinigameFeatureTest extends TestCase {
 
     public function testSqlInjectionLevel2(){
         $attack = $this->createAttack();
-        $attack->calculated_difficulty = 2;
+        $attack->calculated_success_chance = 0.6;
         Attack::updateAttack($attack);
         
         $response = $this->post('/attack/sqlinjection', [

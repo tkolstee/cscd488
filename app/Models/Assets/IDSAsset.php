@@ -13,8 +13,11 @@ class IDSAsset extends Asset {
     public $_buyable = 1;
     public $_purchase_cost = 200;
     public $_ownership_cost = -200;
+    public $_description = "IDS costs money to maintain each turn, but helps detect and analyze attacks.";
 
     function onPreAttack($attack) {
-        
+        $attack->changeDetectionChance(0.25);
+        $attack->changeAnalysisChance(0.25);
+        $attack->changeAttributionChance(0.25);
     }
 }

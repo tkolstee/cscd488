@@ -19,15 +19,15 @@ class UserAwarenessAsset extends Asset {
 
     function onPreAttack($attack) {
         if (in_array("TargetsEndpoints", $attack->tags)) {
-            $attack->changeDifficulty(.2);
+            $attack->changeSuccessChance(-.2);
         }
         if (in_array('SocialEngineering', $attack->tags)){
-            $attack->changeDifficulty(.3);
-            $attack-> changeDetectionRisk(.1);
-            $attack-> changeAnalysisRisk(.1);
+            $attack->changeSuccessChance(-.3);
+            $attack-> changeDetectionChance(.1);
+            $attack-> changeAnalysisChance(.1);
         }
         if( in_array('PhysicalAttack', $attack->tags) || $attack->class_name == "MaliciousInsider"){
-            $attack->changeDifficulty(.1);
+            $attack->changeSuccessChance(-.1);
         }
     }
 }

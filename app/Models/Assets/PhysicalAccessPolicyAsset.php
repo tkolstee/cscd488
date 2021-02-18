@@ -3,7 +3,6 @@
 namespace App\Models\Assets;
 
 use App\Models\Asset;
-use App\Models\Attack;
 
 class PhysicalAccessPolicyAsset extends Asset {
 
@@ -18,7 +17,7 @@ class PhysicalAccessPolicyAsset extends Asset {
 
     function onPreAttack($attack) {
         if (in_array("PhysicalAttack", $attack->tags)) {
-            $attack->changeDifficulty(.2);
+            $attack->changeSuccessChance(-.2);
         }
     }
 }

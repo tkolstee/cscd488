@@ -14,11 +14,12 @@ class BranchOfficeAsset extends Asset
     public $_buyable = 1;
     public $_purchase_cost = 2000;
     public $_ownership_cost = -2500;
+    public $_description = "Open a branch office that helps defend against physical attacks.";
 
     public function onPreAttack($attack)
     {
         if (in_array('PhysicalAttack', $attack->tags)){
-            $attack->changeDifficulty(.15);
+            $attack->changeSuccessChance(-.15);
         }
     }
 }

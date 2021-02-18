@@ -42,7 +42,7 @@ class SynFloodAttackTest extends TestCase {
         $firewall = new FirewallAsset;
         Inventory::factory()->create(['team_id' => $attack->blueteam, 'asset_name' => $firewall->class_name]);
         $expected = $attack;
-        $expected->difficulty += 2;
+        $expected->success_chance -= 0.4;
         $attack->onPreAttack();
         $this->assertEquals($expected, $attack);
     }
@@ -59,7 +59,7 @@ class SynFloodAttackTest extends TestCase {
         $response = $controller->synFlood($request);
         $attackAfter = Attack::find($attack->id);
         $this->assertEquals($attack->name, $attackAfter->name);
-        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals($attack->success_chance, $attackAfter->success_chance);
         $this->assertEquals(1, $attackAfter->success);
     }
 
@@ -75,7 +75,7 @@ class SynFloodAttackTest extends TestCase {
         $response = $controller->synFlood($request);
         $attackAfter = Attack::find($attack->id);
         $this->assertEquals($attack->name, $attackAfter->name);
-        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals($attack->success_chance, $attackAfter->success_chance);
         $this->assertEquals(0, $attackAfter->success);
     }
 
@@ -91,7 +91,7 @@ class SynFloodAttackTest extends TestCase {
         $response = $controller->synFlood($request);
         $attackAfter = Attack::find($attack->id);
         $this->assertEquals($attack->name, $attackAfter->name);
-        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals($attack->success_chance, $attackAfter->success_chance);
         $this->assertEquals(0, $attackAfter->success);
     }
 
@@ -107,7 +107,7 @@ class SynFloodAttackTest extends TestCase {
         $response = $controller->synFlood($request);
         $attackAfter = Attack::find($attack->id);
         $this->assertEquals($attack->name, $attackAfter->name);
-        $this->assertEquals($attack->difficulty, $attackAfter->difficulty);
+        $this->assertEquals($attack->success_chance, $attackAfter->success_chance);
         $this->assertEquals(0, $attackAfter->success);
     }
 

@@ -5,7 +5,7 @@
 @section('pagecontent')
 <h4>Attack Choice </h4>
 @if(!empty($attack))
-Difficulty: {{$attack->difficulty }}/5 <br>
+Difficulty: {{$attack->getDifficulty() }}/5 <br>
 
 <form class="synFloodForm" method="POST" action="/attack/synflood">
         @csrf
@@ -13,7 +13,7 @@ Difficulty: {{$attack->difficulty }}/5 <br>
             <?php function random($attack){
                 $randInt = rand(1,4);
                 $val = 0;
-                if($randInt > $attack->difficulty - 1){
+                if($randInt > $attack->getDifficulty() - 1){
                     $val = 1;
                 }
                 return $val;
