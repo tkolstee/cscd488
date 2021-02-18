@@ -17,11 +17,11 @@ class OnPremDataCenterAsset extends Asset
 
     public function onPreAttack($attack)
     {
-        $attack->changeDetectionRisk(0.2);
-        $attack->changeAnalysisRisk(0.2);
-        $attack->changeAttributionRisk(0.2);
+        $attack->changeDetectionChance(0.2);
+        $attack->changeAnalysisChance(0.2);
+        $attack->changeAttributionChance(0.2);
         if (in_array('PhysicalAttack', $attack->tags)){
-            $attack->changeDifficulty(-.1);
+            $attack->changeSuccessChance(.1);
         }
     }
 }

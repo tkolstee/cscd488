@@ -282,22 +282,22 @@ class Attack extends Model
         return $bonuses;
     }
     
-    public function changeDifficulty($val){
+    public function changeSuccessChance($val){
         $this->calculated_success_chance = $this->calculateNewProbability($this->calculated_success_chance, $val);
         Attack::updateAttack($this);
     }
 
-    public function changeDetectionRisk($val){
+    public function changeDetectionChance($val){
         $this->calculated_detection_chance = $this->calculateNewProbability($this->calculated_detection_chance, $val);
         Attack::updateAttack($this);
     }
 
-    public function changeAnalysisRisk($val){
+    public function changeAnalysisChance($val){
         $this->calculated_analysis_chance = $this->calculateNewProbability($this->calculated_analysis_chance, $val);
         Attack::updateAttack($this);
     }
 
-    public function changeAttributionRisk($val){
+    public function changeAttributionChance($val){
         $this->calculated_attribution_chance = $this->calculateNewProbability($this->calculated_attribution_chance, $val);
         Attack::updateAttack($this);
     }

@@ -17,11 +17,11 @@ class CloudProviderAsset extends Asset
 
     public function onPreAttack($attack)
     {
-        $attack->changeDetectionRisk(0.25);
-        $attack->changeAnalysisRisk(0.25);
-        $attack->changeAttributionRisk(0.25);
+        $attack->changeDetectionChance(0.25);
+        $attack->changeAnalysisChance(0.25);
+        $attack->changeAttributionChance(0.25);
         if (in_array('PhysicalAttack', $attack->tags)){
-            $attack->changeDifficulty(-.5);
+            $attack->changeSuccessChance(.5);
         }
     }
 }

@@ -16,6 +16,6 @@ class RemoteAccessAsset extends Asset {
     public $_percent_revenue_bonus = 10;
 
     function onPreAttack($attack) {
-        $attack->changeDifficulty(-.1);
+        $attack->changeSuccessChance(.1);
     }
 }

@@ -18,7 +18,7 @@ class BranchOfficeAsset extends Asset
     public function onPreAttack($attack)
     {
         if (in_array('PhysicalAttack', $attack->tags)){
-            $attack->changeDifficulty(.15);
+            $attack->changeSuccessChance(-.15);
         }
     }
 }

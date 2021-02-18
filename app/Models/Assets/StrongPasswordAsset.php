@@ -19,7 +19,7 @@ class StrongPasswordAsset extends Asset {
 
     function onPreAttack($attack) {
         if ($attack->class_name == "PasswordGuessing") {
-            $attack->changeDifficulty(.5);
+            $attack->changeSuccessChance(-.5);
         }
     }
 }

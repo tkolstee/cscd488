@@ -3,7 +3,6 @@
 namespace App\Models\Assets;
 
 use App\Models\Asset;
-use App\Models\Attack;
 
 class PRDeptAsset extends Asset 
 {
@@ -19,7 +18,7 @@ class PRDeptAsset extends Asset
     public function onPreAttack($attack)
     {
         if($attack->calculated_detection_risk > 3){
-            $attack->changeDifficulty(.1);
+            $attack->changeSuccessChance(-.1);
         }
     }
 }

@@ -18,8 +18,8 @@ class SecurityAnalystAsset extends Asset
     public function onPreAttack($attack)
     {
         parent::onPreAttack($attack);
-        $attack->changeDifficulty(.1);
-        $attack->changeDetectionRisk(.3);
-        $attack->changeAnalysisRisk(.3);
+        $attack->changeSuccessChance(-.1);
+        $attack->changeDetectionChance(.3);
+        $attack->changeAnalysisChance(.3);
     }
 }

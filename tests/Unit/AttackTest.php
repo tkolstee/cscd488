@@ -219,29 +219,29 @@ class AttackTest extends TestCase {
         $attack = Attack::find(1);
 
         $this->assertEquals($baseAttack->success_chance, $attack->success_chance);
-        $attack->changeDifficulty(10);
+        $attack->changeSuccessChance(10);
         $this->assertEquals(1, $attack->calculated_success_chance);
-        $attack->changeDifficulty(-10);
+        $attack->changeSuccessChance(-10);
         $this->assertEquals(0.2, $attack->calculated_success_chance);
         $attack->success_chance = 1;
         $attack->calculated_success_chance = 1;
-        $attack->changeDifficulty(-.2);
+        $attack->changeSuccessChance(-.2);
         $this->assertEquals(.8, $attack->calculated_success_chance);
     }
 
-    public function testChangeDetectionRisk() {
+    public function testChangeDetectionChance() {
         $baseAttack = new SQLInjectionAttack;
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
         Attack::create('SQLInjection', $red->id, $blue->id);
         $attack = Attack::find(1);
-        $attack->changeDetectionRisk(10);
+        $attack->changeDetectionChance(10);
         $this->assertEquals(1, $attack->calculated_detection_chance);
-        $attack->changeDetectionRisk(-10);
+        $attack->changeDetectionChance(-10);
         $this->assertEquals(0.2, $attack->calculated_detection_chance);
         $attack->detection_chance = 1;
         $attack->calculated_detection_chance = 1;
-        $attack->changeDetectionRisk(-.2);
+        $attack->changeDetectionChance(-.2);
         $this->assertEquals(0.8, $attack->calculated_detection_chance);
     }
 
@@ -302,7 +302,7 @@ class AttackTest extends TestCase {
         $this->assertTrue($attack->possible);
     }
 
-    public function testAnalystAddsAnalysisRiskAttacks(){
+    public function testAnalystAddsAnalysisChanceAttacks(){
         $red = Team::factory()->red()->create();
         $blue = Team::factory()->create();
         Inventory::factory()->create(['asset_name' => 'SecurityAnalyst', 'team_id' => $blue->id]);
