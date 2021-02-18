@@ -95,9 +95,31 @@
                 scripts, etc come from and whether to let them come from anywhere besides the host at all. <br>
                 This means that XSS attacks cannot use their javascript to link to any external files or harmful <br>
                 things.</p>
+        @elseif ($step == 5)
+            <h4>Other ways to execute XSS</h4>
+            <p>If user input is directly included in the html without proper sanitization, <br>
+                there are other ways users can inject malicious javascript. Perhaps the code <br>
+                contains no javascript itself, but user input is displayed in a <strong>&ltp&gt</strong> tag. <br>
+                If sanitation removes <strong>&ltscript&gt</strong> and <strong>&lt/script&gt</strong> from input, users could still <br>
+                inject javascript by inputting <strong>&ltimage src="invalidsource" onerror="maliciousJavascript()" /&gt</strong>
+                This will try to display the image, and result in an error, causing whatever javascript is contained in the <br>
+                <strong>onerror</strong> attribute.</p>
+            <p>If user input is included in some type of tag, for example an image tag, then <br>
+                the resulting code could be <strong>&ltimage src="&lt?php echo $userInput ?&gt" /&gt</strong><br>
+                if the user input closes the src attribute with an invalid source and <br>
+                creates an onerror attribute, by inputting <strong>invalid" onerror="maliciousJavascript()</strong><br>
+                the resulting code will be <strong>&ltimage src="invalid" onerror="maliciousJavascript()" /&gt</strong> <br>
+                causing execution of that javascript.</p>
+            <p>Users can also take advantage of GET requests by replacing certain data in the URL of the website <br>
+                in order to inject code. If the URL for a website is <strong>https://www.example.com/viewpage?prevpage=home</strong><br>
+                the website remembers the last page you visited, so you can return, in the URL as a parameter. The underlying code might be <br>
+                <strong>&lta href="&lt?php echo $prevpage ?&gt"&gt Return To Previous Page &lt/a&gt</strong>. <br>
+                This means if you enter <strong>javascript:maliciousJavascript()</strong> instead of <strong>home</strong>, when that anchor tag is activated <br>
+                it will execute that javascript.
+            </p>
         @endif
         <!-- Reference:  https://excess-xss.com/ -->
-        @if ($step != 4)
+        @if ($step != 5)
             <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">
                     <button type="submit" class="btn btn-primary" name="stepChange" value="1">
