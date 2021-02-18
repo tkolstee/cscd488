@@ -332,7 +332,7 @@ class Attack extends Model
      * Converts success_chance to difficulty for minigames. 5 = impossible, 0 = always succeeds
      */
     public function getDifficulty(){
-        return 5*(1-$this->calculated_success_chance);
+        return round(5*(1-$this->calculated_success_chance));
     }
 
     public function onPreAttack() {

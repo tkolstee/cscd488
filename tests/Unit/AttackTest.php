@@ -420,4 +420,14 @@ class AttackTest extends TestCase {
         $attack->calculated_success_chance = 1;
         $this->assertEquals(0, $attack->getDifficulty());
     }
+
+    public function testGetDifficultyRounding() {
+        $red = Team::factory()->red()->create();
+        $blue = Team::factory()->create();
+        $attack = Attack::create('SQLInjection', $red->id, $blue->id);
+        $attack->calculated_success_chance = 0.10;
+        $this->assertEquals(5, $attack->getDifficulty());
+        $attack->calculated_success_chance = 0.95;
+        $this->assertEquals(0, $attack->getDifficulty()); 
+    }
 }
