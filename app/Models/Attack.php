@@ -240,18 +240,17 @@ class Attack extends Model
     }
 
     public function calculateDetected() {
-        $rand = rand(0, 500)/100;
+        $rand = rand(0, 100)/100;
         if ($rand > $this->calculated_detection_chance) {
             $this->detection_level = 0;
         }
         else {
             $this->detection_level = 1;
-            $blueteam = Team::find($this->blueteam);
-            $rand = rand(0, 500)/100;
+            $rand = rand(0, 100)/100;
             if ($rand < $this->calculated_analysis_chance){
                 $this->detection_level = 2;
                 $this->checkAnalysisBonus();
-                $rand = rand(0, 500)/100;
+                $rand = rand(0, 100)/100;
                 if($rand < $this->calculated_attribution_chance){
                     $this->detection_level = 3;
                 }
@@ -284,31 +283,30 @@ class Attack extends Model
     }
     
     public function changeDifficulty($val){
-        $this->calculated_success_chance += $val * $this->success_chance;
-        if($this->calculated_success_chance > 5) $this->calculated_success_chance = 5;
-        if($this->calculated_success_chance < 1) $this->calculated_success_chance = 1;
+        $this->calculated_success_chance = $this->calculateNewProbability($this->calculated_success_chance, $val);
         Attack::updateAttack($this);
     }
 
     public function changeDetectionRisk($val){
-        $this->calculated_detection_chance += $val * $this->detection_chance;
-        if($this->calculated_detection_chance > 5) $this->calculated_detection_chance = 5;
-        if($this->calculated_detection_chance < 0) $this->calculated_detection_chance = 0;
+        $this->calculated_detection_chance = $this->calculateNewProbability($this->calculated_detection_chance, $val);
         Attack::updateAttack($this);
     }
 
     public function changeAnalysisRisk($val){
-        $this->calculated_analysis_chance += $val * $this->analysis_chance;
-        if($this->calculated_analysis_chance > 5) $this->calculated_analysis_chance = 5;
-        if($this->calculated_analysis_chance < 0) $this->calculated_analysis_chance = 0;
+        $this->calculated_analysis_chance = $this->calculateNewProbability($this->calculated_analysis_chance, $val);
         Attack::updateAttack($this);
     }
 
     public function changeAttributionRisk($val){
-        $this->calculated_detection_chance += $val * $this->detection_chance;
-        if($this->calculated_detection_chance > 5) $this->calculated_detection_chance = 5;
-        if($this->calculated_detection_chance < 0) $this->calculated_detection_chance = 0;
+        $this->calculated_attribution_chance = $this->calculateNewProbability($this->calculated_attribution_chance, $val);
         Attack::updateAttack($this);
+    }
+
+    private function calculateNewProbability($initial, $val){
+        $result = $initial + ($initial*$val);
+        if ($result > 1) { return 1; }
+        elseif ($result < 0.2) { return 0.2; }
+        else { return $result; }
     }
 
     public function getName(){ //Restrict information given based on detection level
@@ -376,7 +374,6 @@ class Attack extends Model
         foreach ($bonuses as $bonus){
             $this->applyBonus($bonus);
         }
-        $this->calculated_success_chance = round($this->calculated_success_chance);
         Attack::updateAttack($this);
         return $this;
     }
@@ -418,10 +415,10 @@ class Attack extends Model
 
     private function applyBonus($bonus){
         if(in_array("DifficultyDeduction", $bonus->tags)){
-            $this->changeDifficulty(-1* $bonus->percentDiffDeducted);
+            $this->changeDifficulty(-1 * 0.01 * $bonus->percentDiffDeducted);
         }
         if(in_array("DetectionDeduction", $bonus->tags)){
-            $this->changeDetectionRisk(-1* $bonus->percentDetDeducted);
+            $this->changeDetectionRisk(-1 * 0.01 * $bonus->percentDetDeducted);
         }
     }
 }
