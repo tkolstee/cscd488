@@ -240,17 +240,17 @@ class Attack extends Model
     }
 
     public function calculateDetected() {
-        $rand = rand(0, 100)/100;
+        $rand = rand(0, 99)/100;
         if ($rand >= $this->calculated_detection_chance) {
             $this->detection_level = 0;
         }
         else {
             $this->detection_level = 1;
-            $rand = rand(0, 100)/100;
+            $rand = rand(0, 99)/100;
             if ($rand < $this->calculated_analysis_chance){
                 $this->detection_level = 2;
                 $this->checkAnalysisBonus();
-                $rand = rand(0, 100)/100;
+                $rand = rand(0, 99)/100;
                 if($rand < $this->calculated_attribution_chance){
                     $this->detection_level = 3;
                 }
@@ -305,7 +305,7 @@ class Attack extends Model
     private function calculateNewProbability($initial, $val){
         $result = $initial + ($initial*$val);
         if ($result > 1) { return 1; }
-        elseif ($result < 0.2) { return 0.2; }
+        elseif ($result < 0) { return 0; }
         else { return $result; }
     }
 
@@ -332,7 +332,11 @@ class Attack extends Model
      * Converts success_chance to difficulty for minigames. 5 = impossible, 0 = always succeeds
      */
     public function getDifficulty(){
-        return round(5*(1-$this->calculated_success_chance));
+        $difficulty = round(5*(1-$this->calculated_success_chance));
+        if($difficulty < 1){
+            $difficulty = 1;
+        }
+        return $difficulty;
     }
 
     public function onPreAttack() {

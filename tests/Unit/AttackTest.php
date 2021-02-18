@@ -222,7 +222,7 @@ class AttackTest extends TestCase {
         $attack->changeSuccessChance(10);
         $this->assertEquals(1, $attack->calculated_success_chance);
         $attack->changeSuccessChance(-10);
-        $this->assertEquals(0.2, $attack->calculated_success_chance);
+        $this->assertEquals(0, $attack->calculated_success_chance);
         $attack->success_chance = 1;
         $attack->calculated_success_chance = 1;
         $attack->changeSuccessChance(-.2);
@@ -238,7 +238,7 @@ class AttackTest extends TestCase {
         $attack->changeDetectionChance(10);
         $this->assertEquals(1, $attack->calculated_detection_chance);
         $attack->changeDetectionChance(-10);
-        $this->assertEquals(0.2, $attack->calculated_detection_chance);
+        $this->assertEquals(0, $attack->calculated_detection_chance);
         $attack->detection_chance = 1;
         $attack->calculated_detection_chance = 1;
         $attack->changeDetectionChance(-.2);
@@ -418,7 +418,7 @@ class AttackTest extends TestCase {
         $attack->calculated_success_chance = 0;
         $this->assertEquals(5, $attack->getDifficulty());
         $attack->calculated_success_chance = 1;
-        $this->assertEquals(0, $attack->getDifficulty());
+        $this->assertEquals(1, $attack->getDifficulty());
     }
 
     public function testGetDifficultyRounding() {
@@ -428,8 +428,10 @@ class AttackTest extends TestCase {
         $attack->calculated_success_chance = 0.10;
         $this->assertEquals(5, $attack->getDifficulty());
         $attack->calculated_success_chance = 0.95;
-        $this->assertEquals(0, $attack->getDifficulty()); 
+        $this->assertEquals(1, $attack->getDifficulty()); 
     }
+
+    //Targeted Prereq Handler tests
   
     public function testTargetedPrereqNoPrereq(){
         $red = Team::factory()->red()->create();

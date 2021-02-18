@@ -18,12 +18,12 @@ class FullDiskEncryptionAsset extends Asset {
 
     function onPreAttack($attack) {
         if ($attack->class_name == "StolenLaptop") {
-            $attack->calculated_difficulty = 0.2;
+            $attack->calculated_success_chance = 0.2;
             $blueteam = Team::find($attack->blueteam);
             $invs = $blueteam->inventories();
             foreach($invs as $inv){
                 if($inv->asset_name == "StrongPassword"){
-                    $attack->calculated_difficulty = 0.03;
+                    $attack->calculated_success_chance = 0.03;
                 }
             }
             Attack::updateAttack($attack);
