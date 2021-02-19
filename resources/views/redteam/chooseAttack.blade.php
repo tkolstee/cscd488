@@ -17,7 +17,9 @@
             @foreach ($possibleAttacks ?? [] as $attack)
                 <tr>
                     <td class="attackTd"><input type="radio" name="result" id="{{ $attack->class_name }}" value="{{ $attack->class_name }}"></td>
-                    <td>{{$attack->name}}</td>
+                    <td title="{{$attack->help_text ?? "" }}">
+                        {{$attack->name}}
+                    </td>
                     <td>{{$attack->energy_cost}}</td>
                 </tr>
             @endforeach
