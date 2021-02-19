@@ -107,7 +107,7 @@ h4{
 .p-pagination{
     color: white;
     display: inline-block;
-    margin-left:53%;
+    margin-left:48%;
     margin-top:1%;
     
 }
@@ -626,7 +626,7 @@ h2{
 }
 .storeForm{
     color:white;
-    width:60%;
+    /*width:60%;*/
 }
 .storeFormInventory{
     color:white;
@@ -704,10 +704,9 @@ input[type="checkbox"], input[type="radio"]{
 }
 .table td, .table th{
     vertical-align: middle;
+    width:0%;
 }
-.blueSettingForm{
 
-}
 .loggedName{
     color:#00CC99;
     font-size: 13pt;   
@@ -753,17 +752,15 @@ input[type="checkbox"], input[type="radio"]{
     float:left;
 }
 .h2Container{
-    float:left;
+    
     width: 80%;
     background-color: black;
     
 }
-.blueTeamImage{
-   
-}
+
 .blueLogoContainer{
     background-color: black;
-    height: 8%;
+    
 }
 
 
@@ -808,7 +805,7 @@ input[type="checkbox"], input[type="radio"]{
 }
 .redLogoContainer{
     background-color: black;
-    height: 8%;
+    
 }
 .redLogo{
     width:75px;
@@ -1009,6 +1006,7 @@ color:#00CC99;
 .settingsPage{
     background: url('/images/repeatingBackground.jpg'), center no-repeat;
     text-align: center;
+    padding-top:3%;
 }
 .settingsPage button{
     background-color: #00CC99;
@@ -1069,4 +1067,7 @@ color:#00CC99;
 }
 .btn.btn.btn-pagination-prev{
     color:white;
+}
+.descriptionTd{
+    width: 100px;
 }
