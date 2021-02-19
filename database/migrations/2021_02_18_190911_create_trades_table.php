@@ -17,7 +17,7 @@ class CreateTradesTable extends Migration
             $table->id();
             $table->foreignId('seller_id')->constrained('teams')->onDelete('cascade');
             $table->foreignId('buyer_id')->nullable()->constrained('teams');
-            $table->foreignId('inv_id')->constrained('inventories')->onDelete('cascade');
+            $table->integer('inv_id');
             $table->integer('price');
             $table->timestamps();
         });

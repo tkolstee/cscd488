@@ -23,6 +23,8 @@ class Trade extends Model
     ];
 
     public static function createTrade($seller_id, $inv_id, $price){
+        if($price < 0)
+            return false;
         $trade = new Trade;
         $trade->seller_id = $seller_id;
         $trade->inv_id = $inv_id;
@@ -33,6 +35,11 @@ class Trade extends Model
             return false;
         }
         return $trade;
+    }
+
+    public function getCurrentTrades(){
+        $trades = Trade::all()->where('buyer_id','=',null);
+        return $trades;
     }
 
 }
