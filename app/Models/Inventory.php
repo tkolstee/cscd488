@@ -116,7 +116,7 @@ class Inventory extends Model
 
     public function getAssetName(){
         if ($this->asset_name != 'AccessToken') { 
-            return $this->asset_name;
+            return Asset::get($this->asset_name)->name;
         }
         else {
             if ($this->level == 1) { return "Basic Access";}
