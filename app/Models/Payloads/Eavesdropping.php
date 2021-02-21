@@ -21,12 +21,14 @@ class Eavesdropping extends Payload
             $bonus->tags = ['DetectionDeduction','DifficultyDeduction'];
             $bonus->percentDetDeducted = 20;
             $bonus->percentDiffDeducted = 20;
+            $bonus->save();
         }
         $rand = rand(1,100);
         if ($rand <= 50) { //50% fininfo, steal 40% per turn rev for one turn
             $bonus = parent::createBonus($attack);
             $bonus->tags = ['OneTurnOnly', 'RevenueSteal'];
             $bonus->percentRevStolen = 40;
+            $bonus->save();
         }
         $rand = rand(1,100);
         if ($rand <= 40) { //40% basic access
