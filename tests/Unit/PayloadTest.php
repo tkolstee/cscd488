@@ -14,6 +14,7 @@ use App\Models\Payloads\Dos;
 use App\Models\Payloads\Destruction;
 use App\Models\Payloads\BasicAccess;
 use App\Models\Payloads\Confusion;
+use App\Models\Payloads\Eavesdropping;
 use App\Models\Payloads\PrivAccess;
 use App\Models\Payloads\Evasion;
 use App\Models\Payloads\InformationStealing;
@@ -263,4 +264,18 @@ class PayloadTest extends TestCase {
         $this->assertEquals($blueteam->name, $access->info);
     }
 
+    public function testEavesdroppingPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new Eavesdropping;
+        $payload->onAttackComplete($attack);
+        $bonuses = $redteam->getBonuses();
+        $this->assertLessThanOrEqual(2, count($bonuses));
+        foreach($bonuses as $bonus) {
+            $this->assertEquals($redteam->id, $bonus->team_id);
+            $this->assertEquals($blueteam->id, $bonus->target_id);
+            $this->assertTrue(in_array('DetectionDeduction', $bonus->tags) || in_array('OneTurnOnly', $bonus->tags));
+        }
+    }
 }
