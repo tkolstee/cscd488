@@ -11,7 +11,7 @@ class TestDefenseAsset extends Asset
     public $_class_name = "TestDefense";
     public $_tags    = ["defensive tag 1"];
     public $_blue = 1;
-    public $_buyable = 1;
+    public $_buyable = 0;
     public $_purchase_cost = 100;
     public $_ownership_cost = 0;
 
