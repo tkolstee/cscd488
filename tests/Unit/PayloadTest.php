@@ -22,6 +22,7 @@ use App\Models\Payloads\WebsiteDefacement;
 use App\Models\Payloads\Keylogger;
 use App\Models\Payloads\Ransomware;
 use App\Models\Payloads\MaliciousInsider;
+use App\Models\Payloads\StolenLaptop;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PayloadTest extends TestCase {
@@ -276,6 +277,26 @@ class PayloadTest extends TestCase {
             $this->assertEquals($redteam->id, $bonus->team_id);
             $this->assertEquals($blueteam->id, $bonus->target_id);
             $this->assertTrue(in_array('DetectionDeduction', $bonus->tags) || in_array('OneTurnOnly', $bonus->tags));
+        }
+    }
+
+    public function testStolenLaptopPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new StolenLaptop;
+        $payload->onAttackComplete($attack);
+        $bonuses = $redteam->getBonuses();
+        $this->assertLessThanOrEqual(2, count($bonuses));
+        foreach($bonuses as $bonus) {
+            $this->assertEquals($redteam->id, $bonus->team_id);
+            $this->assertEquals($blueteam->id, $bonus->target_id);
+            $this->assertTrue(in_array('DetectionDeduction', $bonus->tags) || in_array('OneTurnOnly', $bonus->tags));
+        }
+        $inv = $redteam->inventories();
+        $this->assertLessThanOrEqual(3, count($inv));
+        foreach($inv as $asset){
+            $this->assertEquals('AccessToken', $asset->asset_name);
         }
     }
 }
