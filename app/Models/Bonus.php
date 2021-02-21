@@ -99,15 +99,15 @@ class Bonus extends Model
         if(in_array("RevenueGeneration", $this->tags)){
             $redteam->changeBalance($this->revenueGenerated);
         }
-        if(in_array("OneTurnOnly", $this->tags)){
-            $this->destroy($this->id);
-            return;
-        }
         if(in_array("AddTokens", $this->tags)){
             $tokenQty = $redteam->getTokenQuantity($blueteam->name, 1);
             if ($tokenQty < 5){
                 $redteam->addToken($blueteam->name, 1);
             }
+        }
+        if(in_array("OneTurnOnly", $this->tags)){
+            $this->destroy($this->id);
+            return;
         }
         if(in_array("ChanceToRemove", $this->tags)){
             $rand = rand(1, 100);
