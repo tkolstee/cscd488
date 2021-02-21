@@ -10,7 +10,7 @@ class ActionsOnObjectiveAttack extends Attack {
     public $_class_name             = "ActionsOnObjective";
     public $_tags                   = [];
     public $_prereqs                = ['PwnedAccess'];
-    public $_payload_choice         = 'StealRevenue';
+    public $_payload_choice         = 'ActionsOnObjective';
     public $_initial_success_chance = 0.90;
     public $_initial_detection_chance = 0.8;
     public $_initial_analysis_chance  = 0.2;

@@ -8,6 +8,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Bonus;
 use App\Models\Attack;
+use App\Models\Payloads\ActionsOnObjective;
 use App\Models\Payloads\AdWare;
 use App\Models\Payloads\Xss;
 use App\Models\Payloads\Dos;
@@ -324,5 +325,16 @@ class PayloadTest extends TestCase {
             $this->assertEquals('AccessToken', $inv->asset_name);
             $this->assertEquals(2, $inv->level);
         }
+    }
+
+    public function testActionsOnObjectivePayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $payload = new ActionsOnObjective;
+        $payload->onAttackComplete($attack);
+        $bonus = $redteam->getBonuses()->first();
+        $this->assertEquals($redteam->id, $bonus->team_id);
+        $this->assertTrue(in_array("RevenueSteal", $bonus->tags));
+        $this->assertEquals(10, $bonus->percentRevStolen);
     }
 }
