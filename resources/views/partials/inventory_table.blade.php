@@ -27,7 +27,7 @@
                     title="{{$invAsset->description}}
                     <?php if($invAsset->ownership_cost > 0) echo " Ownership Cost: " . $invAsset->ownership_cost;
                     else echo "Revenue Gained Per Turn: " . (-1 * $invAsset->ownership_cost); ?>"
-                    >{{ $invAsset->name }}</td>
+                    >{{ $inv->getAssetName() }}</td>
                 <td>{{$inv->quantity }}</td>
                 @if(in_array("Targeted", $invAsset->tags)) 
                     @if($inv->info != null)
