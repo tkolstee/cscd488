@@ -13,6 +13,7 @@ class InsiderAsset extends Asset
     public $_tags    = ['AccessToken','Targeted'];
     public $_blue = 0;
     public $_buyable = 0;
+    public $_description = "Man on the inside who is working for a red team.";
 
     public function onPreAttack($attack)
     {

@@ -3,7 +3,6 @@
 namespace App\Models\Assets;
 
 use App\Models\Asset;
-use App\Models\Attack;
 
 class TestAttackAsset extends Asset 
 {
@@ -15,6 +14,7 @@ class TestAttackAsset extends Asset
     public $_buyable = 0;
     public $_purchase_cost = 100;
     public $_ownership_cost = 0;
+    public $_description = "Test asset, you're not supposed to see this.";
 
     public function onPreAttack($attack)
     {

@@ -14,6 +14,7 @@ class TestDefenseAsset extends Asset
     public $_buyable = 0;
     public $_purchase_cost = 100;
     public $_ownership_cost = 0;
+    public $_description = "Test asset, you're not supposed to see this.";
 
     public function onPreAttack($attack)
     {
