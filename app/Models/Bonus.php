@@ -141,8 +141,8 @@ class Bonus extends Model
 
     public function getTeamDescription(){
         $desc = "";
-        if(in_array("RevenueSteal",$this->tags)) $desc += 
-            "Steals 10% of target's revenue made each turn. ";
+        if(in_array("RevenueSteal",$this->tags)) $desc = $desc . 
+            "Steals " . $this->percentRevStolen . "% of target's revenue made each turn. ";
         if(in_array("RevenueGeneration", $this->tags)) $desc = $desc .
             "Your team generates $" . $this->revenueGenerated . " each turn. ";
         if(in_array("RevenueDeduction", $this->tags))  $desc = $desc .  
@@ -169,8 +169,8 @@ class Bonus extends Model
 
     public function getTargetDescription(){
         $desc = "";
-        if(in_array("RevenueSteal",$this->tags)) $desc += 
-            "Attacker steals 10% of your revenue made each turn. ";
+        if(in_array("RevenueSteal",$this->tags)) $desc = $desc .  
+            "Attacker steals " . $this->percentRevStolen . "% of your revenue made each turn. ";
         if(in_array("RevenueGeneration", $this->tags)) $desc = $desc .
             "The attacking team generates $" . $this->revenueGenerated . " each turn. This is not stolen. ";
         if(in_array("RevenueDeduction", $this->tags))  $desc = $desc .  
