@@ -74,6 +74,7 @@ class PayloadTest extends TestCase {
         $this->assertEquals(2, count($bonus->tags));
         $this->assertTrue(in_array("UntilAnalyzed", $bonus->tags));
         $this->assertTrue(in_array("RevenueSteal", $bonus->tags));
+        $this->assertEquals(10, $bonus->percentRevStolen);
     }
 
     public function testDosPayload(){

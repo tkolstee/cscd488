@@ -16,6 +16,7 @@ class Xss extends Payload
         parent::onAttackComplete($attack);
         $bonus = parent::createBonus($attack);
         $bonus->tags = ["UntilAnalyzed", "RevenueSteal"];
+        $bonus->percentRevStolen = 10;
         $bonus->save();
     }
 }

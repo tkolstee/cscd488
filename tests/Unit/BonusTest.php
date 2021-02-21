@@ -115,6 +115,7 @@ class BonusTest extends TestCase {
         $tags = ["RevenueSteal"];
         $bonus = $this->createBonus($team->id, $tags);
         $bonus->target_id = $blueteam->id;
+        $bonus->percentRevStolen = 10;
         $bonus->update();
         $this->assertTrue(in_array("RevenueSteal", $bonus->tags));
         $this->assertEquals($team->id, $bonus->team_id);

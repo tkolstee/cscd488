@@ -24,7 +24,8 @@ class Bonus extends Model
         'percentAnalDeducted', 
         'percentRemoval',
         'removalCostFactor',
-        'revenueGenerated'
+        'revenueGenerated',
+        'percentRevStolen'
     ];
     protected $casts = [ 'tags' => 'array']; // casts "json" database column to array and back
 
@@ -43,6 +44,7 @@ class Bonus extends Model
     public $_removalCostFactor = 1;
     public $_attack_id = null;
     public $_revenue_generated = 0;
+    public $_percent_rev_stolen = 0;
 
     function __construct() {
        $this->tags = $this->_tags;
@@ -60,6 +62,7 @@ class Bonus extends Model
        $this->attack_id = $this->_attack_id;
        $this->percentRevToRemove = $this->_percent_rev_remove;
        $this->revenueGenerated = $this->_revenue_generated;
+       $this->percentRevStolen = $this->_percent_rev_stolen;
     }
 
     public static function createBonus($team_id, $tags){
@@ -92,7 +95,7 @@ class Bonus extends Model
         }
         if(in_array("RevenueSteal", $this->tags)){
             $revGain = $blueteam->getPerTurnRevenue();
-            $amount = $revGain * 0.1;
+            $amount = $revGain * ($this->percentRevStolen * 0.01);
             $blueteam->changeBalance(-1* $amount);
             $redteam->changeBalance($amount);
         }
