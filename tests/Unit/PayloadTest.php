@@ -278,6 +278,11 @@ class PayloadTest extends TestCase {
             $this->assertEquals($blueteam->id, $bonus->target_id);
             $this->assertTrue(in_array('DetectionDeduction', $bonus->tags) || in_array('OneTurnOnly', $bonus->tags));
         }
+        $inv = $redteam->inventories();
+        $this->assertLessThanOrEqual(2, count($inv));
+        foreach($inv as $asset){
+            $this->assertEquals('AccessToken', $asset->asset_name);
+        }
     }
 
     public function testStolenLaptopPayload(){
