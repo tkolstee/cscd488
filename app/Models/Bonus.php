@@ -155,14 +155,14 @@ class Bonus extends Model
             "You have " . $this->percentAnalDeducted. "% less chance of being analyzed by target. ";
         if(in_array("DifficultyDeduction", $this->tags))  $desc = $desc .  
             "It is " . $this->percentDiffDeducted. "% easier to be successful attacking the target. ";
-        if(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
-            "Bonus only lasts until next turn. ";
         if(in_array("ChanceToRemove", $this->tags))  $desc = $desc . 
             "Has a " . $this->removalChance . "% chance to be automatically removed each turn. ";
         if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
             "Target can pay you ". $this->removalCostFactor . " times their per turn revenue to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
             "Bonus lasts until the target analyzes the attack.";
+        elseif(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
+            "Bonus only lasts until next turn. ";
         else  $desc = $desc .  "Decrements by 5% each turn.";
         return $desc;
     }
@@ -183,14 +183,14 @@ class Bonus extends Model
             "You have " . $this->percentAnalDeducted . "% less chance of analyzing this attacker. ";
         if(in_array("DifficultyDeduction", $this->tags))  $desc = $desc .  
             "It is " . $this->percentDiffDeducted . "% easier for the attacker to be successful against you. ";
-        if(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
-            "Bonus only lasts until next turn. ";
         if(in_array("ChanceToRemove", $this->tags))  $desc = $desc . 
             "You have a " . $this->removalChance . "% chance to automatically remove this each turn. ";
         if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
             "You can pay the attacker " . $this->removalCostFactor . " times your per turn revenue to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
             "Bonus lasts until you analyze the attack.";
+        elseif(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
+            "Bonus only lasts until next turn. ";
         else  $desc = $desc .  "Decrements by 5% each turn.";
         return $desc;
     }
