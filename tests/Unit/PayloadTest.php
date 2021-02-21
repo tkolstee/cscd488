@@ -17,6 +17,7 @@ use App\Models\Payloads\Confusion;
 use App\Models\Payloads\Eavesdropping;
 use App\Models\Payloads\PrivAccess;
 use App\Models\Payloads\Evasion;
+use App\Models\Payloads\Fuzzing;
 use App\Models\Payloads\InformationStealing;
 use App\Models\Payloads\WebsiteDefacement;
 use App\Models\Payloads\Keylogger;
@@ -302,6 +303,26 @@ class PayloadTest extends TestCase {
         $this->assertLessThanOrEqual(3, count($inv));
         foreach($inv as $asset){
             $this->assertEquals('AccessToken', $asset->asset_name);
+        }
+    }
+
+    public function testFuzzingPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $payload = new Fuzzing;
+        $payload->onAttackComplete($attack);
+        $bonus = $redteam->getBonuses()->first();
+
+        if ($bonus != null){
+            $this->assertTrue(in_array("DetectionDeduction", $bonus->tags));
+            $this->assertEquals(20, $bonus->percentDetDeducted);
+            $this->assertTrue(in_array("AnalysisDeduction", $bonus->tags));
+            $this->assertEquals(20, $bonus->percentAnalDeducted);
+        }
+        else {
+            $inv = $redteam->inventories()->first();
+            $this->assertEquals('AccessToken', $inv->asset_name);
+            $this->assertEquals(2, $inv->level);
         }
     }
 }
