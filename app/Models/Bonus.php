@@ -13,7 +13,19 @@ class Bonus extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'team_id', 'target_id','payload_name','percentRevDeducted', 'percentRepDeducted', 'percentDiffDeducted', 'percentDetDeducted', 'percentAnalDeducted'];
+    protected $fillable = [ 
+        'team_id', 
+        'target_id',
+        'payload_name',
+        'percentRevDeducted', 
+        'percentRepDeducted', 
+        'percentDiffDeducted', 
+        'percentDetDeducted', 
+        'percentAnalDeducted', 
+        'percentRemoval',
+        'removalCostFactor',
+        'revenueGenerated'
+    ];
     protected $casts = [ 'tags' => 'array']; // casts "json" database column to array and back
 
     public $_tags    = [];
