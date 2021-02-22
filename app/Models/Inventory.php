@@ -113,4 +113,15 @@ class Inventory extends Model
         }
         return true;
     }
+
+    public function getAssetName(){
+        if ($this->asset_name != 'AccessToken') { 
+            return Asset::get($this->asset_name)->name;
+        }
+        else {
+            if ($this->level == 1) { return "Basic Access";}
+            elseif ($this->level == 2) { return "Private Access";}
+            elseif ($this->level ==3 ) { return "Pwnd Access";}
+        }
+    }
 }

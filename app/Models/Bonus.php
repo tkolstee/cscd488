@@ -13,7 +13,20 @@ class Bonus extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'team_id', 'target_id','payload_name','percentRevDeducted', 'percentRepDeducted', 'percentDiffDeducted', 'percentDetDeducted', 'percentAnalDeducted'];
+    protected $fillable = [ 
+        'team_id', 
+        'target_id',
+        'payload_name',
+        'percentRevDeducted', 
+        'percentRepDeducted', 
+        'percentDiffDeducted', 
+        'percentDetDeducted', 
+        'percentAnalDeducted', 
+        'percentRemoval',
+        'removalCostFactor',
+        'revenueGenerated',
+        'percentRevStolen'
+    ];
     protected $casts = [ 'tags' => 'array']; // casts "json" database column to array and back
 
     public $_tags    = [];
@@ -31,6 +44,7 @@ class Bonus extends Model
     public $_removalCostFactor = 1;
     public $_attack_id = null;
     public $_revenue_generated = 0;
+    public $_percent_rev_stolen = 0;
 
     function __construct() {
        $this->tags = $this->_tags;
@@ -48,6 +62,7 @@ class Bonus extends Model
        $this->attack_id = $this->_attack_id;
        $this->percentRevToRemove = $this->_percent_rev_remove;
        $this->revenueGenerated = $this->_revenue_generated;
+       $this->percentRevStolen = $this->_percent_rev_stolen;
     }
 
     public static function createBonus($team_id, $tags){
@@ -80,22 +95,22 @@ class Bonus extends Model
         }
         if(in_array("RevenueSteal", $this->tags)){
             $revGain = $blueteam->getPerTurnRevenue();
-            $amount = $revGain * 0.1;
+            $amount = $revGain * ($this->percentRevStolen * 0.01);
             $blueteam->changeBalance(-1* $amount);
             $redteam->changeBalance($amount);
         }
         if(in_array("RevenueGeneration", $this->tags)){
             $redteam->changeBalance($this->revenueGenerated);
         }
-        if(in_array("OneTurnOnly", $this->tags)){
-            $this->destroy($this->id);
-            return;
-        }
         if(in_array("AddTokens", $this->tags)){
             $tokenQty = $redteam->getTokenQuantity($blueteam->name, 1);
             if ($tokenQty < 5){
                 $redteam->addToken($blueteam->name, 1);
             }
+        }
+        if(in_array("OneTurnOnly", $this->tags)){
+            $this->destroy($this->id);
+            return;
         }
         if(in_array("ChanceToRemove", $this->tags)){
             $rand = rand(1, 100);
@@ -126,8 +141,8 @@ class Bonus extends Model
 
     public function getTeamDescription(){
         $desc = "";
-        if(in_array("RevenueSteal",$this->tags)) $desc += 
-            "Steals 10% of target's revenue made each turn. ";
+        if(in_array("RevenueSteal",$this->tags)) $desc = $desc . 
+            "Steals " . $this->percentRevStolen . "% of target's revenue made each turn. ";
         if(in_array("RevenueGeneration", $this->tags)) $desc = $desc .
             "Your team generates $" . $this->revenueGenerated . " each turn. ";
         if(in_array("RevenueDeduction", $this->tags))  $desc = $desc .  
@@ -140,22 +155,22 @@ class Bonus extends Model
             "You have " . $this->percentAnalDeducted. "% less chance of being analyzed by target. ";
         if(in_array("DifficultyDeduction", $this->tags))  $desc = $desc .  
             "It is " . $this->percentDiffDeducted. "% easier to be successful attacking the target. ";
-        if(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
-            "Bonus only lasts until next turn. ";
         if(in_array("ChanceToRemove", $this->tags))  $desc = $desc . 
             "Has a " . $this->removalChance . "% chance to be automatically removed each turn. ";
         if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
             "Target can pay you ". $this->removalCostFactor . " times their per turn revenue to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
             "Bonus lasts until the target analyzes the attack.";
+        elseif(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
+            "Bonus only lasts until next turn. ";
         else  $desc = $desc .  "Decrements by 5% each turn.";
         return $desc;
     }
 
     public function getTargetDescription(){
         $desc = "";
-        if(in_array("RevenueSteal",$this->tags)) $desc += 
-            "Attacker steals 10% of your revenue made each turn. ";
+        if(in_array("RevenueSteal",$this->tags)) $desc = $desc .  
+            "Attacker steals " . $this->percentRevStolen . "% of your revenue made each turn. ";
         if(in_array("RevenueGeneration", $this->tags)) $desc = $desc .
             "The attacking team generates $" . $this->revenueGenerated . " each turn. This is not stolen. ";
         if(in_array("RevenueDeduction", $this->tags))  $desc = $desc .  
@@ -168,14 +183,14 @@ class Bonus extends Model
             "You have " . $this->percentAnalDeducted . "% less chance of analyzing this attacker. ";
         if(in_array("DifficultyDeduction", $this->tags))  $desc = $desc .  
             "It is " . $this->percentDiffDeducted . "% easier for the attacker to be successful against you. ";
-        if(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
-            "Bonus only lasts until next turn. ";
         if(in_array("ChanceToRemove", $this->tags))  $desc = $desc . 
             "You have a " . $this->removalChance . "% chance to automatically remove this each turn. ";
         if(in_array("PayToRemove", $this->tags))  $desc = $desc . 
             "You can pay the attacker " . $this->removalCostFactor . " times your per turn revenue to remove this bonus. ";
         elseif(in_array("UntilAnalyzed", $this->tags))  $desc = $desc .  
             "Bonus lasts until you analyze the attack.";
+        elseif(in_array("OneTurnOnly", $this->tags))  $desc = $desc . 
+            "Bonus only lasts until next turn. ";
         else  $desc = $desc .  "Decrements by 5% each turn.";
         return $desc;
     }

@@ -13,6 +13,7 @@ class SynFloodAttack extends Attack {
     public $_initial_success_chance = 0.6;
     public $_initial_detection_chance = 1;
     public $_initial_energy_cost    = 100;
+    public $_help_text              = "Send SYN packets to host to overwhelm servers.";
 
     public $learn_page              = true;
 
