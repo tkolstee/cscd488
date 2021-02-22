@@ -37,9 +37,43 @@ class Trade extends Model
         return $trade;
     }
 
-    public function getCurrentTrades(){
+    public static function getByInv($inv_id){
+        $trade = Trade::all()->where('inv_id', '=', $inv_id);
+        if($trade->isEmpty())
+            return false;
+        return $trade;
+    }
+
+    public static function removeByInv($inv_id){
+        $trades = Trade::getByInv($inv_id);
+        if($trades == false)
+            return false;
+        foreach($trades as $trade){
+            Trade::destroy($trade->id);
+        }
+        return true;
+    }
+
+    public static function getCurrentBlueTrades(){
         $trades = Trade::all()->where('buyer_id','=',null);
-        return $trades;
+        $blueTrades = [];
+        foreach($trades as $trade){
+            if(Team::find($trade->seller_id)->blue == 1){
+                $blueTrades[] = $trade;
+            }
+        }
+        return collect($blueTrades);
+    }
+
+    public static function getCurrentRedTrades(){
+        $trades = Trade::all()->where('buyer_id','=',null);
+        $blueTrades = [];
+        foreach($trades as $trade){
+            if(Team::find($trade->seller_id)->blue == 0){
+                $blueTrades[] = $trade;
+            }
+        }
+        return collect($blueTrades);
     }
 
 }

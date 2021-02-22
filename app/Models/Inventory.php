@@ -29,10 +29,12 @@ class Inventory extends Model
     public function reduce(){
         if($this == null) throw new InventoryNotFoundException();
         if($this->quantity == 1){
-           Inventory::destroy($this->id);
+            Trade::removeByInv($this->id);
+            Inventory::destroy($this->id);
         }else{
             $this->quantity--;
             $this->update();
+            $this->removeTrade();
         }
     }
 
@@ -44,8 +46,19 @@ class Inventory extends Model
         }
     }
 
+    public function removeTrade(){
+        $trade = Trade::getByInv($this->id);
+        if($trade != false){
+            if($this->quantity == 1 || $this->quantity <= count($trade)){
+                return Trade::removeByInv($this->id);
+            }
+        }
+        return false;
+    }
+
     public function setInfo($string){
         $team = Team::find($this->team_id);
+        $this->removeTrade();
         $inv = $team->inventoryWithInfo($this->asset_name,$this->level,$string);
         if($inv == null){
             if($this->quantity == 1){
@@ -78,6 +91,7 @@ class Inventory extends Model
     }
 
     public function upgrade(){
+        $this->removeTrade();
         if($this->level == 3){
             return false;
         }

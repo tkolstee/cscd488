@@ -158,6 +158,82 @@ class TradeTest extends TestCase {
 
     //Get Trade Tests
 
+    public function testGetCurrentBlueTrades(){
+        $team = Auth::user()->getBlueTeam();
+        $team2 = Team::factory()->create();
+        $redTeam = Team::factory()->red()->create();
+        $inv1 = Inventory::factory()->create([
+            'team_id' => $team->id,
+            'asset_name' => "SQLDatabase",
+            'level' => 1,
+            'quantity' => 1,
+        ]);
+        $inv2 = Inventory::factory()->create([
+            'team_id' => $team2->id,
+            'asset_name' => "AccessAudit",
+            'level' => 1,
+            'quantity' => 1,
+        ]);
+        $trade1 = Trade::factory()->create([
+            'seller_id' => $team->id,
+            'inv_id' => $inv1->id,
+            'price' => 100
+        ]);
+        $trade2 = Trade::factory()->create([
+            'seller_id' => $team2->id,
+            'inv_id' => $inv2->id,
+            'price' => 200
+        ]);
+        $redTrade = Trade::factory()->create([
+            'seller_id' => $redTeam->id,
+            'inv_id' => $inv2->id,
+            'price' => 100
+        ]);
+        $blueTrades = Trade::getCurrentBlueTrades();
+        $this->assertEquals(2, count($blueTrades));
+        foreach($blueTrades as $trade){
+            $this->assertNotEquals($redTeam->id, $trade->seller_id);
+        }
+    }
+
+    public function testGetCurrentRedTrades(){
+        $blueTeam = Auth::user()->getBlueTeam();
+        $team2 = Team::factory()->red()->create();
+        $team = Team::factory()->red()->create();
+        $inv1 = Inventory::factory()->create([
+            'team_id' => $team->id,
+            'asset_name' => "Botnet",
+            'level' => 1,
+            'quantity' => 1,
+        ]);
+        $inv2 = Inventory::factory()->create([
+            'team_id' => $team2->id,
+            'asset_name' => "Botnet",
+            'level' => 1,
+            'quantity' => 1,
+        ]);
+        $trade1 = Trade::factory()->create([
+            'seller_id' => $team->id,
+            'inv_id' => $inv1->id,
+            'price' => 100
+        ]);
+        $trade2 = Trade::factory()->create([
+            'seller_id' => $team2->id,
+            'inv_id' => $inv2->id,
+            'price' => 200
+        ]);
+        $redTrade = Trade::factory()->create([
+            'seller_id' => $blueTeam->id,
+            'inv_id' => $inv2->id,
+            'price' => 100
+        ]);
+        $redTrades = Trade::getCurrentRedTrades();
+        $this->assertEquals(2, count($redTrades));
+        foreach($redTrades as $trade){
+            $this->assertNotEquals($blueTeam->id, $trade->seller_id);
+        }
+    }
+
     public function testTeamGetCurrentTrades(){
         $team = Auth::user()->getBlueTeam();
         $team2 = Team::factory()->create();
@@ -275,6 +351,35 @@ class TradeTest extends TestCase {
         $this->assertEquals($inv2->id, $firstTrade->inv_id);
         $secondTrade = $completedTrades->pop();
         $this->assertEquals($inv1->id, $secondTrade->inv_id);
+    }
+
+    public function testTradeableInventories(){
+        $team = Auth::user()->getBlueTeam();
+        $inv1 = Inventory::factory()->create([
+            'team_id' => $team->id,
+            'asset_name' => "SQLDatabase",
+            'level' => 1,
+            'quantity' => 1,
+        ]);
+        $inv2 = Inventory::factory()->create([
+            'team_id' => $team->id,
+            'asset_name' => "AccessAudit",
+            'level' => 1,
+            'quantity' => 2,
+        ]);
+        $trade1 = Trade::factory()->create([
+            'seller_id' => $team->id,
+            'inv_id' => $inv1->id,
+            'price' => 100
+        ]);
+        $trade2 = Trade::factory()->create([
+            'seller_id' => $team->id,
+            'inv_id' => $inv2->id,
+            'price' => 100
+        ]);
+        $invs = $team->tradeableInventories();
+        $this->assertEquals(1, count($invs));
+        $this->assertEquals($inv2->id, $invs[0]->id);
     }
 
     //Complete Trade Tests
@@ -551,6 +656,41 @@ class TradeTest extends TestCase {
         ]);
         $this->expectException(TeamNotFoundException::class);
         $response = $buyTeam->completeTrade($trade->id);
+    }
+
+    //Remove Trade tests
+
+    public function testInventoryRemoveTrade(){
+        $team = Auth::user()->getBlueTeam();
+        $inv1 = Inventory::factory()->create([
+            'team_id' => $team->id,
+            'asset_name' => "SQLDatabase",
+            'level' => 1,
+            'quantity' => 1,
+        ]);
+        $inv2 = Inventory::factory()->create([
+            'team_id' => $team->id,
+            'asset_name' => "AccessAudit",
+            'level' => 1,
+            'quantity' => 2,
+        ]);
+        $trade1 = Trade::factory()->create([
+            'seller_id' => $team->id,
+            'inv_id' => $inv1->id,
+            'price' => 100
+        ]);
+        $trade2 = Trade::factory()->create([
+            'seller_id' => $team->id,
+            'inv_id' => $inv2->id,
+            'price' => 100
+        ]);
+        $remove1 = $inv1->removeTrade();
+        $remove2 = $inv2->removeTrade();
+        $trades = Trade::all();
+        $this->assertEquals(1, count($trades));
+        $this->assertEquals($trade2->id, $trades->first()->id);
+        $this->assertTrue($remove1);
+        $this->assertFalse($remove2);
     }
 
 }

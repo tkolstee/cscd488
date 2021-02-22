@@ -27,6 +27,7 @@ class AssetController extends Controller
         $inv = $team->inventory($asset, 1);
         if($inv == null) throw new InventoryNotFoundException();
         BlueTeamController::removeSellItem($inv->id);
+        $inv->removeTrade();
         switch($action){
             case ("AccessAudit"): return $this->accessAudit(); break;
             default: $error = "Invalid Action";

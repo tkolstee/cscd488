@@ -151,6 +151,23 @@ class Team extends Model
         return $trades;
     }
 
+    public function tradeableInventories(){
+        $invs = $this->inventories();
+        $tradeable = [];
+        foreach($invs as $inv){
+            $asset = Asset::get($inv->asset_name);
+            if($asset->buyable == 1){
+                $trade = Trade::getByInv($inv->id);
+                if($trade != false && count($trade) < $inv->quantity){
+                    $tradeable[] = $inv;
+                }else if($trade == false){
+                    $tradeable[] = $inv;
+                }
+            }
+        }
+        return $tradeable;
+    }
+
     public function completeTrade($trade_id){
         $trade = Trade::find($trade_id);
         if($trade == null || $trade->buyer_id != null)
@@ -307,6 +324,7 @@ class Team extends Model
     public function sellInventory($inv) {
         if ($inv == null) { return false;}
         if ($inv->team_id != $this->id) { return false; }
+        $inv->removeTrade();
         $asset = Asset::get($inv->asset_name);
         //get last upgrade cost
         $inv->level--;
