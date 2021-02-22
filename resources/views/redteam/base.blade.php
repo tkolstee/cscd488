@@ -66,6 +66,7 @@
                 <li class="startTurn"><a href="/redteam/learn">Learn</a></li>
                 <li class="startTurn"><a href="/redteam/store">Store</a></li>
                 <li class="startTurn"><a href="/redteam/inventory">Inventory</a></li>
+                <li class="startTurn"><a href="/redteam/market">Player Market</a></li>
                 <li class="startTurn"><a href="/redteam/status">Status</a></li>
                 <li class="startTurn"><a href="/redteam/settings">Team Settings</a></li>
             </ul>
