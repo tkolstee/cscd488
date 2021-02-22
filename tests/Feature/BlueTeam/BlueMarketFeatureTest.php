@@ -66,7 +66,7 @@ class BlueMarketFeatureTest extends TestCase
             'price' => 200
         ]);
         $response = $this->post('/blueteam/market');
-        $response->assertSeeInOrder(["SQL Database", "Access Audit"]);
+        $response->assertSeeInOrder(["SQL Database", "Access Control Audit"]);
     }
 
     public function testMarketCannotCheckOwnTeam(){

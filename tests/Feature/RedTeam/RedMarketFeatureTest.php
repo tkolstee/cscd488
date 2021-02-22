@@ -72,7 +72,7 @@ class RedMarketFeatureTest extends TestCase
         $red = Auth::user()->getRedTeam();
         $inv1 = Inventory::factory()->create([
             'team_id' => $red->id,
-            'asset_name' => "SQLDatabase",
+            'asset_name' => "Botnet",
             'level' => 1,
             'quantity' => 1,
         ]);
@@ -83,7 +83,7 @@ class RedMarketFeatureTest extends TestCase
         ]);
         $response = $this->post('/redteam/market');
         $response->assertDontSee("tradeId");
-        $response->assertSee("SQL Database");
+        $response->assertSee("Botnet");
     }
 
     //Create Trade Tests
@@ -99,20 +99,20 @@ class RedMarketFeatureTest extends TestCase
         $red = Auth::user()->getRedTeam();
         $inv1 = Inventory::factory()->create([
             'team_id' => $red->id,
-            'asset_name' => "SQLDatabase",
+            'asset_name' => "Botnet",
             'level' => 1,
             'quantity' => 1,
         ]);
         $response = $this->post('/redteam/createtrade');
         $response->assertViewIs('redteam.createtrade');
-        $response->assertSee("SQL Database");
+        $response->assertSee("Botnet");
     }
 
     public function testCreateTradeMissingParameters(){
         $red = Auth::user()->getRedTeam();
         $inv1 = Inventory::factory()->create([
             'team_id' => $red->id,
-            'asset_name' => "SQLDatabase",
+            'asset_name' => "Botnet",
             'level' => 1,
             'quantity' => 1,
         ]);
@@ -130,7 +130,7 @@ class RedMarketFeatureTest extends TestCase
         $red = Auth::user()->getRedTeam();
         $inv1 = Inventory::factory()->create([
             'team_id' => $red->id,
-            'asset_name' => "SQLDatabase",
+            'asset_name' => "Botnet",
             'level' => 1,
             'quantity' => 1,
         ]);
@@ -140,7 +140,7 @@ class RedMarketFeatureTest extends TestCase
         ]);
         $response->assertViewIs('redteam.market');
         $response->assertSeeInOrder([
-            "SQL Database",
+            "Botnet",
             "100",
             $red->name,
         ]);
@@ -161,7 +161,7 @@ class RedMarketFeatureTest extends TestCase
         $otherTeam = Team::factory()->red()->create();
         $inv1 = Inventory::factory()->create([
             'team_id' => $otherTeam->id,
-            'asset_name' => "SQLDatabase",
+            'asset_name' => "Botnet",
             'level' => 1,
             'quantity' => 1,
         ]);
@@ -183,7 +183,7 @@ class RedMarketFeatureTest extends TestCase
         $otherTeam = Team::factory()->red()->create();
         $inv1 = Inventory::factory()->create([
             'team_id' => $otherTeam->id,
-            'asset_name' => "SQLDatabase",
+            'asset_name' => "Botnet",
             'level' => 1,
             'quantity' => 1,
         ]);
