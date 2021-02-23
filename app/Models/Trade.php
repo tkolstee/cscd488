@@ -20,6 +20,8 @@ class Trade extends Model
         'buyer_id',
         'inv_id',
         'price',
+        'asset_name',
+        'asset_level',
     ];
 
     public static function createTrade($seller_id, $inv_id, $price){

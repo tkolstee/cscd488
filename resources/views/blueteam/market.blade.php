@@ -5,6 +5,7 @@
 @section('pagecontent')
 <h4>Blue Team Player Market</h4>
     <a href="/blueteam/createtrade"><button type="submit" class="btn btn-primary2">Create Trade</button></a>
+    <a href="/blueteam/currenttrades"><button type="submit" class="btn btn-primary2">View Current Trades</button></a>
     @if($currentTrades->isEmpty())
         <p>There are no available trades right now.</p>
     @else
@@ -21,4 +22,5 @@
         @include('partials.pagination', ['paginator' => $currentTrades])
     </div>
     @endif
+    <a href="/blueteam/completedtrades"><button type="submit" class="btn btn-primary2">View Completed Trades</button></a>
 @endsection

@@ -36,6 +36,9 @@ class RedTeamController extends Controller {
             case 'store': return $this->store($request);break;
             case 'market': return $this->market($request);break;
             case 'createtrade': return $this->createTrade($request);break;
+            case 'currenttrades': return $this->currentTrades($request); break;
+            case 'canceltrade': return $this->cancelTrade($request); break;
+            case 'completedtrades': return $this->completedTrades($request); break;
             case 'filter': return $this->filter($request);break;
             case 'status': return $this->status($request); break;
             case 'buy': return $this->buy($request); break;
@@ -53,6 +56,31 @@ class RedTeamController extends Controller {
             case 'minigamecomplete': return $this->minigameComplete($request); break;
             default: return $this->home(); break;
         }
+    }
+
+    public function completedTrades(request $request){
+        $redteam = Auth::user()->getRedTeam();
+        $boughtTrades = $redteam->getBoughtTrades()->paginate(5);
+        $soldTrades = $redteam->getSoldTrades()->paginate(5);
+        return view('redteam.completedtrades')->with(compact('redteam','boughtTrades','soldTrades'));
+    }
+
+    public function cancelTrade(request $request){
+        $redteam = Auth::user()->getRedTeam();
+        $tradeId = $request->cancelTradeSubmit;
+        $result = $redteam->cancelTrade($tradeId);
+        if(!$result){
+            $error = "Trade Not Canceled";
+        }else{
+            $error = "";
+        }
+        return $this->currentTrades($request)->with(compact('error'));
+    }
+
+    public function currentTrades(request $request){
+        $redteam = Auth::user()->getRedTeam();
+        $currentTrades = $redteam->getCurrentTrades()->paginate(5);
+        return view('redteam.currenttrades')->with(compact('redteam','currentTrades'));
     }
 
     public function createTrade(request $request){
