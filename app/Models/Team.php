@@ -150,6 +150,16 @@ class Team extends Model
         $trades = Trade::all()->where('seller_id','=',$this->id)->where('buyer_id','<>',null);
         return $trades;
     }
+    
+    public function cancelTrade($tradeId){
+        $trade = Trade::find($tradeId);
+        if($trade == null || $trade->seller_id != $this->id)
+            return false;
+        else{
+            Trade::destroy($tradeId);
+            return true;
+        }
+    }
 
     public function tradeableInventories(){
         $invs = $this->inventories();
@@ -200,6 +210,9 @@ class Team extends Model
             $buyInv->quantity++;
             $buyInv->update();
         }
+        $trade->asset_name = $asset->name;
+        $trade->asset_level = $sellInv->level;
+        $trade->update();
         $sellInv->quantity--;
         if($sellInv->quantity == 0){
             Inventory::destroy($sellInv->id);

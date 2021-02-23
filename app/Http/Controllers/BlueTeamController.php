@@ -57,6 +57,9 @@ class BlueTeamController extends Controller {
                 case 'store': return $this->store(); break;
                 case 'market': return $this->market($request); break;
                 case 'createtrade': return $this->createTrade($request); break;
+                case 'canceltrade': return $this->cancelTrade($request); break;
+                case 'currenttrades': return $this->currentTrades($request); break;
+                case 'completedtrades': return $this->completedTrades($request); break;
                 case 'filter': return $this->filter($request); break;
                 case 'training': return view('blueteam.training')->with('blueteam',$blueteam); break;
                 case 'buy': return $this->buy($request); break;
@@ -81,6 +84,31 @@ class BlueTeamController extends Controller {
         
     }
  
+    public function completedTrades(request $request){
+        $blueteam = Auth::user()->getBlueTeam();
+        $boughtTrades = $blueteam->getBoughtTrades()->paginate(5);
+        $soldTrades = $blueteam->getSoldTrades()->paginate(5);
+        return view('blueteam.completedtrades')->with(compact('blueteam','boughtTrades','soldTrades'));
+    }
+
+    public function cancelTrade(request $request){
+        $blueteam = Auth::user()->getBlueTeam();
+        $tradeId = $request->cancelTradeSubmit;
+        $result = $blueteam->cancelTrade($tradeId);
+        if(!$result){
+            $error = "Trade Not Canceled";
+        }else{
+            $error = "";
+        }
+        return $this->currentTrades($request)->with(compact('error'));
+    }
+
+    public function currentTrades(request $request){
+        $blueteam = Auth::user()->getBlueTeam();
+        $currentTrades = $blueteam->getCurrentTrades()->paginate(5);
+        return view('blueteam.currenttrades')->with(compact('blueteam','currentTrades'));
+    }
+
     public function createTrade(request $request){
         $blueteam = Auth::user()->getBlueTeam();
         if(empty($request->inv_id) || empty($request->price)){

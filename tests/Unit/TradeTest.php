@@ -408,6 +408,8 @@ class TradeTest extends TestCase {
         $this->assertEquals($trade->seller_id, $response->seller_id);
         $this->assertEquals(100, $response->price);
         $this->assertEquals($buyTeam->id, $response->buyer_id);
+        $this->assertEquals("SQL Database", $response->asset_name);
+        $this->assertEquals(2, $response->asset_level);
         //Assert Charged Team and Gave Team money
         $buyTeam->fresh();
         $sellTeam = Team::find($sellTeam->id);
@@ -451,6 +453,8 @@ class TradeTest extends TestCase {
         $this->assertEquals($trade->seller_id, $response->seller_id);
         $this->assertEquals(100, $response->price);
         $this->assertEquals($buyTeam->id, $response->buyer_id);
+        $this->assertEquals("SQL Database", $response->asset_name);
+        $this->assertEquals(2, $response->asset_level);
         //Assert Charged Team and Gave Team money
         $buyTeam->fresh();
         $sellTeam = Team::find($sellTeam->id);
@@ -495,6 +499,8 @@ class TradeTest extends TestCase {
         $this->assertEquals($trade->seller_id, $response->seller_id);
         $this->assertEquals(100, $response->price);
         $this->assertEquals($buyTeam->id, $response->buyer_id);
+        $this->assertEquals("SQL Database", $response->asset_name);
+        $this->assertEquals(2, $response->asset_level);
         //Assert Charged Team and Gave Team money
         $buyTeam->fresh();
         $sellTeam = Team::find($sellTeam->id);
@@ -549,6 +555,8 @@ class TradeTest extends TestCase {
         $this->assertEquals($trade->seller_id, $response->seller_id);
         $this->assertEquals(100, $response->price);
         $this->assertEquals($buyTeam->id, $response->buyer_id);
+        $this->assertEquals("SQL Database", $response->asset_name);
+        $this->assertEquals(2, $response->asset_level);
         //Assert Charged Team and Gave Team money
         $buyTeam->fresh();
         $sellTeam = Team::find($sellTeam->id);
@@ -692,5 +700,50 @@ class TradeTest extends TestCase {
         $this->assertTrue($remove1);
         $this->assertFalse($remove2);
     }
+
+    //Cancel Trade Tests
+
+    public function testTeamCancelTrade(){
+        $team = Auth::user()->getBlueTeam();
+        $inv1 = Inventory::factory()->create([
+            'team_id' => $team->id,
+            'asset_name' => "SQLDatabase",
+            'level' => 1,
+            'quantity' => 1,
+        ]);
+        $trade1 = Trade::factory()->create([
+            'seller_id' => $team->id,
+            'inv_id' => $inv1->id,
+            'price' => 100
+        ]);
+        $team->cancelTrade($trade1->id);
+        $trades = Trade::all();
+        $this->assertEmpty($trades);
+    }
+
+    public function testTeamCancelTradeNotOwned(){
+        $team = Auth::user()->getBlueTeam();
+        $otherTeam = Team::factory()->create();
+        $inv1 = Inventory::factory()->create([
+            'team_id' => $otherTeam->id,
+            'asset_name' => "SQLDatabase",
+            'level' => 1,
+            'quantity' => 1,
+        ]);
+        $trade1 = Trade::factory()->create([
+            'seller_id' => $otherTeam->id,
+            'inv_id' => $inv1->id,
+            'price' => 100
+        ]);
+        $response = $team->cancelTrade($trade1->id);
+        $this->assertFalse($response);
+    }
+
+    public function testTeamCancelTradeInvalid(){
+        $team = Auth::user()->getBlueTeam();
+        $response = $team->cancelTrade(1);
+        $this->assertFalse($response);
+    }
+
 
 }

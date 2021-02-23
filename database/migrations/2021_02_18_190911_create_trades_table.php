@@ -18,6 +18,8 @@ class CreateTradesTable extends Migration
             $table->foreignId('seller_id')->constrained('teams')->onDelete('cascade');
             $table->foreignId('buyer_id')->nullable()->constrained('teams');
             $table->integer('inv_id');
+            $table->text('asset_name')->nullable();
+            $table->integer('asset_level')->nullable();
             $table->integer('price');
             $table->timestamps();
         });
