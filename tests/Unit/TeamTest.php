@@ -292,12 +292,12 @@ class TeamTest extends TestCase {
 
         $inv->level = 2;
         $inv->update();
-        $tags = $team->getAssetTags();
+        $tags = $team->collectAssetTags();
         $this->assertTrue(in_array('PrivilegedAccess', $tags));
 
         $inv->level = 3;
         $inv->update();
-        $tags = $team->getAssetTags();
+        $tags = $team->collectAssetTags();
         $this->assertTrue(in_array('PwndAccess', $tags));
     }
 }
