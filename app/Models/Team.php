@@ -166,7 +166,7 @@ class Team extends Model
         $tradeable = [];
         foreach($invs as $inv){
             $asset = Asset::get($inv->asset_name);
-            if($asset->buyable == 1){
+            if($asset->buyable == 1 && !(in_array("Targeted", $asset->tags) && $inv->info != null)){
                 $trade = Trade::getByInv($inv->id);
                 if($trade != false && count($trade) < $inv->quantity){
                     $tradeable[] = $inv;
