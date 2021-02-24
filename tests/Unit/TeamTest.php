@@ -277,8 +277,10 @@ class TeamTest extends TestCase {
         Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'AccessAudit']);
         Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'BranchOffice']);
         $tags = $team->collectAssetTags();
-        $this->assertEquals(2, count($tags));
+        $this->assertEquals(4, count($tags));
+        $this->assertTrue(in_array('AccessAudit', $tags));
         $this->assertTrue(in_array('Action', $tags));
+        $this->assertTrue(in_array('BranchOffice', $tags));
         $this->assertTrue(in_array('ExternalNetworkService', $tags));
     }
 
@@ -287,7 +289,7 @@ class TeamTest extends TestCase {
         $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'AccessToken', 'level' => 1]);
         
         $tags = $team->collectAssetTags();
-        $this->assertEquals(1, count($tags));
+        $this->assertEquals(2, count($tags));
         $this->assertTrue(in_array('BasicAccess', $tags));
 
         $inv->level = 2;

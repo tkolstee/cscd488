@@ -420,6 +420,7 @@ class Team extends Model
         $inventories = $this->inventories();
         $tags = [];
         foreach ($inventories as $invAsset){
+            $tags[] = $invAsset->asset_name;
             if ($invAsset->asset_name != "AccessToken"){
                 $asset = Asset::get($invAsset->asset_name);
                 $tags = array_merge($tags, $asset->tags);
