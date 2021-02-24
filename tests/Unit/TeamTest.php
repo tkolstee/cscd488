@@ -298,6 +298,7 @@ class TeamTest extends TestCase {
         $tags = $team->collectAssetTags($attack);
         $this->assertEquals(2, count($tags));
         $this->assertTrue(in_array('BasicAccess', $tags));
+        $this->assertTrue(in_array('AccessToken', $tags));
 
         $inv->level = 2;
         $inv->update();
@@ -307,6 +308,6 @@ class TeamTest extends TestCase {
         $inv->level = 3;
         $inv->update();
         $tags = $team->collectAssetTags($attack);
-        $this->assertTrue(in_array('PwndAccess', $tags));
+        $this->assertTrue(in_array('PwnedAccess', $tags));
     }
 }
