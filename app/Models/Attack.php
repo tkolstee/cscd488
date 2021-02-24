@@ -17,7 +17,7 @@ class Attack extends Model
      *
      * @var array
      */
-    protected $fillable = [ 'name', 'class_name', 'energy_cost', 'difficulty','detection_risk', 'calculated_detection_risk', 'calculated_difficulty','success','detection_level','blueteam','redteam'];
+    protected $fillable = [ 'name', 'class_name', 'energy_cost', 'success_chance','detection_chance', 'calculated_detection_chance', 'calculated_success_chance','success','detection_level','blueteam','redteam'];
     protected $casts = [ 'tags' => 'array', 'prereqs' => 'array', 'payloads' => 'array']; // casts "json" database column to array and back
 
     public $_name    = "Abstract class - do not use";
@@ -26,27 +26,27 @@ class Attack extends Model
     public $_prereqs = [];
     public $_payload_tag = null;
     public $_payload_choice = null;
-    public $_initial_difficulty = 3;
-    public $_initial_detection_risk = 3;
+    public $_initial_success_chance = 0.5;
+    public $_initial_detection_chance = 0.5;
     public $_initial_detection = 0;
     public $_initial_energy_cost = 100;
     public $_possible = true;
     public $errormsg = "";
-    public $_initial_analysis_risk = null;
-    public $_initial_attribution_risk = null;
+    public $_initial_analysis_chance = null;
+    public $_initial_attribution_chance = null;
     public $_help_text = null;
 
     function __construct() {
         $this->name           = $this->_name;
         $this->class_name     = $this->_class_name;
-        $this->difficulty     = $this->_initial_difficulty;
-        $this->detection_risk = $this->_initial_detection_risk;
-        $this->analysis_risk  = $this->_initial_analysis_risk;
-        $this->attribution_risk = $this->_initial_attribution_risk;
-        $this->calculated_analysis_risk = $this->_initial_analysis_risk;
-        $this->calculated_attribution_risk = $this->_initial_attribution_risk;
-        $this->calculated_difficulty = $this->_initial_difficulty;
-        $this->calculated_detection_risk = $this->_initial_detection_risk;
+        $this->success_chance = $this->_initial_success_chance;
+        $this->detection_chance = $this->_initial_detection_chance;
+        $this->analysis_chance  = $this->_initial_analysis_chance;
+        $this->attribution_chance = $this->_initial_attribution_chance;
+        $this->calculated_analysis_chance = $this->_initial_analysis_chance;
+        $this->calculated_attribution_chance = $this->_initial_attribution_chance;
+        $this->calculated_success_chance = $this->_initial_success_chance;
+        $this->calculated_detection_chance = $this->_initial_detection_chance;
         $this->tags           = $this->_tags;
         $this->prereqs        = $this->_prereqs;
         $this->payload_tag    = $this->_payload_tag;
@@ -181,14 +181,14 @@ class Attack extends Model
         $this->prereqs = $attack->prereqs;
         $this->payload_tag = $attack->payload_tag;
         $this->payload_choice = $attack->payload_choice;
-        $this->difficulty = $attack->difficulty;
-        $this->detection_risk = $attack->detection_risk;
-        $this->analysis_risk = $attack->analysis_risk;
-        $this->attribution_risk = $attack->attribution_risk;
-        $this->calculated_detection_risk = $attack->calculated_detection_risk;
-        $this->calculated_difficulty = $attack->calculated_difficulty;
-        $this->calculated_analysis_risk = $attack->calculated_analysis_risk;
-        $this->calculated_attribution_risk = $attack->calculated_attribution_risk;
+        $this->success_chance = $attack->success_chance;
+        $this->detection_chance = $attack->detection_chance;
+        $this->analysis_chance = $attack->analysis_chance;
+        $this->attribution_chance = $attack->attribution_chance;
+        $this->calculated_detection_chance = $attack->calculated_detection_chance;
+        $this->calculated_success_chance = $attack->calculated_success_chance;
+        $this->calculated_analysis_chance = $attack->calculated_analysis_chance;
+        $this->calculated_attribution_chance = $attack->calculated_attribution_chance;
         $this->success = $attack->success;
         $this->detection_level = $attack->detection_level;
         $this->notified = $attack->notified;
@@ -240,19 +240,18 @@ class Attack extends Model
     }
 
     public function calculateDetected() {
-        $rand = rand(0, 500)/100;
-        if ($rand > $this->calculated_detection_risk) {
+        $rand = rand(0, 99)/100;
+        if ($rand >= $this->calculated_detection_chance) {
             $this->detection_level = 0;
         }
         else {
             $this->detection_level = 1;
-            $blueteam = Team::find($this->blueteam);
-            $rand = rand(0, 500)/100;
-            if ($rand < $this->calculated_analysis_risk){
+            $rand = rand(0, 99)/100;
+            if ($rand < $this->calculated_analysis_chance){
                 $this->detection_level = 2;
                 $this->checkAnalysisBonus();
-                $rand = rand(0, 500)/100;
-                if($rand < $this->calculated_attribution_risk){
+                $rand = rand(0, 99)/100;
+                if($rand < $this->calculated_attribution_chance){
                     $this->detection_level = 3;
                 }
             }
@@ -283,32 +282,31 @@ class Attack extends Model
         return $bonuses;
     }
     
-    public function changeDifficulty($val){
-        $this->calculated_difficulty += $val * $this->difficulty;
-        if($this->calculated_difficulty > 5) $this->calculated_difficulty = 5;
-        if($this->calculated_difficulty < 1) $this->calculated_difficulty = 1;
+    public function changeSuccessChance($val){
+        $this->calculated_success_chance = $this->calculateNewProbability($this->calculated_success_chance, $val);
         Attack::updateAttack($this);
     }
 
-    public function changeDetectionRisk($val){
-        $this->calculated_detection_risk += $val * $this->detection_risk;
-        if($this->calculated_detection_risk > 5) $this->calculated_detection_risk = 5;
-        if($this->calculated_detection_risk < 0) $this->calculated_detection_risk = 0;
+    public function changeDetectionChance($val){
+        $this->calculated_detection_chance = $this->calculateNewProbability($this->calculated_detection_chance, $val);
         Attack::updateAttack($this);
     }
 
-    public function changeAnalysisRisk($val){
-        $this->calculated_analysis_risk += $val * $this->analysis_risk;
-        if($this->calculated_analysis_risk > 5) $this->calculated_analysis_risk = 5;
-        if($this->calculated_analysis_risk < 0) $this->calculated_analysis_risk = 0;
+    public function changeAnalysisChance($val){
+        $this->calculated_analysis_chance = $this->calculateNewProbability($this->calculated_analysis_chance, $val);
         Attack::updateAttack($this);
     }
 
-    public function changeAttributionRisk($val){
-        $this->calculated_detection_risk += $val * $this->detection_risk;
-        if($this->calculated_detection_risk > 5) $this->calculated_detection_risk = 5;
-        if($this->calculated_detection_risk < 0) $this->calculated_detection_risk = 0;
+    public function changeAttributionChance($val){
+        $this->calculated_attribution_chance = $this->calculateNewProbability($this->calculated_attribution_chance, $val);
         Attack::updateAttack($this);
+    }
+
+    private function calculateNewProbability($initial, $val){
+        $result = $initial + ($initial*$val);
+        if ($result > 1) { return 1; }
+        elseif ($result < 0) { return 0; }
+        else { return $result; }
     }
 
     public function getName(){ //Restrict information given based on detection level
@@ -328,6 +326,17 @@ class Attack extends Model
     public function getPayloads(){
         if ($this->payload_tag == null){ return null; }
         return Payload::getByTag($this->payload_tag);
+    }
+
+    /**
+     * Converts success_chance to difficulty for minigames. 5 = impossible, 0 = always succeeds
+     */
+    public function getDifficulty(){
+        $difficulty = round(5*(1-$this->calculated_success_chance));
+        if($difficulty < 1){
+            $difficulty = 1;
+        }
+        return $difficulty;
     }
 
     public function onPreAttack() {
@@ -381,7 +390,6 @@ class Attack extends Model
         foreach ($bonuses as $bonus){
             $this->applyBonus($bonus);
         }
-        $this->calculated_difficulty = round($this->calculated_difficulty);
         Attack::updateAttack($this);
         return $this;
     }
@@ -423,10 +431,10 @@ class Attack extends Model
 
     private function applyBonus($bonus){
         if(in_array("DifficultyDeduction", $bonus->tags)){
-            $this->changeDifficulty(-1* $bonus->percentDiffDeducted);
+            $this->changeSuccessChance(-1 * 0.01 * $bonus->percentDiffDeducted);
         }
         if(in_array("DetectionDeduction", $bonus->tags)){
-            $this->changeDetectionRisk(-1* $bonus->percentDetDeducted);
+            $this->changeDetectionChance(-1 * 0.01 * $bonus->percentDetDeducted);
         }
     }
 }

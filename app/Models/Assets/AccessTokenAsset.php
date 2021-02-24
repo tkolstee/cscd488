@@ -19,6 +19,7 @@ class AccessTokenAsset extends Asset
     public $_buyable = 0;
     public $_purchase_cost = 0;
     public $_ownership_cost = 0;
+    public $_description = "Access Tokens give access to new attacks. Not purchasable.";
 
     public function onPreAttack($attack)
     {

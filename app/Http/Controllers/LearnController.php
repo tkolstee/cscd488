@@ -98,7 +98,6 @@ class LearnController extends Controller
         if(empty($step)) $step = 1;
         else $step += $request->stepChange;
         if($step < 1) $step = 1;
-        if($step > 4) $step = 4;
         return $step;
     }
 

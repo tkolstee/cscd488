@@ -6,7 +6,7 @@
         <th>Ownership Cost</th>
         <th>Revenue Generated Per Turn</th>
         <th>Owned</th>
-        <th>Description</th>
+        <th class="descriptionTd" >Description</th>
     </thead>
     <tbody>
         @foreach ($assets as $asset)
@@ -29,7 +29,7 @@
                 @endif
                 </td>
                 <td>@if ($ownedAssets->contains($asset)) ✅ @endif</td>
-                <td>{{$asset->description}}</td>
+                <td class="descriptionTd">{{$asset->description}}</td>
             </tr>
         @endforeach
     </tbody>

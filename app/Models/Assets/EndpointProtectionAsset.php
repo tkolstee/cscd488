@@ -18,9 +18,10 @@ class EndpointProtectionAsset extends Asset {
 
     function onPreAttack($attack) {
         if (in_array("AttackOnEndpoint", $attack->tags)) {
-            $attack->changeDifficulty(1);
-            $attack->changeDetectionRisk(1);
-            $attack->changeAnalysisRisk(1);
+            $attack->calculated_success_chance = 0;
+            Attack::updateAttack($attack);
+            $attack->changeDetectionChance(1);
+            $attack->changeAnalysisChance(1);
         }
     }
 }

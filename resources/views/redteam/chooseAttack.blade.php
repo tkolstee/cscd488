@@ -7,11 +7,24 @@
 <h3>Select a method of attack against {{ $blueteam->name }}:</h3>
 <form method="POST" action="/redteam/performattack">
     @csrf
-    @foreach ($possibleAttacks ?? [] as $attack)
-        <input type="radio" name="result" id="{{ $attack->class_name }}" value="{{ $attack->class_name }}">
-        <label title="{{$attack->help_text ?? "" }}" class="chooseTeamRadioButtons" for="{{ $attack->class_name }}">{{ $attack->name }}</label>
-        <br>
-    @endforeach
+    <table class="table table-bordered ">
+        <thead>
+            <th class="attackTd"></th>
+            <th>Name</th>
+            <th>Energy Cost</th>
+        </thead>
+        <tbody>
+            @foreach ($possibleAttacks ?? [] as $attack)
+                <tr>
+                    <td class="attackTd"><input type="radio" name="result" id="{{ $attack->class_name }}" value="{{ $attack->class_name }}"></td>
+                    <td title="{{$attack->help_text ?? "" }}">
+                        {{$attack->name}}
+                    </td>
+                    <td>{{$attack->energy_cost}}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
     @include('partials.pagination', ['paginator' => $possibleAttacks])
     <input type="hidden" name="blueteam" value="{{ $blueteam->name }}">
     <div class="form-group row mb-0">

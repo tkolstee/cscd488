@@ -15,6 +15,7 @@ use App\Exceptions\InventoryNotFoundException;
 use Exception;
 use App\Models\Attack;
 use App\Models\Bonus;
+use App\Models\Trade;
 use Illuminate\Pagination\Paginator;
 
 class BlueTeamController extends Controller {
@@ -41,6 +42,8 @@ class BlueTeamController extends Controller {
                 return $this->home()->with(compact('turn', 'endTime'));
             }
             //logged in with blueteam options
+            
+            //throw new Exception("called");
             switch ($page) {
                 case 'home': return $this->home(); break;
                 case 'broadcast': return $this->broadcast($request); break;
@@ -51,8 +54,13 @@ class BlueTeamController extends Controller {
                 case 'planning': return view('blueteam.planning')->with('blueteam',$blueteam); break;
                 case 'status': return $this->status(); break;
                 case 'removeBonus': return $this->removeBonus($request); break;
-                case 'store': return $this->store();
-                case 'filter': return $this->filter($request);
+                case 'store': return $this->store(); break;
+                case 'market': return $this->market($request); break;
+                case 'createtrade': return $this->createTrade($request); break;
+                case 'canceltrade': return $this->cancelTrade($request); break;
+                case 'currenttrades': return $this->currentTrades($request); break;
+                case 'completedtrades': return $this->completedTrades($request); break;
+                case 'filter': return $this->filter($request); break;
                 case 'training': return view('blueteam.training')->with('blueteam',$blueteam); break;
                 case 'buy': return $this->buy($request); break;
                 case 'inventory': return $this->inventory(); break;
@@ -76,6 +84,62 @@ class BlueTeamController extends Controller {
         
     }
  
+    public function completedTrades(request $request){
+        $blueteam = Auth::user()->getBlueTeam();
+        $boughtTrades = $blueteam->getBoughtTrades()->paginate(5);
+        $soldTrades = $blueteam->getSoldTrades()->paginate(5);
+        return view('blueteam.completedtrades')->with(compact('blueteam','boughtTrades','soldTrades'));
+    }
+
+    public function cancelTrade(request $request){
+        $blueteam = Auth::user()->getBlueTeam();
+        $tradeId = $request->cancelTradeSubmit;
+        $result = $blueteam->cancelTrade($tradeId);
+        if(!$result){
+            $error = "Trade Not Canceled";
+        }else{
+            $error = "";
+        }
+        return $this->currentTrades($request)->with(compact('error'));
+    }
+
+    public function currentTrades(request $request){
+        $blueteam = Auth::user()->getBlueTeam();
+        $currentTrades = $blueteam->getCurrentTrades()->paginate(5);
+        return view('blueteam.currenttrades')->with(compact('blueteam','currentTrades'));
+    }
+
+    public function createTrade(request $request){
+        $blueteam = Auth::user()->getBlueTeam();
+        if(empty($request->inv_id) || empty($request->price)){
+            $inventories = $blueteam->tradeableInventories();
+            return view('blueteam.createtrade')->with(compact('inventories','blueteam'));
+        }
+        $trade = $blueteam->createTrade($request->inv_id, $request->price);
+        if($trade == false){
+            $error = "Trade could not be created";
+            $inventories = $blueteam->tradeableInventories();
+            return view('blueteam.createtrade')->with(compact('inventories','blueteam','error'));
+        }
+        return $this->market($request);
+    }
+
+    public function market(request $request){
+        $blueteam = Auth::user()->getBlueTeam();
+        if(empty($request->tradeId)){
+            $currentTrades = Trade::getCurrentBlueTrades()->paginate(5);
+            return view('blueteam.market')->with(compact('blueteam','currentTrades'));
+        }else{
+            $trade = $blueteam->completeTrade($request->tradeId);
+            $currentTrades = Trade::getCurrentBlueTrades()->paginate(5);
+            if($trade == false){
+                $error = "Trade Not Completed";
+                return view('blueteam.market')->with(compact('blueteam','currentTrades','error'));
+            }
+            return view('blueteam.market')->with(compact('blueteam','currentTrades'));
+        }
+    }
+
     public static function removeSellItem($id){
         $removed = false;
         $sellCart = session('sellCart');
@@ -92,7 +156,7 @@ class BlueTeamController extends Controller {
         $blueteam = Auth::user()->getBlueTeam();
         $bonuses = $blueteam->getBonusesByTarget();
         $bonuses = $bonuses->sortByDesc("created_at")->paginate(3);
-        return view('blueteam/status')->with(compact('blueteam','bonuses'));
+        return view('blueteam.status')->with(compact('blueteam','bonuses'));
     }
 
     public function removeBonus(request $request){

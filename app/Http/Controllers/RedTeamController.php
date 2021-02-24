@@ -7,6 +7,7 @@ use App\Models\Asset;
 use App\Models\Inventory;
 use App\Models\Attack;
 use App\Models\Payload;
+use App\Models\Trade;
 use Auth;
 use App\Exceptions\AttackNotFoundException;
 use App\Exceptions\TeamNotFoundException;
@@ -32,7 +33,12 @@ class RedTeamController extends Controller {
             case 'home': return $this->home(); break;
             case 'attacks': return $this->attacks(); break;
             case 'learn': return (new LearnController)->page($page, $request); break;
-            case 'store': return $this->store();break;
+            case 'store': return $this->store($request);break;
+            case 'market': return $this->market($request);break;
+            case 'createtrade': return $this->createTrade($request);break;
+            case 'currenttrades': return $this->currentTrades($request); break;
+            case 'canceltrade': return $this->cancelTrade($request); break;
+            case 'completedtrades': return $this->completedTrades($request); break;
             case 'filter': return $this->filter($request);break;
             case 'status': return $this->status($request); break;
             case 'buy': return $this->buy($request); break;
@@ -49,6 +55,62 @@ class RedTeamController extends Controller {
             case 'leaveteam': return $this->leaveTeam($request); break;
             case 'minigamecomplete': return $this->minigameComplete($request); break;
             default: return $this->home(); break;
+        }
+    }
+
+    public function completedTrades(request $request){
+        $redteam = Auth::user()->getRedTeam();
+        $boughtTrades = $redteam->getBoughtTrades()->paginate(5);
+        $soldTrades = $redteam->getSoldTrades()->paginate(5);
+        return view('redteam.completedtrades')->with(compact('redteam','boughtTrades','soldTrades'));
+    }
+
+    public function cancelTrade(request $request){
+        $redteam = Auth::user()->getRedTeam();
+        $tradeId = $request->cancelTradeSubmit;
+        $result = $redteam->cancelTrade($tradeId);
+        if(!$result){
+            $error = "Trade Not Canceled";
+        }else{
+            $error = "";
+        }
+        return $this->currentTrades($request)->with(compact('error'));
+    }
+
+    public function currentTrades(request $request){
+        $redteam = Auth::user()->getRedTeam();
+        $currentTrades = $redteam->getCurrentTrades()->paginate(5);
+        return view('redteam.currenttrades')->with(compact('redteam','currentTrades'));
+    }
+
+    public function createTrade(request $request){
+        $redteam = Auth::user()->getRedTeam();
+        if(empty($request->inv_id) || empty($request->price)){
+            $inventories = $redteam->tradeableInventories();
+            return view('redteam.createtrade')->with(compact('inventories','redteam'));
+        }
+        $trade = $redteam->createTrade($request->inv_id, $request->price);
+        if($trade == false){
+            $error = "Trade could not be created";
+            $inventories = $redteam->tradeableInventories();
+            return view('redteam.createtrade')->with(compact('inventories','redteam','error'));
+        }
+        return $this->market($request);
+    }
+
+    public function market(request $request){
+        $redteam = Auth::user()->getRedTeam();
+        if(empty($request->tradeId)){
+            $currentTrades = Trade::getCurrentRedTrades()->paginate(5);
+            return view('redteam.market')->with(compact('redteam','currentTrades'));
+        }else{
+            $trade = $redteam->completeTrade($request->tradeId);
+            $currentTrades = Trade::getCurrentRedTrades()->paginate(5);
+            if($trade == false){
+                $error = "Trade Not Completed";
+                return view('redteam.market')->with(compact('redteam','currentTrades','error'));
+            }
+            return view('redteam.market')->with(compact('redteam','currentTrades'));
         }
     }
 

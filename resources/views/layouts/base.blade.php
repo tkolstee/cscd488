@@ -67,11 +67,22 @@
                 </div><!--End navbar class-->
                 
             <div class="container_form" style="align: center; vertical-align: center;">
-                @if(! empty($error))
-                <p>{{ $error }}</p>
+                @if(! empty($error)) <!-- Popup message for error -->
+                    <div class="popup">
+                        <span class="popuptext" id="errorPopup" onclick="displayPopup()">{{$error}}</span>
+                    </div>
+                    <script>
+                        // When the user clicks on <div>, open the popup
+                        function displayPopup() {
+                            var popup = document.getElementById("errorPopup");
+                            popup.classList.toggle("show");
+                        }
+                        displayPopup();
+                    </script>
                 @endif
                 @yield('basecontent')
             </div>
+            
             <div class="footer">
                 <p>©copyright 2020 - Terrance Cunningham | Robin Deskins | Tony Kolste | Steven Zuelke  - Web Designers</p>
             </div><!--End footer class-->

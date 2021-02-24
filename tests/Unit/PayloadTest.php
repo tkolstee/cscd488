@@ -8,19 +8,23 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Bonus;
 use App\Models\Attack;
+use App\Models\Payloads\ActionsOnObjective;
 use App\Models\Payloads\AdWare;
 use App\Models\Payloads\Xss;
 use App\Models\Payloads\Dos;
 use App\Models\Payloads\Destruction;
 use App\Models\Payloads\BasicAccess;
 use App\Models\Payloads\Confusion;
+use App\Models\Payloads\Eavesdropping;
 use App\Models\Payloads\PrivAccess;
 use App\Models\Payloads\Evasion;
+use App\Models\Payloads\Fuzzing;
 use App\Models\Payloads\InformationStealing;
 use App\Models\Payloads\WebsiteDefacement;
 use App\Models\Payloads\Keylogger;
 use App\Models\Payloads\Ransomware;
 use App\Models\Payloads\MaliciousInsider;
+use App\Models\Payloads\StolenLaptop;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PayloadTest extends TestCase {
@@ -34,13 +38,13 @@ class PayloadTest extends TestCase {
 
     public function testPayloadOnPreAttackCanIncreaseSuccess() {
         $attack = $this->createTeamsAndAttack();
-        $initialDiff = $attack->calculated_difficulty;
-        $this->assertEquals(2, $attack->calculated_difficulty);
+        $initialDiff = $attack->calculated_success_chance;
+        $this->assertEquals(0.6, $attack->calculated_success_chance);
         $payload = new Payload;
-        $payload->percentIncreasedSuccess = .2;
+        $payload->percentIncreasedSuccess = 20;
         $payload->onPreAttack($attack);
         $attack->fresh();
-        $this->assertEquals($initialDiff * .8, $attack->calculated_difficulty);
+        $this->assertEquals($initialDiff * 1.2, $attack->calculated_success_chance);
     }
 
     public function testGetPayloadByTag() {
@@ -74,6 +78,7 @@ class PayloadTest extends TestCase {
         $this->assertEquals(2, count($bonus->tags));
         $this->assertTrue(in_array("UntilAnalyzed", $bonus->tags));
         $this->assertTrue(in_array("RevenueSteal", $bonus->tags));
+        $this->assertEquals(10, $bonus->percentRevStolen);
     }
 
     public function testDosPayload(){
@@ -262,4 +267,74 @@ class PayloadTest extends TestCase {
         $this->assertEquals($blueteam->name, $access->info);
     }
 
+    public function testEavesdroppingPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new Eavesdropping;
+        $payload->onAttackComplete($attack);
+        $bonuses = $redteam->getBonuses();
+        $this->assertLessThanOrEqual(2, count($bonuses));
+        foreach($bonuses as $bonus) {
+            $this->assertEquals($redteam->id, $bonus->team_id);
+            $this->assertEquals($blueteam->id, $bonus->target_id);
+            $this->assertTrue(in_array('DetectionDeduction', $bonus->tags) || in_array('OneTurnOnly', $bonus->tags));
+        }
+        $inv = $redteam->inventories();
+        $this->assertLessThanOrEqual(2, count($inv));
+        foreach($inv as $asset){
+            $this->assertEquals('AccessToken', $asset->asset_name);
+        }
+    }
+
+    public function testStolenLaptopPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        $payload = new StolenLaptop;
+        $payload->onAttackComplete($attack);
+        $bonuses = $redteam->getBonuses();
+        $this->assertLessThanOrEqual(2, count($bonuses));
+        foreach($bonuses as $bonus) {
+            $this->assertEquals($redteam->id, $bonus->team_id);
+            $this->assertEquals($blueteam->id, $bonus->target_id);
+            $this->assertTrue(in_array('DetectionDeduction', $bonus->tags) || in_array('OneTurnOnly', $bonus->tags));
+        }
+        $inv = $redteam->inventories();
+        $this->assertLessThanOrEqual(3, count($inv));
+        foreach($inv as $asset){
+            $this->assertEquals('AccessToken', $asset->asset_name);
+        }
+    }
+
+    public function testFuzzingPayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $payload = new Fuzzing;
+        $payload->onAttackComplete($attack);
+        $bonus = $redteam->getBonuses()->first();
+
+        if ($bonus != null){
+            $this->assertTrue(in_array("DetectionDeduction", $bonus->tags));
+            $this->assertEquals(20, $bonus->percentDetDeducted);
+            $this->assertTrue(in_array("AnalysisDeduction", $bonus->tags));
+            $this->assertEquals(20, $bonus->percentAnalDeducted);
+        }
+        else {
+            $inv = $redteam->inventories()->first();
+            $this->assertEquals('AccessToken', $inv->asset_name);
+            $this->assertEquals(2, $inv->level);
+        }
+    }
+
+    public function testActionsOnObjectivePayload(){
+        $attack = $this->createTeamsAndAttack();
+        $redteam = Team::find($attack->redteam);
+        $payload = new ActionsOnObjective;
+        $payload->onAttackComplete($attack);
+        $bonus = $redteam->getBonuses()->first();
+        $this->assertEquals($redteam->id, $bonus->team_id);
+        $this->assertTrue(in_array("RevenueSteal", $bonus->tags));
+        $this->assertEquals(10, $bonus->percentRevStolen);
+    }
 }

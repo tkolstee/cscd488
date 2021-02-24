@@ -19,11 +19,11 @@ class FirewallAsset extends Asset {
 
     function onPreAttack($attack) {
         if (in_array("FirewallDefends", $attack->tags)) {
-            $attack->changeDifficulty(.2);
+            $attack->changeSuccessChance(-.2);
         }
         if (in_array('Internal', $attack->tags) || in_array('PrivilegedAccess', $attack->tags) || in_array('PwnedAccess', $attack->tags)){
-            $attack->changeDetectionRisk(.15);
-            $attack->changeAnalysisRisk(.15);
+            $attack->changeDetectionChance(.15);
+            $attack->changeAnalysisChance(.15);
         }
     }
 }

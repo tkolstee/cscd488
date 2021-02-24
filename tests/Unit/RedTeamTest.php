@@ -136,8 +136,8 @@ class RedTeamTest extends TestCase
         $this->assertEquals($team->id, $response->redteam->id);
         $this->assertEquals($team->id, $response->attack->redteam);
         $this->assertEquals($target->id, $response->attack->blueteam);
-        $this->assertFalse(empty($response->attack->difficulty));
-        $this->assertFalse(empty($response->attack->detection_risk));
+        $this->assertFalse(empty($response->attack->success_chance));
+        $this->assertFalse(empty($response->attack->detection_chance));
         $this->assertTrue($response->attack->possible);
         $this->assertEquals("Syn Flood", $response->attack->name);
     }

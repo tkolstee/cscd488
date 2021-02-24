@@ -116,6 +116,118 @@ class Team extends Model
         return Inventory::all()->where('team_id', '=', $this->id)->where('asset_name', '=', $assetName)->where('level', '=', $level)->where('info' ,'=', $info)->first();
     }
 
+    public function createTrade($inv_id, $price){
+        $inv = Inventory::find($inv_id);
+        if($inv == null)
+            throw new InventoryNotFoundException();
+        if($inv->team_id != $this->id)
+            throw new InventoryNotFoundException();
+        $asset = Asset::get($inv->asset_name);
+        if($asset->buyable == 0)
+            return false;
+        if(in_array("Targeted", $asset->tags) && $inv->info != null){
+            return false;
+        }
+        if($price < 0) return false;
+        $trade = Trade::createTrade($this->id, $inv_id, $price);
+        if($trade != false)
+            return $trade;
+        else   
+            return false;
+    }
+
+    public function getCurrentTrades(){
+        $trades = Trade::all()->where('seller_id','=',$this->id)->where('buyer_id','=',null);
+        return $trades;
+    }
+
+    public function getBoughtTrades(){
+        $trades = Trade::all()->where('buyer_id','=',$this->id);
+        return $trades;
+    }
+
+    public function getSoldTrades(){
+        $trades = Trade::all()->where('seller_id','=',$this->id)->where('buyer_id','<>',null);
+        return $trades;
+    }
+    
+    public function cancelTrade($tradeId){
+        $trade = Trade::find($tradeId);
+        if($trade == null || $trade->seller_id != $this->id)
+            return false;
+        else{
+            Trade::destroy($tradeId);
+            return true;
+        }
+    }
+
+    public function tradeableInventories(){
+        $invs = $this->inventories();
+        $tradeable = [];
+        foreach($invs as $inv){
+            $asset = Asset::get($inv->asset_name);
+            if($asset->buyable == 1){
+                $trade = Trade::getByInv($inv->id);
+                if($trade != false && count($trade) < $inv->quantity){
+                    $tradeable[] = $inv;
+                }else if($trade == false){
+                    $tradeable[] = $inv;
+                }
+            }
+        }
+        return $tradeable;
+    }
+
+    public function completeTrade($trade_id){
+        $trade = Trade::find($trade_id);
+        if($trade == null || $trade->buyer_id != null)
+            throw new InventoryNotFoundException;
+        if($this->balance < $trade->price)
+            return false;
+        $seller = Team::find($trade->seller_id);
+        if($seller == null || $seller->blue != $this->blue)
+            throw new TeamNotFoundException;
+        $sellInv = Inventory::find($trade->inv_id);
+        if($sellInv == null || $sellInv->team_id != $seller->id)
+            throw new InventoryNotFoundException;
+        $asset = Asset::get($sellInv->asset_name);
+        if($sellInv->info == null){
+            $buyInv = $this->inventory($asset, $sellInv->level);
+        }elseif(in_array("Targeted", $asset->tags)){
+            throw new InventoryNotFoundException;
+        }else{
+            $buyInv = $this->inventoryWithInfo($asset->class_name, $sellInv->level, $sellInv->info);
+        }
+        if($buyInv == null){
+            $buyInv = new Inventory();
+            $buyInv->asset_name = $sellInv->asset_name;
+            $buyInv->team_id = $this->id;
+            $buyInv->level = $sellInv->level;
+            $buyInv->quantity = 1;
+            $buyInv->info = $sellInv->info;
+            $buyInv->save();
+        }else{
+            $buyInv->quantity++;
+            $buyInv->update();
+        }
+        $trade->asset_name = $asset->name;
+        $trade->asset_level = $sellInv->level;
+        $trade->update();
+        $sellInv->quantity--;
+        if($sellInv->quantity == 0){
+            Inventory::destroy($sellInv->id);
+        }else{
+            $sellInv->update();
+        }
+        $this->balance -= $trade->price;
+        $this->update();
+        $seller->balance += $trade->price;
+        $seller->update();
+        $trade->buyer_id = $this->id;
+        $trade->update();
+        return $trade;
+    }
+
     public function assets() {
         $inventories = Inventory::all()->where('team_id', '=', $this->id);
         $assets_arr = [];
@@ -225,6 +337,7 @@ class Team extends Model
     public function sellInventory($inv) {
         if ($inv == null) { return false;}
         if ($inv->team_id != $this->id) { return false; }
+        $inv->removeTrade();
         $asset = Asset::get($inv->asset_name);
         //get last upgrade cost
         $inv->level--;

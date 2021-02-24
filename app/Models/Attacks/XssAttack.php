@@ -11,10 +11,10 @@ class XssAttack extends Attack {
     public $_tags                   = ['TargetsCustomers'];
     public $_prereqs                = ['MaliciousWebsite','BlueWebsite'];
     public $_payload_choice           = "Xss";
-    public $_initial_difficulty     = 3.5;
-    public $_initial_detection_risk = 1;
-    public $_initial_analysis_risk  = 2.5;
-    public $_initial_attribution_risk = 2.5;
+    public $_initial_success_chance = 0.3;
+    public $_initial_detection_chance = 0.2;
+    public $_initial_analysis_chance = 0.5;
+    public $_initial_attribution_chance = 0.5;
     public $_initial_energy_cost    = 200;
     public $_help_text              = "Redirect customers to your own website.";
 

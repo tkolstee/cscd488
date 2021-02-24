@@ -12,6 +12,62 @@ h4{
     color:white;
     
 }
+/* Popup container */
+.popup {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  /* The actual popup (appears on top) */
+  .popup .popuptext {
+    visibility: hidden;
+    width: 20%;
+    background-color: rgb(255, 255, 255);
+    color: #00CC99;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    left: 45%;
+    margin-left: -80px;
+    margin-top: 4px;
+  }
+
+/* The actual popup (appears on top) */
+.popup .popuptextattack {
+    visibility: hidden;
+    width: 20%;
+    background-color: rgb(255, 255, 255);
+    color: #00CC99;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    left: 45%;
+    margin-left: -80px;
+    margin-top: -15px;
+    }
+  
+  /* Toggle this class when clicking on the popup container (hide and show the popup) */
+  .popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s
+  }
+  
+  /* Add animation (fade in the popup) */
+  @-webkit-keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+  
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity:1 ;}
+  }
 #h4BlueHomePage{
     
 }
@@ -107,7 +163,7 @@ h4{
 .p-pagination{
     color: white;
     display: inline-block;
-    margin-left:53%;
+    margin-left:48%;
     margin-top:1%;
     
 }
@@ -626,7 +682,7 @@ h2{
 }
 .storeForm{
     color:white;
-    width:80%;
+    /*width:60%;*/
 }
 .storeFormInventory{
     color:white;
@@ -705,10 +761,9 @@ input[type="checkbox"], input[type="radio"]{
 }
 .table td, .table th{
     vertical-align: middle;
+    width:0%;
 }
-.blueSettingForm{
 
-}
 .loggedName{
     color:#00CC99;
     font-size: 13pt;   
@@ -754,17 +809,15 @@ input[type="checkbox"], input[type="radio"]{
     float:left;
 }
 .h2Container{
-    float:left;
+    
     width: 80%;
     background-color: black;
     
 }
-.blueTeamImage{
-   
-}
+
 .blueLogoContainer{
     background-color: black;
-    height: 8%;
+    
 }
 
 
@@ -809,7 +862,7 @@ input[type="checkbox"], input[type="radio"]{
 }
 .redLogoContainer{
     background-color: black;
-    height: 8%;
+    
 }
 .redLogo{
     width:75px;
@@ -947,6 +1000,9 @@ color:#00CC99;
 .blueInvTd{
     width:10%;
 }
+.attackTd{
+    width:10%;
+}
 .bonusDescTd{
     width:20%;
 }
@@ -1010,6 +1066,7 @@ color:#00CC99;
 .settingsPage{
     background: url('/images/repeatingBackground.jpg'), center no-repeat;
     text-align: center;
+    padding-top:3%;
 }
 .settingsPage button{
     background-color: #00CC99;
@@ -1070,4 +1127,7 @@ color:#00CC99;
 }
 .btn.btn.btn-pagination-prev{
     color:white;
+}
+.descriptionTd{
+    width: 100px;
 }

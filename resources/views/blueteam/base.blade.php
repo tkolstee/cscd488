@@ -161,6 +161,7 @@
                 <li class="startTurn"><a href="/blueteam/status">Status</a></li>
                 <li class="startTurn"><a href="/blueteam/store">Store</a></li>
                 <li class="startTurn"><a href="/blueteam/inventory">Inventory</a></li>
+                <li class="startTurn"><a href="/blueteam/market">Player Market</a></li>
                 <li class="startTurn"><a href="/blueteam/training">Training</a></li>
                 <li class="startTurn"><a href="/blueteam/leaderboard">Leaderboard</a></li>
                 <li class="startTurn"><a href="/blueteam/settings">Team Settings</a></li>
