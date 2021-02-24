@@ -8,8 +8,8 @@ class EavesdroppingAttack extends Attack {
 
     public $_name                   = "Eavesdropping";
     public $_class_name             = "Eavesdropping";
-    public $_tags                   = [];
-    public $_prereqs                = ['Internal', 'PrivilegedAccess'];
+    public $_tags                   = ['Internal'];
+    public $_prereqs                = ['PrivilegedAccess'];
     public $_payload_choice         = 'Eavesdropping';
     public $_initial_success_chance = 0.7;
     public $_initial_detection_chance = 0.2;

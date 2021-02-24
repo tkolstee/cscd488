@@ -224,6 +224,7 @@ class BackdoorAttackTest extends TestCase {
         Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 2]);
         Inventory::factory()->create(['team_id' => $attack->redteam, 'asset_name' => $token->class_name, 'info' => $blueteam->name, 'level' => 3]);
         $attack->onPreAttack();
+        $this->assertEquals(1, $attack->errormsg);
         $this->assertEquals(true, $attack->possible);
     }
 

@@ -9,8 +9,8 @@ class BackdoorPrivilegedAttack extends Attack {
 
     public $_name                   = "Backdoor (Privileged Access)";
     public $_class_name             = "BackdoorPrivileged";
-    public $_tags                   = ['Internal','PrivilegedAccess'];
-    public $_prereqs                = [];
+    public $_tags                   = ['Internal'];
+    public $_prereqs                = ['PrivilegedAccess'];
     public $_initial_success_chance = 0.6;
     public $_initial_detection_chance = 0.4;
     public $_initial_energy_cost    = 150;
