@@ -271,4 +271,33 @@ class TeamTest extends TestCase {
         $team->changeBalance($balChange);
         $this->assertEquals(371, $team->balance);
     }
+
+    public function testCollectAssetTagsForNonAccessTokens(){
+        $team = Team::factory()->create();
+        Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'AccessAudit']);
+        Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'BranchOffice']);
+        $tags = $team->collectAssetTags();
+        $this->assertEquals(2, count($tags));
+        $this->assertTrue(in_array('Action', $tags));
+        $this->assertTrue(in_array('ExternalNetworkService', $tags));
+    }
+
+    public function testCollectAssetTagForAccessTokens(){
+        $team = Team::factory()->create();
+        $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'AccessToken', 'level' => 1]);
+        
+        $tags = $team->collectAssetTags();
+        $this->assertEquals(1, count($tags));
+        $this->assertTrue(in_array('BasicAccess', $tags));
+
+        $inv->level = 2;
+        $inv->update();
+        $tags = $team->getAssetTags();
+        $this->assertTrue(in_array('PrivilegedAccess', $tags));
+
+        $inv->level = 3;
+        $inv->update();
+        $tags = $team->getAssetTags();
+        $this->assertTrue(in_array('PwndAccess', $tags));
+    }
 }
