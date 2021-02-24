@@ -12,7 +12,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    
+
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -23,7 +23,7 @@
 </head>
 <body class="body_home">
     <div class="wrapper">
-            <div class="header"> 
+            <div class="header">
                 <div class="headerContainer">
                         <div class="logo">
                             <a href="{{ url('http://localhost:8000/') }}"><img src="images/LOGOcscd488.png" class="img-fluid" alt="Responsive image"/></a>
@@ -41,8 +41,8 @@
                                 @endif
                             </div><!-- end login class-->
                          @endif
-                        </div><!--end loginAndRegister class-->          
-                </div><!--end headerContainer class-->        
+                        </div><!--end loginAndRegister class-->
+                </div><!--end headerContainer class-->
             </div><!--End header class-->
 
             <div class="navbar">
@@ -55,18 +55,18 @@
                     </ul>
                 </div><!--End navbarSelection class-->
             </div><!--End navbar class-->
-            
+
             <div class="container_login_reg">
                 <div class="lContainer">
                     <img class="img-fluid" alt="Responsive image" src="images/side_secondPage1.jpg" >
                 </div><!--end lContainer -->
                 <div class="rContainer">@yield('content') </div><!--end rContainer -->
                 <div class="footer">
-                <p>©copyright 2020 - Terrance Cunningham | Robin Deskins | Tony Kolste | Steven Zuelke  - Web Designers</p>
+                <p>©copyright 2020 - Terrance Cunningham | Robin Deskins | Tony Kolstee | Steven Zuelke  - Web Designers</p>
             </div><!--End footer class-->
             </div><!--end container -->
-            
-            
+
+
     </div><!--End Wrapper class-->
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
