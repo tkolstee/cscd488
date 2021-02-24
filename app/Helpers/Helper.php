@@ -36,6 +36,7 @@ if (!function_exists('isValidTargetedAsset')) {
      */
     function isValidTargetedAsset($inv, $attack) {
         $asset = Asset::get($inv->asset_name);
+        if (!in_array('Targeted', $asset->tags)){ return true;}
         $redteam = Team::find($attack->redteam);
         $blueteam = Team::find($attack->blueteam);
         

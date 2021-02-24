@@ -361,11 +361,14 @@ class Attack extends Model
         }
 
         // Each asset gets chance to modify attack, then apply bonuses
-        $blueInv = $blueteam->assets();
-        $redInv = $redteam->assets();
-        $assets = $blueInv->merge($redInv);
-        foreach ($assets as $asset) {
-            $asset->onPreAttack($this);
+        $blueInv = $blueteam->inventories();
+        $redInv = $redteam->inventories();
+        $inventories = $blueInv->merge($redInv);
+        foreach ($inventories as $inv) {
+            $asset = Asset::get($inv->asset_name);
+            if (isValidTargetedAsset($inv, $this)){
+                $asset->onPreAttack($this);
+            }
         }
         $bonuses = $this->getBonuses();
         foreach ($bonuses as $bonus){
