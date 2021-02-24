@@ -342,33 +342,12 @@ class Attack extends Model
     public function onPreAttack() {
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
-        $blueInv = $blueteam->inventories();
-        $redInv = $redteam->inventories();
-        $inventories = $blueInv->merge($redInv);
 
-        // Collect all tags and names of these assets to match against prerequisites for this attack. Assets modify attack
-        $have = [];
-        foreach ($inventories as $inv) {
-            $asset = Asset::get($inv->asset_name);
-            $asset->onPreAttack($this);
-            $validAsset = true;
-            if(in_array("Targeted", $asset->tags)){
-                if($asset->blue == 1)
-                    $expectedInfo = $redteam->name;
-                else   
-                    $expectedInfo = $blueteam->name;
-                if($expectedInfo != $inv->info)
-                    $validAsset = false;
-            }
-            if($validAsset){
-                $have[] = $asset->class_name;
-                foreach ($asset->tags as $tag) {
-                    if($tag != "Targeted")
-                        $have[] = $tag;
-                }
-            }
-        }
+        //Check prereqs and energy cost first
         if (!Game::prereqsDisabled()) {
+            $redTags = $redteam->collectAssetTags($this);
+            $blueTags = $blueteam->collectAssetTags($this);
+            $have = array_merge($redTags,$blueTags);
             $unmet_prereqs = array_diff($this->prereqs, $have);
             if ( count($unmet_prereqs) > 0 ) {
                 $this->possible = false;
@@ -385,6 +364,15 @@ class Attack extends Model
             Attack::updateAttack($this);
             return $this;
         }
+
+        // Each asset gets chance to modify attack
+        $blueInv = $blueteam->assets();
+        $redInv = $redteam->assets();
+        $assets = $blueInv->merge($redInv);
+        foreach ($assets as $asset) {
+            $asset->onPreAttack($this);
+        }
+        
         $this->checkTokens();
         $bonuses = $this->getBonuses();
         foreach ($bonuses as $bonus){
