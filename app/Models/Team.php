@@ -416,16 +416,12 @@ class Team extends Model
         return false;
     }
 
-    public function collectAssetTags() {
+    public function collectAssetTags($attack) {
         $inventories = $this->inventories();
         $tags = [];
         foreach ($inventories as $invAsset){
-            $tags[] = $invAsset->asset_name;
-            if ($invAsset->asset_name != "AccessToken"){
-                $asset = Asset::get($invAsset->asset_name);
-                $tags = array_merge($tags, $asset->tags);
-            }
-            else {
+            $asset = Asset::get($invAsset->asset_name);
+            if($invAsset->asset_name == "AccessToken"){
                 if ($invAsset->level == 1) {
                     $tags[] = "BasicAccess";
                 }
@@ -435,6 +431,17 @@ class Team extends Model
                 else if ($invAsset->level == 3) {
                     $tags[] = "PwndAccess";
                 }
+                $tags[] = $invAsset->asset_name;
+            }
+            elseif (in_array('Targeted', $asset->tags)){
+                if (isValidTargetedAsset($invAsset, $attack)) {
+                    $tags = array_merge($tags, $asset->tags);
+                    $tags[] = $invAsset->asset_name;
+                }
+            }
+            else {
+                $tags = array_merge($tags, $asset->tags);
+                $tags[] = $invAsset->asset_name;
             }
         }
         return $tags;

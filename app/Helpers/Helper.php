@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Asset;
+use App\Models\Team;
+
 if (!function_exists('attack_broadcastable')) {
     /**
      * Returns true if an attack is allowed to be broadcasted.
@@ -24,5 +27,23 @@ if (!function_exists('generateRandomString')) {
             $randomString .= $chars[rand(0, $charsLength - 1)];
         }
         return $randomString;
+    }
+}
+
+if (!function_exists('isValidTargetedAsset')) {
+    /**
+     * Checks if an asset with Targeted tag can be applied the attack passed in
+     */
+    function isValidTargetedAsset($inv, $attack) {
+        $asset = Asset::get($inv->asset_name);
+        $redteam = Team::find($attack->redteam);
+        $blueteam = Team::find($attack->blueteam);
+        
+        if($asset->blue == 1)
+            $expectedInfo = $redteam->name;
+        else   
+            $expectedInfo = $blueteam->name;
+
+        return ($expectedInfo == $inv->info);
     }
 }
