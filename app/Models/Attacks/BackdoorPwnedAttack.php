@@ -10,7 +10,7 @@ class BackdoorPwnedAttack extends Attack {
     public $_name                   = "Backdoor (Pwned Access)";
     public $_class_name             = "BackdoorPwned";
     public $_tags                   = ['Internal'];
-    public $_prereqs                = ['PwnedAccess'];
+    public $_prereqs                = ['BasicAccess','PwnedAccess','PrivilegedAccess'];
     public $_initial_success_chance = 0.6;
     public $_initial_detection_chance = 0.4;
     public $_initial_energy_cost    = 400;
