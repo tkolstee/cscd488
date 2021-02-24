@@ -390,15 +390,14 @@ class Attack extends Model
             $tokenLevel = 1;
             if(in_array("PrivilegedAccess", $this->prereqs)) $tokenLevel = 2;
             elseif(in_array("PwnedAccess", $this->prereqs)) $tokenLevel = 3;
-            $tokenOwned = false;
             $tokens = $redteam->getTokens();
             $tokensRequired = $this->tokensRequired();
             foreach( $tokens as $token){
                 if( $token->info == $blueteam->name && $token->level == $tokenLevel && $token->quantity >= $tokensRequired){
-                    $tokenOwned = true;
+                    return true;
                 }
             }
-            return $tokenOwned;
+            return false;
         }
         return true;
     }
