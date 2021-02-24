@@ -343,7 +343,7 @@ class Attack extends Model
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
 
-        //Check prereqs and energy cost first
+        //Check prereqs, energy cost first, and token amount
         if (!Game::prereqsDisabled()) {
             $redTags = $redteam->collectAssetTags($this);
             $blueTags = $blueteam->collectAssetTags($this);
@@ -364,6 +364,13 @@ class Attack extends Model
             Attack::updateAttack($this);
             return $this;
         }
+        if (!$this->checkTokens()) {
+            $this->possible = false;
+            $this->detection_level = 0;
+            $this->errormsg = "No access token.";
+            Attack::updateAttack($this);
+            return $this;
+        }
 
         // Each asset gets chance to modify attack
         $blueInv = $blueteam->assets();
@@ -372,8 +379,6 @@ class Attack extends Model
         foreach ($assets as $asset) {
             $asset->onPreAttack($this);
         }
-        
-        $this->checkTokens();
         $bonuses = $this->getBonuses();
         foreach ($bonuses as $bonus){
             $this->applyBonus($bonus);
@@ -387,8 +392,8 @@ class Attack extends Model
             $redteam = Team::find($this->redteam);
             $blueteam = Team::find($this->blueteam);
             $tokenLevel = 1;
-            if(in_array("PrivilegedAccess", $this->tags)) $tokenLevel = 2;
-            if(in_array("PwnedAccess", $this->tags)) $tokenLevel = 3;
+            if(in_array("PrivilegedAccess", $this->prereqs)) $tokenLevel = 2;
+            elseif(in_array("PwnedAccess", $this->prereqs)) $tokenLevel = 3;
             $tokenOwned = false;
             $tokens = $redteam->getTokens();
             $tokensRequired = $this->tokensRequired();
@@ -397,12 +402,9 @@ class Attack extends Model
                     $tokenOwned = true;
                 }
             }
-            if( !$tokenOwned ){
-                $this->possible = false;
-                $this->detection_level = 0;
-                $this->errormsg = "No access token.";
-            }
+            return $tokenOwned;
         }
+        return true;
     }
 
     private function tokensRequired(){
