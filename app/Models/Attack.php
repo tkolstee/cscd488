@@ -366,7 +366,7 @@ class Attack extends Model
         $inventories = $blueInv->merge($redInv);
         foreach ($inventories as $inv) {
             $asset = Asset::get($inv->asset_name);
-            if (isValidTargetedAsset($inv, $this)){
+            if (isValidTargetedAsset($asset, $inv->info, $this)){
                 $asset->onPreAttack($this);
             }
         }

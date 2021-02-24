@@ -422,7 +422,7 @@ class Team extends Model
         foreach ($inventories as $invAsset){
             $asset = Asset::get($invAsset->asset_name);
             if (in_array('Targeted', $asset->tags)){
-                if (isValidTargetedAsset($invAsset, $attack)){
+                if (isValidTargetedAsset($asset,$invAsset->info, $attack)){
                     $tags[] = $invAsset->asset_name;
                     if($invAsset->asset_name == "AccessToken"){
                         if ($invAsset->level == 1) {

@@ -34,8 +34,7 @@ if (!function_exists('isValidTargetedAsset')) {
     /**
      * Checks if an asset with Targeted tag can be applied the attack passed in
      */
-    function isValidTargetedAsset($inv, $attack) {
-        $asset = Asset::get($inv->asset_name);
+    function isValidTargetedAsset($asset, $info, $attack) {
         if (!in_array('Targeted', $asset->tags)){ return true;}
         $redteam = Team::find($attack->redteam);
         $blueteam = Team::find($attack->blueteam);
@@ -45,6 +44,6 @@ if (!function_exists('isValidTargetedAsset')) {
         else   
             $expectedInfo = $blueteam->name;
 
-        return ($expectedInfo == $inv->info);
+        return ($expectedInfo == $info);
     }
 }
