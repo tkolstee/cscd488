@@ -343,36 +343,24 @@ class Attack extends Model
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
 
-        //Check prereqs, energy cost first, and token amount
+        //Check prereqs, energy cost first, and token amount, exit early if conditions not met
         if (!Game::prereqsDisabled()) {
             $redTags = $redteam->collectAssetTags($this);
             $blueTags = $blueteam->collectAssetTags($this);
             $have = array_merge($redTags,$blueTags);
             $unmet_prereqs = array_diff($this->prereqs, $have);
             if ( count($unmet_prereqs) > 0 ) {
-                $this->possible = false;
-                $this->detection_level = 0;
-                $this->errormsg = "Unsatisfied prereqs for this attack";
-                Attack::updateAttack($this);
-                return $this;
+                return $this->failPreAttack("Unsatisfied prereqs for this attack");
             }
         }
         if ( $redteam->getEnergy() < $this->energy_cost ) {
-            $this->possible = false;
-            $this->detection_level = 0;
-            $this->errormsg = "Not enough energy available.";
-            Attack::updateAttack($this);
-            return $this;
+            return $this->failPreAttack("Not enough energy available.");
         }
-        if (!$this->checkTokens()) {
-            $this->possible = false;
-            $this->detection_level = 0;
-            $this->errormsg = "No access token.";
-            Attack::updateAttack($this);
-            return $this;
+        if (!$this->hasTokensNeeded()) {
+            return $this->failPreAttack("No access token.");
         }
 
-        // Each asset gets chance to modify attack
+        // Each asset gets chance to modify attack, then apply bonuses
         $blueInv = $blueteam->assets();
         $redInv = $redteam->assets();
         $assets = $blueInv->merge($redInv);
@@ -387,7 +375,15 @@ class Attack extends Model
         return $this;
     }
 
-    private function checkTokens(){
+    private function failPreAttack($errormsg){
+        $this->possible = false;
+        $this->detection_level = 0;
+        $this->errormsg = $errormsg;
+        Attack::updateAttack($this);
+        return $this;
+    }
+
+    private function hasTokensNeeded(){
         if ( in_array("Internal", $this->tags) ){
             $redteam = Team::find($this->redteam);
             $blueteam = Team::find($this->blueteam);
