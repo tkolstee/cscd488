@@ -73,7 +73,7 @@ class Attack extends Model
         }
         
         if ( $this->detection_level > 0 ) {
-            if( in_array("Internal", $this->tags)){
+            if($this->hasTag("Internal")){
                 $tokens = $redteam->getTokens();
                 foreach($tokens as $token){
                     if($token->info == $blueteam->name && $token->level == 1){
@@ -85,7 +85,7 @@ class Attack extends Model
         elseif ($this->detection_level == 0) {
             $bonuses = $this->getBonuses();
             foreach ($bonuses as $bonus){
-                if (in_array("UntilAnalyzed", $bonus->tags)){
+                if ($bonus->hasTag("UntilAnalyzed")){
                     $this->detection_level = 1;
                 }
             }
@@ -233,7 +233,7 @@ class Attack extends Model
         }
         $bonuses = Bonus::all()->where('attack_id','=',$this->id);
         foreach($bonuses as $bonus){
-            if(in_array("UntilAnalyzed",$bonus->tags)){
+            if($bonus->hasTag("UntilAnalyzed")){
                 Bonus::destroy($bonus->id);
             }
         }
@@ -339,6 +339,14 @@ class Attack extends Model
         return $difficulty;
     }
 
+    public function hasTag($tag){
+        return in_array($tag, $this->tags);
+    }
+
+    public function hasPrereq($prereq){
+        return in_array($prereq, $this->prereqs);
+    }
+
     public function onPreAttack() {
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
@@ -356,7 +364,7 @@ class Attack extends Model
         if ( $redteam->getEnergy() < $this->energy_cost ) {
             return $this->failPreAttack("Not enough energy available.");
         }
-        if (in_array('Internal', $this->tags) && !$this->hasTokensNeeded()) {
+        if (!$this->hasTokensNeeded()) {
             return $this->failPreAttack("No access token.");
         }
 
@@ -387,12 +395,12 @@ class Attack extends Model
     }
 
     private function hasTokensNeeded(){
-        if ( in_array("Internal", $this->tags) ){
+        if ($this->hasTag('Internal')){
             $redteam = Team::find($this->redteam);
             $blueteam = Team::find($this->blueteam);
             $tokenLevel = 1;
-            if(in_array("PrivilegedAccess", $this->prereqs)) $tokenLevel = 2;
-            elseif(in_array("PwnedAccess", $this->prereqs)) $tokenLevel = 3;
+            if($this->hasPrereq('PrivilegedAccess')) $tokenLevel = 2;
+            elseif($this->hasPrereq('PwnedAccess')) $tokenLevel = 3;
             $tokens = $redteam->getTokens();
             $tokensRequired = $this->tokensRequired();
             foreach( $tokens as $token){
@@ -411,17 +419,17 @@ class Attack extends Model
         $tokensRequired = 1;
         foreach($invs as $inv){
             $asset = Asset::get($inv->asset_name);
-            if(in_array("AddToken", $asset->tags))
+            if($asset->hasTag("AddToken"))
                 $tokensRequired++;
         }
         return $tokensRequired;
     }
 
     private function applyBonus($bonus){
-        if(in_array("DifficultyDeduction", $bonus->tags)){
+        if($bonus->hasTag("DifficultyDeduction")){
             $this->changeSuccessChance(-1 * 0.01 * $bonus->percentDiffDeducted);
         }
-        if(in_array("DetectionDeduction", $bonus->tags)){
+        if($bonus->hasTag("DetectionDeduction")){
             $this->changeDetectionChance(-1 * 0.01 * $bonus->percentDetDeducted);
         }
     }
