@@ -26,6 +26,7 @@ class BackdoorBasicAttack extends Attack {
         if( !$this->success){
             if(!$this->detected){
                 $this->detected = true;
+                Attack::updateAttack($this);
                 foreach($tokens as $token){
                     if($token->info == $blueteam->name && $token->level == 1){
                         $token->usedToken();
