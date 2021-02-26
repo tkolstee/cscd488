@@ -3,7 +3,6 @@
 namespace App\Models\Assets;
 
 use App\Models\Asset;
-use App\Models\Attack;
 
 class FirewallAsset extends Asset {
 
@@ -18,10 +17,10 @@ class FirewallAsset extends Asset {
         Access Tokens will be detected and analyzed.";
 
     function onPreAttack($attack) {
-        if (in_array("FirewallDefends", $attack->tags)) {
+        if ($attack->hasTag("FirewallDefends")) {
             $attack->changeSuccessChance(-.2);
         }
-        if (in_array('Internal', $attack->tags) || in_array('PrivilegedAccess', $attack->tags) || in_array('PwnedAccess', $attack->tags)){
+        if ($attack->hasTag("Internal")){
             $attack->changeDetectionChance(.15);
             $attack->changeAnalysisChance(.15);
         }
