@@ -61,7 +61,6 @@ class Attack extends Model
     }
 
     function onAttackComplete() { 
-        $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
 
         if ($this->success) {
@@ -71,18 +70,8 @@ class Attack extends Model
                 $payload->onAttackComplete($this);
             }
         }
-        
-        if ( $this->detection_level > 0 ) {
-            if($this->hasTag("Internal")){
-                $tokens = $redteam->getTokens();
-                foreach($tokens as $token){
-                    if($token->info == $blueteam->name && $token->level == 1){
-                        $token->usedToken();
-                    }
-                }
-            }
-        }
-        elseif ($this->detection_level == 0) {
+
+        if ($this->detection_level == 0) {
             $bonuses = $this->getBonuses();
             foreach ($bonuses as $bonus){
                 if ($bonus->hasTag("UntilAnalyzed")){
