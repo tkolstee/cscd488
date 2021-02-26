@@ -356,7 +356,7 @@ class Attack extends Model
         if ( $redteam->getEnergy() < $this->energy_cost ) {
             return $this->failPreAttack("Not enough energy available.");
         }
-        if (!$this->hasTokensNeeded()) {
+        if (in_array('Internal', $this->tags) && !$this->hasTokensNeeded()) {
             return $this->failPreAttack("No access token.");
         }
 
