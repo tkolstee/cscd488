@@ -43,24 +43,18 @@ class BackdoorPrivilegedAttack extends Attack {
         $blueteam = Team::find($this->blueteam);
         $tokens = $redteam->getTokens();
         $lowEnergy = false;
-        $lowerTokenOwned = false;
         foreach($tokens as $token){
             if($token->info ==  $blueteam->name &&  $token->level == 3)
                 $lowEnergy = true;
-            else if($token->info ==  $blueteam->name &&  $token->level == 1)
-                $lowerTokenOwned = true;
         }
-        if(!$lowerTokenOwned){
-            $this->possible = false;
-            $this->detected = false;
-            $this->errormsg = "No basic access token.";
-        }
-        if(!$lowEnergy) $this->energy_cost = (2 * $this->energy_cost);
-        Attack::updateAttack($this);
-        if ( $redteam->getEnergy() < $this->energy_cost ) {
-            $this->possible = false;
-            $this->detection_level = 0;
-            $this->errormsg = "Not enough energy available.";
+        if(!$lowEnergy) {
+            $this->energy_cost = (2 * $this->energy_cost);
+            Attack::updateAttack($this);
+            if ( $redteam->getEnergy() < $this->energy_cost ) {
+                $this->possible = false;
+                $this->detection_level = 0;
+                $this->errormsg = "Not enough energy available.";
+            }
         }
         return $this;
     }
