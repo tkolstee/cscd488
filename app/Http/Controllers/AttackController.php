@@ -81,25 +81,27 @@ class AttackController extends Controller
         return $this->attackComplete($attack, $attMsg);
     }
 
-    public function sqlResultToTable($r) {
+    public function sqlResultToTable($r, $one_row=false) {
         if ( $r->numColumns() == 0 || $r->columnType(0) == SQLITE3_NULL ) {
             return "No results found.";
         }
-        $retval = '<table border=2\n  <tr>';
+        $retval = '<table class="table table-bordered"><tr>';
         $rowcount = 0;
 
-        foreach (range(0,$r->numColumns()) as $x) {
+        foreach (range(0,$r->numColumns()-1) as $x) {
             $retval .= "<th>" . $r->columnName($x) . "</th>";
         }
-        $retval .= "</tr>\n";
+        $retval .= "</tr>";
 
         while ($row = $r->fetchArray(SQLITE3_NUM)) {
             $rowcount++;
-            $retval .= "  <tr>";
-            foreach ($row as $field) {
-                $retval .= "<td>" . $field . "</td>";
+            if ($rowcount < 1 or !$one_row) {
+                $retval .= "  <tr>";
+                foreach ($row as $field) {
+                    $retval .= "<td>" . $field . "</td>";
+                }
+                $retval .= "</tr>";
             }
-            $retval .= "</tr>\n";
         }
 
         $retval .= "</table>\n";
@@ -109,38 +111,81 @@ class AttackController extends Controller
     }
 
     public function sqlInjection(request $request){
+
         $attack = Attack::find($request->attID);
         if($attack == null) throw new AttackNotFoundException();
-        $blueteam = Team::find($attack->blueteam);
-        $redteam  = Team::find($attack->redteam);
-        $success  = false;
 
-        if ( $request->resign == 'xxx' ) {
-            $attack->setSuccess(false);
-            return $this->attackComplete($attack, "You gave up.");
+        $blueteam   = Team::find($attack->blueteam);
+        $redteam    = Team::find($attack->redteam);
+        $difficulty = 1; #$attack->getDifficulty();
+        $session    = $request->session();
+        $success    = false;
+        $result     = "";
+        $dbh        = $this->sqlOpen($request);
+
+        $targetuser = $session->get('target_username');
+        $targetpass = $session->get('target_pass');
+
+        $objective       = ($difficulty < 3) ? "Find all usernames" : "Get password for user ${targetuser}";
+        $answer          = ($difficulty < 3) ? $targetuser : $targetpass;
+        $onerow          = ($difficulty > 2);
+        $filter_keywords = ($difficulty % 3 == 2);
+        $quote           = ($difficulty == 5);
+        $report_err      = ($difficulty % 3 < 2);
+        $report_query    = ($difficulty % 3 == 0);
+
+        $session->put('magic_word', $answer);
+
+        if ( $request->has('outcome') ) {
+            $success = ($request->outcome == $answer);
+            $attack->setSuccess($success);
+            $dbh->close();
+            $this->sqlTearDown($request);
+            $attmsg = $success ? 'You did it!' : 'You gave up.';
+            return $this->attackComplete($attack, $attmsg);
         }
-
-        $url = $request->url;
-        $dbh = $this->sqlOpen($request);
-        $answer = $request->session()->get('target_answer');
 
         if ( $request->username != NULL ) {
             $user = $request->username;
+            if ($filter_keywords) {
+                $user = preg_replace('/(AND|OR|NOT)/i', "xxx", $user);
+            }
+            if ($quote) {
+                $user = SQLite3::escapeString($user);
+            }
             $query = "SELECT username, phone FROM USERS WHERE username = '${user}';";
+
             try {
                 $dbresult = $dbh->query($query);
                 if (! $dbresult) { throw new Exception("database error"); }
-                $result = $this->sqlResultToTable($dbresult);
+                $result = $this->sqlResultToTable($dbresult, $onerow);
             } catch (exception $e) {
-                $result = "A database error occurred:<br>\n" . $dbh->lastErrorMsg();
+                $result = "A database error occurred.<br>";
+                if ( $report_err < 1 ) {
+                    $result .= "Error message:<br>" . $dbh->lastErrorMsg() . "<br>";
+                }
+                if ( $report_query < 2 ) {
+                    $result .= "The query was:<br>${query}<br>";
+                }
             }
         }
 
         if (strpos($result, $answer) !== false) {
             $success = true;
-            $attack->setSuccess(true);
         }
-        return view('minigame.sqlinjection')->with(compact('attack', 'blueteam', 'redteam', 'result', 'success'));
+
+        return view('minigame.sqlinjection')->with(compact('attack', 'blueteam', 'redteam', 'result', 'success', 'objective'));
+    }
+
+    public function sqlTearDown(Request $request) {
+
+        $session = $request->session();
+        $db = $session->pull('gamedb', '/nonexistent');
+
+
+        if (file_exists($db)) { unlink($db); }
+        $session->pull('target_username', '');
+        $session->pull('target_pass', '');
     }
 
     public function sqlSetUp(Request $request){
@@ -157,8 +202,8 @@ class AttackController extends Controller
             $pass  = $faker->password();
             $phone = $faker->phoneNumber();
             if ( $target == $x ) {
-                $request->session()->put('target_question', "Get password for user '${user}'");
-                $request->session()->put('target_answer', $pass);
+                $request->session()->put('target_username', $user);
+                $request->session()->put('target_pass', $pass);
             }
             $statement = $dbh->prepare('INSERT INTO users (id, username, password, phone) VALUES (:id, :user, :pass, :phone)');
             $statement->bindValue(':id', $x);
@@ -174,7 +219,7 @@ class AttackController extends Controller
     public function sqlOpen(Request $request) {
         $dbfile = $request->session()->get('gamedb', NULL);
         if (is_null($dbfile) || ! file_exists($dbfile)) { return $this->sqlSetUp($request); }
-        return new SQLite3($dbfile, SQLITE3_OPEN_READONLY);
+        return new SQLite3($dbfile, SQLITE3_OPEN_READWRITE);
     }
 
     public function sqlDone(Request $request) {

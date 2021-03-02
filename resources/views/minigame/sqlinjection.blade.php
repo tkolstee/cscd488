@@ -4,21 +4,30 @@
 
 @section('pagecontent')
 
-@if($success)
+@if ($success ?? '')
     <h1>You did it!</h1>
-    <a href="/redteam/home"><button class="btn btn-primary">Home</button></a>
+    <form method="POST" action="/attack/sqlinjection">
+        @csrf
+        <input type="hidden" name="attID" value="{{$attack->id}}">
+        <input type="hidden" name="outcome" value="{{ Session::get('magic_word') }}">
+        <div class="form-group row mb-0">
+            <div class="col-md-8 offset-md-4">
+                <button type="submit" class="btn btn-primary">Continue</button>
+            </div>
+        </div>
+    </form>
 @else
-  <strong>Objective:</strong> {{ session('target_question') }}<br>
+  <strong>Objective:</strong> {{ $objective ?? '' ?? '' ?? '' }}<br>
   <strong>Difficulty: {{ $attack->getDifficulty() }}/5</strong><br>
 @endif
 
 @if (!empty($result))
     <br><strong>Result:</strong><br>
-    <center>{!! $result !!}</center>
+    <div align="center">{!! $result !!}</div>
     <br><br>
 @endif
 
-@if (! $success)
+@if (! ($success ?? ''))
 <h2>Company Phone Directory:</h2>
 <form method="POST" action="/attack/sqlinjection">
     @csrf
@@ -39,7 +48,7 @@
 <form method="POST" action="/attack/sqlinjection">
     @csrf
     <input type="hidden" name="attID" value="{{$attack->id}}">
-    <input type="hidden" name="resign" value="xxx">
+    <input type="hidden" name="outcome" value="resigned">
     <div class="form-group row mb-0">
         <div class="col-md-8 offset-md-4">
             <button type="submit" class="btn btn-primary">I give up!</button>
