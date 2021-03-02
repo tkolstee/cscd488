@@ -18,7 +18,7 @@
         <title>@yield('title')</title>
     </head>
     <body class="body_home">
-            <div class="header"> 
+            <div class="header">
                 <div class="headerContainer">
                     <div class="logo">
                         <a href="/home/home"><img src="../images/LOGOcscd488.png" class="img-fluid" alt="Responsive image"/></a>
@@ -32,7 +32,7 @@
                             <div class="rLogin">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="/home/chooseteam" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                      {{ Auth::user()->name }}
-                                </a> 
+                                </a>
                                 @if (Auth::user()->isAdmin())
                                     <br>
                                     <a href="/admin/home" role="button" >
@@ -50,10 +50,10 @@
                                         @csrf
                                     </form>
                                 </div>
-                            </div>                   
+                            </div>
                         </div>
                     @endif
-                    </div>     
+                    </div>
                 </div><!--end header-->
                 <div class="navbar">
                     <div class="navbarSelection">
@@ -65,7 +65,7 @@
                         </ul>
                     </div><!--End navbarSelection class-->
                 </div><!--End navbar class-->
-                
+
             <div class="container_form" style="align: center; vertical-align: center;">
                 @if(! empty($error)) <!-- Popup message for error -->
                     <div class="popup">
@@ -82,15 +82,15 @@
                 @endif
                 @yield('basecontent')
             </div>
-            
+
             <div class="footer">
-                <p>©copyright 2020 - Terrance Cunningham | Robin Deskins | Tony Kolste | Steven Zuelke  - Web Designers</p>
+                <p>©copyright 2020 - Terrance Cunningham | Robin Deskins | Tony Kolstee | Steven Zuelke  - Web Designers</p>
             </div><!--End footer class-->
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-        
+
     </body>
-    
+
 </html>

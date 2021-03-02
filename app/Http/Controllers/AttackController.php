@@ -10,13 +10,16 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use SQLite3;
+use Illuminate\Support\Str;
+use Faker\Factory as Faker;
 
 class AttackController extends Controller
 {
     public function page($page, Request $request) {
         switch($page){
             case 'sqlinjection': return $this->sqlInjection($request); break;
-            case 'sqlinjectioncheck': return $this->sqlInjectionCheckAnswer($request); break;
             case 'synflood': return $this->synFlood($request); break;
             case 'malvertise': return $this->malvertise($request); break;
             default: return (new RedTeamController)->home(); break;
@@ -57,7 +60,7 @@ class AttackController extends Controller
             }
         }
         $attack->setSuccess($success);
-        
+
         return $this->attackComplete($attack, $attMsg);
     }
 
@@ -74,75 +77,157 @@ class AttackController extends Controller
             $attMsg = "You have failed in your attempt to SYN flood ".$blueteam->name;
         }
         $attack->setSuccess($success);
-        
+
         return $this->attackComplete($attack, $attMsg);
+    }
+
+    public function sqlResultToTable($r, $one_row=false) {
+        if ( $r->numColumns() == 0 || $r->columnType(0) == SQLITE3_NULL ) {
+            return "No results found.";
+        }
+        $retval = '<table class="table table-bordered"><tr>';
+        $rowcount = 0;
+
+        foreach (range(0,$r->numColumns()-1) as $x) {
+            $retval .= "<th>" . $r->columnName($x) . "</th>";
+        }
+        $retval .= "</tr>";
+
+        while ($row = $r->fetchArray(SQLITE3_NUM)) {
+            $rowcount++;
+            if ($rowcount < 1 or !$one_row) {
+                $retval .= "  <tr>";
+                foreach ($row as $field) {
+                    $retval .= "<td>" . $field . "</td>";
+                }
+                $retval .= "</tr>";
+            }
+        }
+
+        $retval .= "</table>\n";
+
+        if ($rowcount==0) { return "No results found."; }
+        return $retval;
     }
 
     public function sqlInjection(request $request){
+
         $attack = Attack::find($request->attID);
         if($attack == null) throw new AttackNotFoundException();
-        $url = $request->url;
-        $this->sqlSetUp();
 
-        try {
-            $result = DB::connection('sql_minigame')->select(DB::raw("SELECT * FROM users WHERE id = '$url'"));
-            if ($result == null) { $result = "Nothing happened!"; }
+        $blueteam   = Team::find($attack->blueteam);
+        $redteam    = Team::find($attack->redteam);
+        $difficulty = 1; #$attack->getDifficulty();
+        $session    = $request->session();
+        $success    = false;
+        $result     = "";
+        $dbh        = $this->sqlOpen($request);
+
+        $targetuser = $session->get('target_username');
+        $targetpass = $session->get('target_pass');
+
+        $objective       = ($difficulty < 3) ? "Find all usernames" : "Get password for user ${targetuser}";
+        $answer          = ($difficulty < 3) ? $targetuser : $targetpass;
+        $onerow          = ($difficulty > 2);
+        $filter_keywords = ($difficulty % 3 == 2);
+        $quote           = ($difficulty == 5);
+        $report_err      = ($difficulty % 3 < 2);
+        $report_query    = ($difficulty % 3 == 0);
+
+        $session->put('magic_word', $answer);
+
+        if ( $request->has('outcome') ) {
+            $success = ($request->outcome == $answer);
+            $attack->setSuccess($success);
+            $dbh->close();
+            $this->sqlTearDown($request);
+            $attmsg = $success ? 'You did it!' : 'You gave up.';
+            return $this->attackComplete($attack, $attmsg);
         }
-        catch (QueryException $e) {
-            $result = "You caused a query error!";
-            if ($attack->calculated_difficulty <= 1) {
-                $attMsg = $result;
-                $attack->setSuccess(true);
-                return $this->attackComplete($attack, $attMsg);
+
+        if ( $request->username != NULL ) {
+            $user = $request->username;
+            if ($filter_keywords) {
+                $user = preg_replace('/(AND|OR|NOT)/i', "xxx", $user);
+            }
+            if ($quote) {
+                $user = SQLite3::escapeString($user);
+            }
+            $query = "SELECT username, phone FROM USERS WHERE username = '${user}';";
+
+            try {
+                $dbresult = $dbh->query($query);
+                if (! $dbresult) { throw new Exception("database error"); }
+                $result = $this->sqlResultToTable($dbresult, $onerow);
+            } catch (exception $e) {
+                $result = "A database error occurred.<br>";
+                if ( $report_err < 1 ) {
+                    $result .= "Error message:<br>" . $dbh->lastErrorMsg() . "<br>";
+                }
+                if ( $report_query < 2 ) {
+                    $result .= "The query was:<br>${query}<br>";
+                }
             }
         }
-        $redteam = Team::find($attack->redteam);
-        $blueteam = Team::find($attack->blueteam);
-        return view('minigame.sqlinjection')->with(compact('attack', 'blueteam', 'redteam', 'result'));
-    }
 
-    public function sqlInjectionCheckAnswer($request){
-        $attack = Attack::find($request->attID);
-        $passIn = $request->pass;
-        $adminPass = DB::connection('sql_minigame')->table('users')->where('username', 'admin')->first()->password;
-
-        $success = false;
-        $attMsg = "You did not guess the admin's password correctly.";
-        if ($passIn == $adminPass) {
+        if (strpos($result, $answer) !== false) {
             $success = true;
-            $attMsg = "You successfully discovered the admin's password!";
         }
-        $attack->setSuccess($success);
-        return $this->attackComplete($attack, $attMsg);
+
+        return view('minigame.sqlinjection')->with(compact('attack', 'blueteam', 'redteam', 'result', 'success', 'objective'));
     }
 
-    public function sqlSetUp(){
-        $connect = 'sql_minigame';
-        Schema::connection($connect)->dropIfExists('users');
-        Schema::connection($connect)->dropIfExists('products');
+    public function sqlTearDown(Request $request) {
 
-        Schema::connection($connect)->create('users', function($table){
-            $table->integer('id');
-            $table->text('username');
-            $table->text('password');
-        });
-        Schema::connection($connect)->create('products', function($table){
-            $table->increments('id');
-            $table->text('product_name');
-        });
-        
-        DB::connection($connect)->table('users')->insert([
-            'id' => rand(0, 999),
-            'username' => 'admin',
-            'password' => generateRandomString(),
-        ]);
-        DB::connection($connect)->table('users')->insert([
-            'id' => rand(0, 999),
-            'username' => 'user',
-            'password' => generateRandomString(),
-        ]);
-        DB::connection($connect)->table('products')->insert([
-            'product_name' => 'product1',
-        ]);
+        $session = $request->session();
+        $db = $session->pull('gamedb', '/nonexistent');
+
+
+        if (file_exists($db)) { unlink($db); }
+        $session->pull('target_username', '');
+        $session->pull('target_pass', '');
     }
+
+    public function sqlSetUp(Request $request){
+        $dbfile = Storage::path(Str::uuid().'.db');
+        $request->session()->put('gamedb', $dbfile);
+        $dbh = new SQLite3($dbfile);
+
+        $faker = Faker::create();
+        $dbh->exec("create table users (id INTEGER, username VARCHAR(30), password VARCHAR(30), phone VARCHAR(13));");
+
+        $target = rand(0, 20);
+        foreach (range(0, 20) as $x) {
+            $user  = $faker->userName();
+            $pass  = $faker->password();
+            $phone = $faker->phoneNumber();
+            if ( $target == $x ) {
+                $request->session()->put('target_username', $user);
+                $request->session()->put('target_pass', $pass);
+            }
+            $statement = $dbh->prepare('INSERT INTO users (id, username, password, phone) VALUES (:id, :user, :pass, :phone)');
+            $statement->bindValue(':id', $x);
+            $statement->bindValue(':user', $user);
+            $statement->bindValue(':pass', $pass);
+            $statement->bindValue(':phone', $phone);
+            $statement->execute();
+        }
+
+        return $dbh;
+    }
+
+    public function sqlOpen(Request $request) {
+        $dbfile = $request->session()->get('gamedb', NULL);
+        if (is_null($dbfile) || ! file_exists($dbfile)) { return $this->sqlSetUp($request); }
+        return new SQLite3($dbfile, SQLITE3_OPEN_READWRITE);
+    }
+
+    public function sqlDone(Request $request) {
+        $dbfile = $request->session()->get('gamedb', NULL);
+        if (! is_null($dbfile) && file_exists($dbfile)) {
+            unlink($dbfile);
+            $request->session()->forget('gamedb');
+        }
+    }
+
 }

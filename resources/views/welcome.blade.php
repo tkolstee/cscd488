@@ -12,15 +12,15 @@
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
         <!-- Styles -->
-        <style> 
+        <style>
             /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
         </style>
 
-        
+
     </head>
     <body class= "body_home">
         <div class="wrapper">
-            <div class="header"> 
+            <div class="header">
                 <div class="headerContainer">
                         <div class="logo">
                             <a href="/home/home"><img src="/images/LOGOcscd488.png" class="img-fluid" alt="Responsive image"/></a>
@@ -36,7 +36,7 @@
                             <div class="rLogin">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="/home/chooseteam" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                      {{ Auth::user()->name }}
-                                </a> 
+                                </a>
                                 @if (Auth::user()->isAdmin())
                                     <br>
                                     <a href="/admin/home" role="button">
@@ -54,7 +54,7 @@
                                         @csrf
                                     </form>
                                 </div>
-                            </div>                   
+                            </div>
                         </div>
                                  @else
                                 <a href="{{ route('login') }}"><input type="button" class="btn btn-primary" value="Login"></a>
@@ -64,8 +64,8 @@
                                 @endif
                             </div><!-- end login class-->
                          @endif
-                        </div><!--end loginAndRegister class-->          
-                </div><!--end headerContainer class-->        
+                        </div><!--end loginAndRegister class-->
+                </div><!--end headerContainer class-->
             </div><!--End header class-->
 
             <div class="navbar">
@@ -78,13 +78,13 @@
                     </ul>
                 </div><!--End navbarSelection class-->
             </div><!--End navbar class-->
-            
+
             <div class="container_frontpage" >
                 <img src="/images/FPslideshow_new1.jpg" />
             </div><!--End container class-->
-            
+
             <div class="footer">
-                <p>©copyright 2020 - Terrance Cunningham | Robin Deskins | Tony Kolste | Steven Zuelke  - Web Designers</p>
+                <p>©copyright 2020 - Terrance Cunningham | Robin Deskins | Tony Kolstee | Steven Zuelke  - Web Designers</p>
             </div><!--End footer class-->
         </div><!--End Wrapper class-->
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
