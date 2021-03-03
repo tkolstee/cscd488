@@ -271,4 +271,43 @@ class TeamTest extends TestCase {
         $team->changeBalance($balChange);
         $this->assertEquals(371, $team->balance);
     }
+
+    public function testCollectAssetTagsForNonAccessTokens(){
+        $blueteam = Team::factory()->create();
+        $team = Team::factory()->create();
+        Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'AccessAudit']);
+        Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'BranchOffice']);
+        $tags = $team->collectAssetTags(Attack::create('SQLInjection', $team->id, $blueteam->id));
+        $this->assertEquals(4, count($tags));
+        $this->assertTrue(in_array('AccessAudit', $tags));
+        $this->assertTrue(in_array('Action', $tags));
+        $this->assertTrue(in_array('BranchOffice', $tags));
+        $this->assertTrue(in_array('ExternalNetworkService', $tags));
+    }
+
+    public function testCollectAssetTagForAccessTokens(){
+        $blueteam = Team::factory()->create();
+        $team = Team::factory()->red()->create();
+        $inv = Inventory::factory()->create([
+            'team_id' => $team->id, 
+            'asset_name' => 'AccessToken', 
+            'level' => 1, 
+            'info' => $blueteam->name]);
+        $attack = Attack::create('SQLInjection', $team->id, $blueteam->id);
+        
+        $tags = $team->collectAssetTags($attack);
+        $this->assertEquals(2, count($tags));
+        $this->assertTrue(in_array('BasicAccess', $tags));
+        $this->assertTrue(in_array('AccessToken', $tags));
+
+        $inv->level = 2;
+        $inv->update();
+        $tags = $team->collectAssetTags($attack);
+        $this->assertTrue(in_array('PrivilegedAccess', $tags));
+
+        $inv->level = 3;
+        $inv->update();
+        $tags = $team->collectAssetTags($attack);
+        $this->assertTrue(in_array('PwnedAccess', $tags));
+    }
 }

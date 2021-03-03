@@ -428,4 +428,36 @@ class Team extends Model
         }
         return false;
     }
+
+    public function collectAssetTags($attack) {
+        $inventories = $this->inventories();
+        $tags = [];
+        foreach ($inventories as $invAsset){
+            $asset = Asset::get($invAsset->asset_name);
+            if (in_array('Targeted', $asset->tags)){
+                if (isValidTargetedAsset($asset,$invAsset->info, $attack)){
+                    $tags[] = $invAsset->asset_name;
+                    if($invAsset->asset_name == "AccessToken"){
+                        if ($invAsset->level == 1) {
+                            $tags[] = "BasicAccess";
+                        }
+                        else if ($invAsset->level == 2) {
+                            $tags[] = "PrivilegedAccess";
+                        }
+                        else if ($invAsset->level == 3) {
+                            $tags[] = "PwnedAccess";
+                        }
+                    }
+                    else {
+                        $tags = array_merge($tags, $asset->tags);
+                    }
+                }
+            }
+            else {
+                $tags[] = $invAsset->asset_name;
+                $tags = array_merge($tags, $asset->tags);
+            }
+        }
+        return $tags;
+    }
 }

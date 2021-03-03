@@ -10,7 +10,7 @@ class BackdoorBasicAttack extends Attack {
     public $_name                   = "Backdoor (Basic Access)";
     public $_class_name             = "BackdoorBasic";
     public $_tags                   = ['Internal'];
-    public $_prereqs                = [];
+    public $_prereqs                = ['BasicAccess'];
     public $_initial_success_chance  = 0.6;
     public $_initial_detection_chance = 0.4;
     public $_initial_energy_cost    = 100;
@@ -26,6 +26,7 @@ class BackdoorBasicAttack extends Attack {
         if( !$this->success){
             if(!$this->detected){
                 $this->detected = true;
+                Attack::updateAttack($this);
                 foreach($tokens as $token){
                     if($token->info == $blueteam->name && $token->level == 1){
                         $token->usedToken();
@@ -47,13 +48,16 @@ class BackdoorBasicAttack extends Attack {
             if($token->info ==  $blueteam->name && ($token->level == 2 || $token->level == 3))
                 $lowEnergy = true;
         }
-        if(!$lowEnergy) $this->energy_cost = (2 * $this->energy_cost);
-        Attack::updateAttack($this);
-        if ( $redteam->getEnergy() < $this->energy_cost ) {
-            $this->possible = false;
-            $this->detection_level = 0;
-            $this->errormsg = "Not enough energy available.";
-        }
+        if(!$lowEnergy){
+            $this->energy_cost = (2 * $this->energy_cost);
+            Attack::updateAttack($this);
+            if ( $redteam->getEnergy() < $this->energy_cost ) {
+                $this->possible = false;
+                $this->detection_level = 0;
+                $this->errormsg = "Not enough energy available.";
+            }
+        } 
+        
         return $this;
     }
 }

@@ -61,7 +61,6 @@ class Attack extends Model
     }
 
     function onAttackComplete() { 
-        $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
 
         if ($this->success) {
@@ -71,21 +70,11 @@ class Attack extends Model
                 $payload->onAttackComplete($this);
             }
         }
-        
-        if ( $this->detection_level > 0 ) {
-            if( in_array("Internal", $this->tags)){
-                $tokens = $redteam->getTokens();
-                foreach($tokens as $token){
-                    if($token->info == $blueteam->name && $token->level == 1){
-                        $token->usedToken();
-                    }
-                }
-            }
-        }
-        elseif ($this->detection_level == 0) {
+
+        if ($this->detection_level == 0) {
             $bonuses = $this->getBonuses();
             foreach ($bonuses as $bonus){
-                if (in_array("UntilAnalyzed", $bonus->tags)){
+                if ($bonus->hasTag("UntilAnalyzed")){
                     $this->detection_level = 1;
                 }
             }
@@ -233,7 +222,7 @@ class Attack extends Model
         }
         $bonuses = Bonus::all()->where('attack_id','=',$this->id);
         foreach($bonuses as $bonus){
-            if(in_array("UntilAnalyzed",$bonus->tags)){
+            if($bonus->hasTag("UntilAnalyzed")){
                 Bonus::destroy($bonus->id);
             }
         }
@@ -339,53 +328,45 @@ class Attack extends Model
         return $difficulty;
     }
 
+    public function hasTag($tag){
+        return in_array($tag, $this->tags);
+    }
+
+    public function hasPrereq($prereq){
+        return in_array($prereq, $this->prereqs);
+    }
+
     public function onPreAttack() {
         $blueteam = Team::find($this->blueteam);
         $redteam  = Team::find($this->redteam);
-        $blueInv = $blueteam->inventories();
-        $redInv = $redteam->inventories();
-        $inventories = $blueInv->merge($redInv);
 
-        // Collect all tags and names of these assets to match against prerequisites for this attack. Assets modify attack
-        $have = [];
-        foreach ($inventories as $inv) {
-            $asset = Asset::get($inv->asset_name);
-            $asset->onPreAttack($this);
-            $validAsset = true;
-            if(in_array("Targeted", $asset->tags)){
-                if($asset->blue == 1)
-                    $expectedInfo = $redteam->name;
-                else   
-                    $expectedInfo = $blueteam->name;
-                if($expectedInfo != $inv->info)
-                    $validAsset = false;
-            }
-            if($validAsset){
-                $have[] = $asset->class_name;
-                foreach ($asset->tags as $tag) {
-                    if($tag != "Targeted")
-                        $have[] = $tag;
-                }
-            }
-        }
+        //Check prereqs, energy cost first, and token amount, exit early if conditions not met
         if (!Game::prereqsDisabled()) {
+            $redTags = $redteam->collectAssetTags($this);
+            $blueTags = $blueteam->collectAssetTags($this);
+            $have = array_merge($redTags,$blueTags);
             $unmet_prereqs = array_diff($this->prereqs, $have);
             if ( count($unmet_prereqs) > 0 ) {
-                $this->possible = false;
-                $this->detection_level = 0;
-                $this->errormsg = "Unsatisfied prereqs for this attack";
-                Attack::updateAttack($this);
-                return $this;
+                return $this->failPreAttack("Unsatisfied prereqs for this attack");
             }
         }
         if ( $redteam->getEnergy() < $this->energy_cost ) {
-            $this->possible = false;
-            $this->detection_level = 0;
-            $this->errormsg = "Not enough energy available.";
-            Attack::updateAttack($this);
-            return $this;
+            return $this->failPreAttack("Not enough energy available.");
         }
-        $this->checkTokens();
+        if (!$this->hasTokensNeeded()) {
+            return $this->failPreAttack("No access token.");
+        }
+
+        // Each asset gets chance to modify attack, then apply bonuses
+        $blueInv = $blueteam->inventories();
+        $redInv = $redteam->inventories();
+        $inventories = $blueInv->merge($redInv);
+        foreach ($inventories as $inv) {
+            $asset = Asset::get($inv->asset_name);
+            if (isValidTargetedAsset($asset, $inv->info, $this)){
+                $asset->onPreAttack($this);
+            }
+        }
         $bonuses = $this->getBonuses();
         foreach ($bonuses as $bonus){
             $this->applyBonus($bonus);
@@ -394,27 +375,31 @@ class Attack extends Model
         return $this;
     }
 
-    private function checkTokens(){
-        if ( in_array("Internal", $this->tags) ){
+    private function failPreAttack($errormsg){
+        $this->possible = false;
+        $this->detection_level = 0;
+        $this->errormsg = $errormsg;
+        Attack::updateAttack($this);
+        return $this;
+    }
+
+    private function hasTokensNeeded(){
+        if ($this->hasTag('Internal')){
             $redteam = Team::find($this->redteam);
             $blueteam = Team::find($this->blueteam);
             $tokenLevel = 1;
-            if(in_array("PrivilegedAccess", $this->tags)) $tokenLevel = 2;
-            if(in_array("PwnedAccess", $this->tags)) $tokenLevel = 3;
-            $tokenOwned = false;
+            if($this->hasPrereq('PrivilegedAccess')) $tokenLevel = 2;
+            elseif($this->hasPrereq('PwnedAccess')) $tokenLevel = 3;
             $tokens = $redteam->getTokens();
             $tokensRequired = $this->tokensRequired();
             foreach( $tokens as $token){
                 if( $token->info == $blueteam->name && $token->level == $tokenLevel && $token->quantity >= $tokensRequired){
-                    $tokenOwned = true;
+                    return true;
                 }
             }
-            if( !$tokenOwned ){
-                $this->possible = false;
-                $this->detection_level = 0;
-                $this->errormsg = "No access token.";
-            }
+            return false;
         }
+        return true;
     }
 
     private function tokensRequired(){
@@ -423,17 +408,17 @@ class Attack extends Model
         $tokensRequired = 1;
         foreach($invs as $inv){
             $asset = Asset::get($inv->asset_name);
-            if(in_array("AddToken", $asset->tags))
+            if($asset->hasTag("AddToken"))
                 $tokensRequired++;
         }
         return $tokensRequired;
     }
 
     private function applyBonus($bonus){
-        if(in_array("DifficultyDeduction", $bonus->tags)){
+        if($bonus->hasTag("DifficultyDeduction")){
             $this->changeSuccessChance(-1 * 0.01 * $bonus->percentDiffDeducted);
         }
-        if(in_array("DetectionDeduction", $bonus->tags)){
+        if($bonus->hasTag("DetectionDeduction")){
             $this->changeDetectionChance(-1 * 0.01 * $bonus->percentDetDeducted);
         }
     }

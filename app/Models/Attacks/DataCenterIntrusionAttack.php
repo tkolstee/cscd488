@@ -17,7 +17,7 @@ class DataCenterIntrusionAttack extends Attack {
     public $_initial_energy_cost    = 200;
     public $_help_text              = "Perform a physical attack on the target's data center. Requires physical access.";
 
-    public $learn_page              = true;
+    public $learn_page              = false;
 
     function onAttackComplete() {
         parent::onAttackComplete();

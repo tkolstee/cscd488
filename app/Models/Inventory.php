@@ -134,8 +134,8 @@ class Inventory extends Model
         }
         else {
             if ($this->level == 1) { return "Basic Access";}
-            elseif ($this->level == 2) { return "Private Access";}
-            elseif ($this->level ==3 ) { return "Pwnd Access";}
+            elseif ($this->level == 2) { return "Privileged Access";}
+            elseif ($this->level ==3 ) { return "Pwned Access";}
         }
     }
 }
