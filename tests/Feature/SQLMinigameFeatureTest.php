@@ -22,6 +22,7 @@ class SQLMinigameFeatureTest extends TestCase {
         return $attack;
     }
 
+    /*
     public function testSqlNonInjectionInput(){
         $attack = $this->createAttack();
         $attack->calculated_success_chance = 0.6;
@@ -92,4 +93,5 @@ class SQLMinigameFeatureTest extends TestCase {
         $response->assertViewIs('redteam.home');
         $response->assertSee("You successfully discovered the admin's password!");
     }
+    */
 }
