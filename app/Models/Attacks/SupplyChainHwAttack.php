@@ -9,7 +9,7 @@ class SupplyChainHwAttack extends Attack {
     public $_name                   = "Supply Chain - Hardware";
     public $_class_name             = "SupplyChainHw";
     public $_tags                   = [];
-    public $_prereqs                = ['SecInfo'];
+    public $_prereqs                = ['SecurityIntelligence'];
     public $_payload_tag           = 'ServerExecutable';
     public $_initial_success_chance = 0.1;
     public $_initial_detection_chance = 0.2;

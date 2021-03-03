@@ -9,7 +9,7 @@ class SupplyChainSwAttack extends Attack {
     public $_name                   = "Supply Chain - Software";
     public $_class_name             = "SupplyChainSw";
     public $_tags                   = [];
-    public $_prereqs                = ['SecInfo'];
+    public $_prereqs                = ['SecurityIntelligence'];
     public $_payload_tag           = 'ServerExecutable';
     public $_initial_success_chance = 0.1;
     public $_initial_detection_chance = 0.3;
