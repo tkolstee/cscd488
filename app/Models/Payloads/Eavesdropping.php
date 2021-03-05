@@ -16,12 +16,9 @@ class Eavesdropping extends Payload
         parent::onAttackComplete($attack);
 
         $rand = rand(1,100);
-        if ($rand <= 50) { //50% secinfo, reduces detection and difficulty 
-            $bonus = parent::createBonus($attack);
-            $bonus->tags = ['DetectionDeduction','DifficultyDeduction'];
-            $bonus->percentDetDeducted = 20;
-            $bonus->percentDiffDeducted = 20;
-            $bonus->save();
+        if ($rand <= 50) { //50% secinfo
+            $payload = new SecInfo;
+            $payload->onAttackComplete($attack);
         }
         $rand = rand(1,100);
         if ($rand <= 50) { //50% fininfo, steal 40% per turn rev for one turn

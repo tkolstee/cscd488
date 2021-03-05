@@ -59,6 +59,8 @@ class Game extends Model
         $redteams = Redteam::all();
         foreach($redteams as $redteam){
             $redteam->setEnergy(1000);
+            $team = Team::find($redteam->team_id);
+            $team->useTurnConsumables();
         }
     }
 

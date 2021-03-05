@@ -238,11 +238,10 @@ class Team extends Model
     }
 
     public function useTurnConsumables(){
-        if($this->blue != 1) throw new TeamNotFoundException();
         $inventories = $this->inventories();
         foreach($inventories as $inv){
             $asset = Asset::get($inv->asset_name);
-            if(in_array("TurnConsumable", $asset->tags)){
+            if($asset->hasTag('TurnConsumable')){
                 $inv->reduce();
             }
         }
