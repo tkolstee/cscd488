@@ -310,4 +310,18 @@ class TeamTest extends TestCase {
         $tags = $team->collectAssetTags($attack);
         $this->assertTrue(in_array('PwnedAccess', $tags));
     }
+
+    public function testUseTurnConsumables() {
+        $team = Team::factory()->create();
+        $inv = Inventory::factory()->create(['team_id' => $team->id, 'asset_name' => 'SecurityIntelligence', 'quantity' =>5]);
+        $this->assertEquals(5, $inv->quantity);
+        $team->useTurnConsumables();
+        $inv->refresh();
+        $this->assertEquals(4, $inv->quantity);
+
+        $inv->quantity = 1;
+        $inv->update();
+        $team->useTurnConsumables();
+        $this->assertEmpty(Inventory::all());
+    }
 }
