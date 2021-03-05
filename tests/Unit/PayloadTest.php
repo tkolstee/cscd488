@@ -287,6 +287,7 @@ class PayloadTest extends TestCase {
         }
     }
 
+    /*
     public function testStolenLaptopPayload(){
         $attack = $this->createTeamsAndAttack();
         $redteam = Team::find($attack->redteam);
@@ -305,7 +306,7 @@ class PayloadTest extends TestCase {
         foreach($inv as $asset){
             $this->assertEquals('AccessToken', $asset->asset_name);
         }
-    }
+    }*/
 
     public function testFuzzingPayload(){
         $attack = $this->createTeamsAndAttack();
