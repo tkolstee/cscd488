@@ -2,7 +2,7 @@
 
 namespace App\Models\Payloads;
 
-use App\Models\Attack;
+use App\Models\Team;
 use App\Models\Inventory;
 use App\Models\Payload;
 
@@ -24,7 +24,7 @@ class SecInfo extends Payload
         //Team gains Security Intelligence Asset for 5 turns
         Inventory::create([
             'team_id' => $attack->redteam,
-            'info' => $attack->blueteam,
+            'info' => Team::find($attack->blueteam)->name,
             'asset_name' => 'SecurityIntelligence',
             'quantity' => 5
         ]);
