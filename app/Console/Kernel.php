@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->call( Game::endTurn() )->dailyAt( Setting::get('turn_end_time') );
+        $schedule->call( function(){Game::endTurn();})->dailyAt( Setting::get('turn_end_time') );
     }
 
     /**
