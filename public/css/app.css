@@ -639,9 +639,7 @@ h4{
     padding-right:1.5%;
     padding-left: 34%;
     text-decoration: none;
-    background-color: rgb(3, 3, 148);
-    
-    
+    background-color: rgb(3, 3, 148);   
 }
 .blueTeamMenuSelection a:hover{
     background-color:blue;
@@ -1130,4 +1128,28 @@ color:#00CC99;
 }
 .descriptionTd{
     width: 100px;
+}
+
+#username2{
+    
+    width: 26%;
+    margin-right:13%;
+}
+.sqlInjectionContainer{
+    width: 90%;
+    margin-left:7%;
+}
+.labelSql{
+    color:white;
+    width: 68%;
+}
+.malP{
+    color:white;
+}
+.malLabel{
+    color:white;
+}
+.form-group.row2{
+    width:70%;
+    margin-left:14%;
 }

@@ -6,7 +6,8 @@
 
 @if ($success ?? '')
     <h1>You did it!</h1>
-    <form method="POST" action="/attack/sqlinjection">
+    
+    <form class="sqlInjectionAttack" method="POST" action="/attack/sqlinjection">
         @csrf
         <input type="hidden" name="attID" value="{{$attack->id}}">
         <input type="hidden" name="outcome" value="{{ Session::get('magic_word') }}">
@@ -29,12 +30,18 @@
 
 @if (! ($success ?? ''))
 <h2>Company Phone Directory:</h2>
-<form method="POST" action="/attack/sqlinjection">
+
+<div class= "sqlInjectionContainer">
+<form class="sqlInjectionAttack" method="POST" action="/attack/sqlinjection">
     @csrf
     <div class="form-group row">
-        <label for="username" class="col-md-4 col-form-label text-md-right">
+        <label for="username" class="labelSql">
             username = </label>
-        <input type="text" id="username" name="username" >
+
+<div class="username2Container">
+        <input type="text" id="username2" name="username" >
+</div><!--end username2Container-->
+
         <input type="hidden" name="attID" value="{{$attack->id}}">
     </div>
     <div class="form-group row mb-0">
@@ -55,6 +62,7 @@
         </div>
     </div>
 </form>
+</div><!--end sqlInjectionContainer -->
 @endif
 
 @endsection
